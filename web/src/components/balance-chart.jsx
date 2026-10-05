@@ -34,7 +34,7 @@ export function BalanceChart({ balance, isLoading }) {
                 nameKey="key"
                 innerRadius="68%"
                 outerRadius="100%"
-                paddingAngle={2}
+                 paddingAngle={data.filter((d) => d.value > 0).length > 1 ? 2 : 0}
                 stroke="none"
               >
                 {data.map((d) => (
