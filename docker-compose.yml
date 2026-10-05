@@ -1,0 +1,44 @@
+# Sobe tudo com: docker compose up --build
+# Dashboard: http://localhost:3000  |  API: http://localhost:8080/api  |  Docs: http://localhost:8080/docs
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: finance-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: finance-app
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d finance-app']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./api
+    container_name: finance-api
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/finance-app
+      JWT_ACCESS_TOKEN_SECRET: ${JWT_ACCESS_TOKEN_SECRET:-dev-access-secret-troque-em-producao}
+      JWT_REFRESH_TOKEN_SECRET: ${JWT_REFRESH_TOKEN_SECRET:-dev-refresh-secret-troque-em-producao}
+      PORT: 8080
+    ports:
+      - '8080:8080'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build: ./web
+    container_name: finance-web
+    ports:
+      - '3000:80'
+    depends_on:
+      - api
+
+volumes:
+  pgdata:

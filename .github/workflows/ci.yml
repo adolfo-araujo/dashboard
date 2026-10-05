@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  api:
+    name: API + banco (teste de ponta a ponta)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: finance-app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    defaults:
+      run:
+        working-directory: api
+    env:
+      DATABASE_URL: postgresql://postgres:password@localhost:5432/finance-app
+      JWT_ACCESS_TOKEN_SECRET: ci-access-secret
+      JWT_REFRESH_TOKEN_SECRET: ci-refresh-secret
+      PORT: 8080
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - run: npm ci
+      - run: npx prisma migrate deploy
+      - run: node prisma/seed.js
+      - name: Subir API e rodar teste de fumaça
+        run: |
+          node index.js &
+          for i in $(seq 1 30); do curl -sf http://localhost:8080/api/health && break; sleep 1; done
+          npm run test:smoke
+
+  web:
+    name: Build do dashboard
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm run build
