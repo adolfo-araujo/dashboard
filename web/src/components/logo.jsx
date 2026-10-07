@@ -4,9 +4,17 @@ export function Logo({ className = '' }) {
       <svg viewBox="0 0 32 32" className="h-8 w-8" aria-hidden="true">
         <rect width="32" height="32" rx="8" fill="#55B02E" />
         <path
-          d="M9 21l5-6 4 3 5-7"
+          d="M9 10.5L15.5 23L23.5 9"
           stroke="#fff"
-          strokeWidth="2.6"
+          strokeWidth="3"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M18.5 9H23.5V14"
+          stroke="#fff"
+          strokeWidth="3"
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
