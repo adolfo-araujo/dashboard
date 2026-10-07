@@ -6,6 +6,8 @@ import { SignupPage } from './pages/signup'
 import { DashboardPage } from './pages/dashboard'
 import { ForgotPasswordPage } from './pages/forgot-password'
 import { ResetPasswordPage } from './pages/reset-password'
+import { VerifyEmailPage } from './pages/verify-email'
+import { VerifyEmailNoticePage } from './pages/verify-email-notice'
 
 function FullScreenLoader() {
   return (
@@ -18,7 +20,10 @@ function FullScreenLoader() {
 function PrivateRoute({ children }) {
   const { user, isInitializing } = useAuth()
   if (isInitializing) return <FullScreenLoader />
-  return user ? children : <Navigate to="/login" replace />
+  if (!user) return <Navigate to="/login" replace />
+  // conta criada, mas e-mail ainda não confirmado
+  if (!user.email_verified_at) return <VerifyEmailNoticePage />
+  return children
 }
 
 function PublicRoute({ children }) {
@@ -35,6 +40,7 @@ export default function App() {
       <Route path="/signup" element={<PublicRoute><SignupPage /></PublicRoute>} />
       <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/verify-email" element={<VerifyEmailPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

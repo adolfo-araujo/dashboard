@@ -43,6 +43,7 @@ async function main() {
             last_name: 'Demo',
             email: DEMO_EMAIL,
             password: await bcrypt.hash(DEMO_PASSWORD, 10),
+            email_verified_at: new Date(),
         },
     })
 

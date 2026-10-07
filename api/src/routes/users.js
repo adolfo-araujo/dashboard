@@ -9,6 +9,8 @@ import {
     makeUpdateUserController,
 } from '../factories/controllers/user.js'
 import { auth } from '../middlewares/auth.js'
+import { prisma } from '../../prisma/prisma.js'
+import { sendVerificationEmail } from './email-verification.js'
 
 export const usersRouter = Router()
 
@@ -57,11 +59,25 @@ usersRouter.post('/', async (request, response) => {
 
     const { statusCode, body } = await createUserController.execute(request)
 
+    // Conta criada: envia o e-mail de confirmação.
+    // Se o envio falhar, a conta continua criada e a pessoa pode pedir outro e-mail.
+    if (statusCode === 201) {
+        try {
+            await sendVerificationEmail(body)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     response.status(statusCode).send(sanitize(body))
 })
 
 usersRouter.patch('/me', auth, async (request, response) => {
     const updateUserController = makeUpdateUserController()
+
+    const previous = await prisma.user.findUnique({
+        where: { id: request.userId },
+    })
 
     const { statusCode, body } = await updateUserController.execute({
         ...request,
@@ -69,6 +85,26 @@ usersRouter.patch('/me', auth, async (request, response) => {
             userId: request.userId,
         },
     })
+
+    // Trocou o e-mail: o novo endereço precisa ser confirmado.
+    const emailChanged =
+        statusCode === 200 &&
+        previous &&
+        body?.email &&
+        body.email.toLowerCase() !== previous.email.toLowerCase()
+
+    if (emailChanged) {
+        await prisma.user.update({
+            where: { id: request.userId },
+            data: { email_verified_at: null },
+        })
+        body.email_verified_at = null
+        try {
+            await sendVerificationEmail(body)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     response.status(statusCode).send(sanitize(body))
 })

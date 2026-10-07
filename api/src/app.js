@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { usersRouter, transactionsRouter } from './routes/index.js'
 import { passwordResetRouter } from './routes/password-reset.js'
+import { emailVerificationRouter } from './routes/email-verification.js'
 import swaggerUi from 'swagger-ui-express'
 import fs from 'fs'
 import cors from 'cors'
@@ -24,6 +25,7 @@ app.get('/api/health', (request, response) => {
 })
 
 app.use('/api/users', passwordResetRouter)
+app.use('/api/users', emailVerificationRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/transactions', transactionsRouter)
 

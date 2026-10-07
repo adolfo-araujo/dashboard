@@ -39,7 +39,7 @@ export function SignupPage() {
   const onSubmit = async ({ passwordConfirmation, terms, ...values }) => {
     try {
       await signup(values)
-      toast.success('Conta criada. Bem-vindo!')
+      toast.success('Conta criada. Enviamos um link de confirmação para o seu e-mail.')
       navigate('/', { replace: true })
     } catch (error) {
       toast.error(getErrorMessage(error, 'Não foi possível criar a conta.'))

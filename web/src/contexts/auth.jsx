@@ -55,6 +55,14 @@ export function AuthProvider({ children }) {
     handleAuthResponse(data)
   }
 
+  // Busca os dados atualizados do usuário (ex.: depois de confirmar o e-mail)
+  const refreshUser = useCallback(async () => {
+    if (!tokenStorage.getAccess()) return null
+    const { data } = await api.get('/users/me')
+    setUser(data)
+    return data
+  }, [])
+
   const updateUser = async (values) => {
     const { data } = await api.patch('/users/me', values)
     setUser(data)
@@ -68,7 +76,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, isInitializing, login, signup, logout, updateUser, deleteAccount }}
+      value={{ user, isInitializing, login, signup, logout, refreshUser, updateUser, deleteAccount }}
     >
       {children}
     </AuthContext.Provider>
