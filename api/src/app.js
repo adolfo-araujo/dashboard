@@ -2,6 +2,7 @@ import express from 'express'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { usersRouter, transactionsRouter } from './routes/index.js'
+import { passwordResetRouter } from './routes/password-reset.js'
 import swaggerUi from 'swagger-ui-express'
 import fs from 'fs'
 import cors from 'cors'
@@ -22,6 +23,7 @@ app.get('/api/health', (request, response) => {
     response.status(200).send({ status: 'ok' })
 })
 
+app.use('/api/users', passwordResetRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/transactions', transactionsRouter)
 
