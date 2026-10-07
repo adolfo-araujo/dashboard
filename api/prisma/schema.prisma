@@ -8,12 +8,13 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(uuid())
-  first_name   String        @db.VarChar(50)
-  last_name    String        @db.VarChar(50)
-  email        String        @unique @db.VarChar(100)
-  password     String        @db.VarChar(100)
-  transactions Transaction[]
+  id                  String               @id @default(uuid())
+  first_name          String               @db.VarChar(50)
+  last_name           String               @db.VarChar(50)
+  email               String               @unique @db.VarChar(100)
+  password            String               @db.VarChar(100)
+  transactions        Transaction[]
+  passwordResetTokens PasswordResetToken[]
 }
 
 model Transaction {
@@ -24,6 +25,18 @@ model Transaction {
   date    DateTime        @db.Date
   amount  Decimal         @db.Decimal(10, 2)
   type    TransactionType
+}
+
+model PasswordResetToken {
+  id         String    @id @default(uuid())
+  user_id    String
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  token_hash String    @unique @db.VarChar(64)
+  expires_at DateTime
+  used_at    DateTime?
+  created_at DateTime  @default(now())
+
+  @@index([user_id])
 }
 
 enum TransactionType {

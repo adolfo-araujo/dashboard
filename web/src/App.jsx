@@ -4,6 +4,8 @@ import { useAuth } from './contexts/auth'
 import { LoginPage } from './pages/login'
 import { SignupPage } from './pages/signup'
 import { DashboardPage } from './pages/dashboard'
+import { ForgotPasswordPage } from './pages/forgot-password'
+import { ResetPasswordPage } from './pages/reset-password'
 
 function FullScreenLoader() {
   return (
@@ -31,6 +33,8 @@ export default function App() {
       <Route path="/" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/signup" element={<PublicRoute><SignupPage /></PublicRoute>} />
+      <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

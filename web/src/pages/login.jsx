@@ -61,19 +61,24 @@ export function LoginPage() {
         <Field label="Senha" htmlFor="password" error={errors.password?.message}>
           <Input id="password" type="password" autoComplete="current-password" placeholder="••••••" hasError={!!errors.password} {...register('password')} />
         </Field>
+        <div className="-mt-1 text-right">
+          <Link to="/forgot-password" className="text-sm font-medium text-primary hover:underline">
+            Esqueci a senha
+          </Link>
+        </div>
         <Button type="submit" className="w-full" size="lg" isLoading={isSubmitting}>
           Entrar
         </Button>
       </form>
       {import.meta.env.DEV && (
-           <button
-             type="button"
-             onClick={fillDemo}
-             className="mt-4 w-full rounded-lg border border-dashed border-border px-3 py-2.5 text-left text-xs text-muted hover:border-primary hover:text-foreground"
-           >
-             Usar conta demo: <span className="font-semibold text-foreground">demo@finance.app</span> / 123456
-           </button>
-         )}
+        <button
+          type="button"
+          onClick={fillDemo}
+          className="mt-4 w-full rounded-lg border border-dashed border-border px-3 py-2.5 text-left text-xs text-muted hover:border-primary hover:text-foreground"
+        >
+          Usar conta demo: <span className="font-semibold text-foreground">demo@finance.app</span> / 123456
+        </button>
+      )}
     </AuthLayout>
   )
 }
