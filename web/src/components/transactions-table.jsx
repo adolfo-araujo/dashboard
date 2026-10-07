@@ -181,6 +181,8 @@ export function TransactionsTable({ transactions = [], isLoading, onEdit, onCrea
               </li>
             ))}
           </ul>
+        </>
+      )}
 
       <ConfirmDialog
         open={Boolean(toDelete)}
