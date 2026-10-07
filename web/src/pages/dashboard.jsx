@@ -38,9 +38,9 @@ export function DashboardPage() {
             <h1 className="text-2xl font-extrabold tracking-tight">Olá, {user?.first_name}</h1>
             <p className="text-sm text-muted">Este é o resumo das suas finanças no período.</p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
             <DateRangePicker from={from} to={to} onChange={setRange} />
-            <Button onClick={openCreate}>
+            <Button onClick={openCreate} className="w-full sm:w-auto">
               <Plus className="h-4 w-4" /> Adicionar transação
             </Button>
           </div>

@@ -164,22 +164,23 @@ export function TransactionsTable({ transactions = [], isLoading, onEdit, onCrea
           {/* mobile */}
           <ul className="divide-y divide-border md:hidden">
             {filtered.map((t) => (
-              <li key={t.id} className="flex items-center gap-3 px-5 py-3">
+              <li key={t.id} className="flex items-start justify-between gap-3 px-5 py-3">
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">{t.name}</p>
-                  <p className="mt-0.5 flex items-center gap-2 text-xs text-muted">
-                    <TypeBadge type={t.type} /> {formatDate(t.date)}
-                  </p>
+                  <div className="mt-1.5 flex items-center gap-2 text-xs text-muted">
+                    <TypeBadge type={t.type} />
+                    <span className="whitespace-nowrap tabular-nums">{formatDate(t.date)}</span>
+                  </div>
                 </div>
-                <div className="text-right text-sm">
-                  <Amount transaction={t} />
+                <div className="flex shrink-0 flex-col items-end gap-1">
+                  <span className="whitespace-nowrap text-sm">
+                    <Amount transaction={t} />
+                  </span>
+                  {actions(t)}
                 </div>
-                {actions(t)}
               </li>
             ))}
           </ul>
-        </>
-      )}
 
       <ConfirmDialog
         open={Boolean(toDelete)}

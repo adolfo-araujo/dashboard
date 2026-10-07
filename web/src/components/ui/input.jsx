@@ -2,7 +2,7 @@ import { forwardRef } from 'react'
 import { cn } from '../../lib/cn'
 
 export const inputClass =
-  'h-10 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted/70 transition-colors focus:border-primary'
+  'h-10 w-full rounded-lg border border-border bg-background px-3 text-base sm:text-sm text-foreground placeholder:text-muted/70 transition-colors focus:border-primary'
 
 export const Input = forwardRef(function Input({ className, hasError, ...props }, ref) {
   return (

@@ -8,7 +8,7 @@ export function DateRangePicker({ from, to, onChange }) {
   })
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center">
       <Select
         value={activePreset === -1 ? 'custom' : String(activePreset)}
         onChange={(e) => {
@@ -16,7 +16,7 @@ export function DateRangePicker({ from, to, onChange }) {
           const [f, t] = DATE_PRESETS[Number(e.target.value)].range()
           onChange(f, t)
         }}
-        className="w-auto"
+        className="col-span-2 sm:w-auto"
         aria-label="Período"
       >
         {DATE_PRESETS.map((p, i) => (
@@ -26,25 +26,23 @@ export function DateRangePicker({ from, to, onChange }) {
         ))}
         <option value="custom">Personalizado</option>
       </Select>
-      <div className="flex items-center gap-2">
-        <Input
-          type="date"
-          value={from}
-          max={to}
-          onChange={(e) => e.target.value && onChange(e.target.value, to)}
-          className="w-auto"
-          aria-label="Data inicial"
-        />
-        <span className="text-sm text-muted">até</span>
-        <Input
-          type="date"
-          value={to}
-          min={from}
-          onChange={(e) => e.target.value && onChange(from, e.target.value)}
-          className="w-auto"
-          aria-label="Data final"
-        />
-      </div>
+      <Input
+        type="date"
+        value={from}
+        max={to}
+        onChange={(e) => e.target.value && onChange(e.target.value, to)}
+        className="min-w-0 sm:w-auto"
+        aria-label="Data inicial"
+      />
+      <span className="hidden text-sm text-muted sm:inline">até</span>
+      <Input
+        type="date"
+        value={to}
+        min={from}
+        onChange={(e) => e.target.value && onChange(from, e.target.value)}
+        className="min-w-0 sm:w-auto"
+        aria-label="Data final"
+      />
     </div>
   )
 }

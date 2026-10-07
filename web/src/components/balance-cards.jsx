@@ -9,7 +9,7 @@ function Skeleton({ className }) {
 
 function StatCard({ icon: Icon, label, value, iconClass, isLoading }) {
   return (
-    <Card className="p-5">
+    <Card className="flex items-center justify-between gap-3 p-4 sm:block sm:p-5">
       <div className="flex items-center gap-2.5">
         <span className={cn('flex h-9 w-9 items-center justify-center rounded-lg', iconClass)}>
           <Icon className="h-[18px] w-[18px]" />
@@ -17,9 +17,9 @@ function StatCard({ icon: Icon, label, value, iconClass, isLoading }) {
         <span className="text-sm font-medium text-muted">{label}</span>
       </div>
       {isLoading ? (
-        <Skeleton className="mt-4 h-8 w-36" />
+        <Skeleton className="h-6 w-28 sm:mt-4 sm:h-8 sm:w-36" />
       ) : (
-        <p className="mt-4 text-2xl font-bold tabular-nums">{formatCurrency(value)}</p>
+        <p className="text-lg font-bold tabular-nums sm:mt-4 sm:text-2xl">{formatCurrency(value)}</p>
       )}
     </Card>
   )
