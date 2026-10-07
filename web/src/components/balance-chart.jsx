@@ -5,13 +5,46 @@ import { TRANSACTION_TYPES, formatCurrency } from '../lib/format'
 
 const icons = { EARNING: TrendingUp, EXPENSE: TrendingDown, INVESTMENT: PiggyBank }
 
+// Percentuais com 1 casa decimal que sempre somam exatamente 100%.
+function toPercentages(values) {
+  const total = values.reduce((sum, v) => sum + v, 0)
+  if (total === 0) return values.map(() => 0)
+
+  const raw = values.map((v) => (v / total) * 1000)
+  const tenths = raw.map(Math.floor)
+  let remaining = 1000 - tenths.reduce((sum, t) => sum + t, 0)
+
+  raw
+    .map((r, i) => ({ i, rest: r - tenths[i] }))
+    .sort((a, b) => b.rest - a.rest)
+    .forEach(({ i }) => {
+      if (remaining > 0) {
+        tenths[i] += 1
+        remaining -= 1
+      }
+    })
+
+  return tenths.map((t) => t / 10)
+}
+
+const percentFormat = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 })
+
+function formatPercent(pct, value) {
+  if (value > 0 && pct === 0) return '< 0,1%'
+  return `${percentFormat.format(pct)}%`
+}
+
 export function BalanceChart({ balance, isLoading }) {
-  const data = [
-    { key: 'EARNING', value: Number(balance?.earnings ?? 0), pct: Number(balance?.earningsPercentage ?? 0) },
-    { key: 'EXPENSE', value: Number(balance?.expenses ?? 0), pct: Number(balance?.expensesPercentage ?? 0) },
-    { key: 'INVESTMENT', value: Number(balance?.investments ?? 0), pct: Number(balance?.investmentsPercentage ?? 0) },
+  const keys = ['EARNING', 'EXPENSE', 'INVESTMENT']
+  const values = [
+    Number(balance?.earnings ?? 0),
+    Number(balance?.expenses ?? 0),
+    Number(balance?.investments ?? 0),
   ]
-  const isEmpty = data.every((d) => d.value === 0)
+  const percentages = toPercentages(values)
+  const data = keys.map((key, i) => ({ key, value: values[i], pct: percentages[i] }))
+  const isEmpty = values.every((v) => v === 0)
+  const slices = data.filter((d) => d.value > 0).length
 
   return (
     <Card className="flex h-full flex-col p-6">
@@ -34,7 +67,7 @@ export function BalanceChart({ balance, isLoading }) {
                 nameKey="key"
                 innerRadius="68%"
                 outerRadius="100%"
-                 paddingAngle={data.filter((d) => d.value > 0).length > 1 ? 2 : 0}
+                paddingAngle={slices > 1 ? 2 : 0}
                 stroke="none"
               >
                 {data.map((d) => (
@@ -66,7 +99,7 @@ export function BalanceChart({ balance, isLoading }) {
                 <Icon className="h-4 w-4" />
               </span>
               <span className="flex-1 text-sm text-muted">{cfg.plural}</span>
-              <span className="text-sm font-bold tabular-nums">{d.pct}%</span>
+              <span className="text-sm font-bold tabular-nums">{formatPercent(d.pct, d.value)}</span>
             </li>
           )
         })}
