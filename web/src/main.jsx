@@ -6,6 +6,10 @@ import { Toaster } from 'sonner'
 import App from './App'
 import { AuthProvider } from './contexts/auth'
 import './index.css'
+import { api } from './lib/api'
+
+// acorda a API (plano gratuito do Render) enquanto a pessoa vê a tela de login
+api.get('/health').catch(() => {})
 
 const queryClient = new QueryClient({
   defaultOptions: {
