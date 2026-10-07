@@ -12,9 +12,7 @@ export function Logo({ className = '' }) {
           strokeLinejoin="round"
         />
       </svg>
-      <span className="text-lg font-extrabold tracking-tight">
-        finance<span className="text-primary">.app</span>
-      </span>
+      <span className="text-lg font-extrabold tracking-tight">Valtrea</span>
     </div>
   )
 }
