@@ -1,11 +1,13 @@
-import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Plus, Repeat } from 'lucide-react'
 import { Header } from '../components/header'
 import { DateRangePicker } from '../components/date-range-picker'
 import { BalanceCards } from '../components/balance-cards'
 import { BalanceChart } from '../components/balance-chart'
 import { CategoryBreakdown } from '../components/category-breakdown'
 import { MonthlyEvolution } from '../components/monthly-evolution'
+import { RecurringDialog } from '../components/recurring-dialog'
+import { useSyncRecurring } from '../hooks/use-recurring'
 import { TransactionsTable } from '../components/transactions-table'
 import { TransactionFormDialog } from '../components/transaction-form-dialog'
 import { AccountDialog } from '../components/account-dialog'
@@ -24,6 +26,13 @@ export function DashboardPage() {
 
   const [formState, setFormState] = useState({ open: false, transaction: null })
   const [accountOpen, setAccountOpen] = useState(false)
+  const [recurringOpen, setRecurringOpen] = useState(false)
+
+  // Ao abrir o painel, lança as recorrentes que venceram desde a última visita
+  const syncRecurring = useSyncRecurring()
+  useEffect(() => {
+    syncRecurring.mutate()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const openCreate = () => setFormState({ open: true, transaction: null })
   const openEdit = (transaction) => setFormState({ open: true, transaction })
@@ -43,9 +52,14 @@ export function DashboardPage() {
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
             <DateRangePicker from={from} to={to} onChange={setRange} />
-            <Button onClick={openCreate} className="w-full sm:w-auto">
-              <Plus className="h-4 w-4" /> Adicionar transação
-            </Button>
+            <div className="grid grid-cols-2 gap-2 sm:flex">
+              <Button variant="secondary" onClick={() => setRecurringOpen(true)} className="w-full sm:w-auto">
+                <Repeat className="h-4 w-4" /> Recorrentes
+              </Button>
+              <Button onClick={openCreate} className="w-full sm:w-auto">
+                <Plus className="h-4 w-4" /> Adicionar
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -79,6 +93,7 @@ export function DashboardPage() {
 
       <TransactionFormDialog open={formState.open} transaction={formState.transaction} onClose={closeForm} />
       <AccountDialog open={accountOpen} onClose={() => setAccountOpen(false)} />
+      <RecurringDialog open={recurringOpen} onClose={() => setRecurringOpen(false)} />
     </div>
   )
 }

@@ -19,6 +19,7 @@ model User {
   transactions            Transaction[]
   passwordResetTokens     PasswordResetToken[]
   emailVerificationTokens EmailVerificationToken[]
+  recurringTransactions   RecurringTransaction[]
 }
 
 model Transaction {
@@ -28,10 +29,32 @@ model Transaction {
   name    String          @db.VarChar(50)
   date    DateTime        @db.Date
   amount  Decimal         @db.Decimal(10, 2)
-  type     TransactionType
-  category String?         @db.VarChar(30)
+  type         TransactionType
+  category     String?               @db.VarChar(30)
+  recurring_id String?
+  recurring    RecurringTransaction? @relation(fields: [recurring_id], references: [id], onDelete: SetNull)
 
+  @@unique([recurring_id, date])
   @@index([user_id, date])
+}
+
+model RecurringTransaction {
+  id              String          @id @default(uuid())
+  user_id         String
+  user            User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  name            String          @db.VarChar(50)
+  amount          Decimal         @db.Decimal(10, 2)
+  type            TransactionType
+  category        String?         @db.VarChar(30)
+  day_of_month    Int
+  start_date      DateTime        @db.Date
+  end_date        DateTime?       @db.Date
+  active          Boolean         @default(true)
+  generated_until DateTime?       @db.Date
+  created_at      DateTime        @default(now())
+  transactions    Transaction[]
+
+  @@index([user_id])
 }
 
 model PasswordResetToken {

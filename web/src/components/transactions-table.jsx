@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { Pencil, Plus, Search, Trash2 } from 'lucide-react'
+import { Pencil, Plus, Repeat, Search, Trash2 } from 'lucide-react'
 import { Card } from './ui/card'
 import { Button } from './ui/button'
 import { Input, Select } from './ui/input'
@@ -19,6 +19,11 @@ function TypeBadge({ type }) {
       {cfg.label}
     </span>
   )
+}
+
+function RecurringMark({ transaction }) {
+  if (!transaction.recurring_id) return null
+  return <Repeat className="ml-1.5 inline h-3.5 w-3.5 text-muted" aria-label="Lançamento recorrente" />
 }
 
 function CategoryLabel({ transaction }) {
@@ -161,7 +166,10 @@ export function TransactionsTable({ transactions = [], isLoading, onEdit, onCrea
               <tbody>
                 {filtered.map((t) => (
                   <tr key={t.id} className="border-t border-border hover:bg-surface-2/50">
-                    <td className="px-5 py-3 font-semibold">{t.name}</td>
+                    <td className="px-5 py-3 font-semibold">
+                      {t.name}
+                      <RecurringMark transaction={t} />
+                    </td>
                     <td className="px-5 py-3 text-muted">
                       <CategoryLabel transaction={t} />
                     </td>
@@ -184,7 +192,10 @@ export function TransactionsTable({ transactions = [], isLoading, onEdit, onCrea
             {filtered.map((t) => (
               <li key={t.id} className="flex items-start justify-between gap-3 px-5 py-3">
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold">{t.name}</p>
+                  <p className="truncate font-semibold">
+                    {t.name}
+                    <RecurringMark transaction={t} />
+                  </p>
                   <p className="mt-1 truncate text-xs text-muted">
                     <CategoryLabel transaction={t} />
                   </p>
