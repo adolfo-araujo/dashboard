@@ -4,6 +4,7 @@ import { dirname, join } from 'path'
 import { usersRouter, transactionsRouter } from './routes/index.js'
 import { passwordResetRouter } from './routes/password-reset.js'
 import { emailVerificationRouter } from './routes/email-verification.js'
+import { reportsRouter } from './routes/reports.js'
 import swaggerUi from 'swagger-ui-express'
 import fs from 'fs'
 import cors from 'cors'
@@ -28,6 +29,7 @@ app.use('/api/users', passwordResetRouter)
 app.use('/api/users', emailVerificationRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/transactions', transactionsRouter)
+app.use('/api/reports', reportsRouter)
 
 const swaggerDocument = JSON.parse(
     fs.readFileSync(join(__dirname, '../docs/swagger.json'), 'utf8'),

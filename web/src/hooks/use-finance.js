@@ -15,11 +15,19 @@ export const useTransactions = (from, to) =>
     enabled: from <= to,
   })
 
+// Totais por mês (independente do filtro de período)
+export const useMonthlySummary = (months, to) =>
+  useQuery({
+    queryKey: ['monthly', months, to],
+    queryFn: async () => (await api.get('/reports/monthly', { params: { months, to } })).data,
+  })
+
 const useInvalidate = () => {
   const queryClient = useQueryClient()
   return () => {
     queryClient.invalidateQueries({ queryKey: ['balance'] })
     queryClient.invalidateQueries({ queryKey: ['transactions'] })
+    queryClient.invalidateQueries({ queryKey: ['monthly'] })
   }
 }
 

@@ -5,6 +5,7 @@ import { DateRangePicker } from '../components/date-range-picker'
 import { BalanceCards } from '../components/balance-cards'
 import { BalanceChart } from '../components/balance-chart'
 import { CategoryBreakdown } from '../components/category-breakdown'
+import { MonthlyEvolution } from '../components/monthly-evolution'
 import { TransactionsTable } from '../components/transactions-table'
 import { TransactionFormDialog } from '../components/transaction-form-dialog'
 import { AccountDialog } from '../components/account-dialog'
@@ -59,7 +60,10 @@ export function DashboardPage() {
           <BalanceChart balance={balanceQuery.data} isLoading={balanceQuery.isLoading} />
         </div>
 
-        <CategoryBreakdown transactions={transactionsQuery.data} isLoading={transactionsQuery.isLoading} />
+        <div className="grid gap-6 lg:grid-cols-2">
+          <CategoryBreakdown transactions={transactionsQuery.data} isLoading={transactionsQuery.isLoading} />
+          <MonthlyEvolution />
+        </div>
 
         <TransactionsTable
           transactions={transactionsQuery.data}
