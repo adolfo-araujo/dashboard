@@ -8,6 +8,8 @@ import { ForgotPasswordPage } from './pages/forgot-password'
 import { ResetPasswordPage } from './pages/reset-password'
 import { VerifyEmailPage } from './pages/verify-email'
 import { VerifyEmailNoticePage } from './pages/verify-email-notice'
+import { TermsPage } from './pages/terms'
+import { PrivacyPage } from './pages/privacy'
 
 function FullScreenLoader() {
   return (
@@ -41,6 +43,8 @@ export default function App() {
       <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/verify-email" element={<VerifyEmailPage />} />
+      <Route path="/termos" element={<TermsPage />} />
+      <Route path="/privacidade" element={<PrivacyPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

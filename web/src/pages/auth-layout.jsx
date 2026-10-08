@@ -1,4 +1,5 @@
 import { Logo } from '../components/logo'
+import { LegalLinks } from '../components/legal-links'
 
 export function AuthLayout({ title, description, children, footer }) {
   return (
@@ -10,6 +11,7 @@ export function AuthLayout({ title, description, children, footer }) {
         <div className="mt-6">{children}</div>
       </div>
       {footer && <div className="mt-6 text-sm text-muted">{footer}</div>}
+      <LegalLinks className="mt-10" />
     </main>
   )
 }

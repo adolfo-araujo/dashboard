@@ -7,6 +7,7 @@ import { BalanceChart } from '../components/balance-chart'
 import { TransactionsTable } from '../components/transactions-table'
 import { TransactionFormDialog } from '../components/transaction-form-dialog'
 import { AccountDialog } from '../components/account-dialog'
+import { LegalLinks } from '../components/legal-links'
 import { Button } from '../components/ui/button'
 import { useAuth } from '../contexts/auth'
 import { useDateRange } from '../hooks/use-date-range'
@@ -64,6 +65,10 @@ export function DashboardPage() {
           onCreate={openCreate}
         />
       </main>
+
+      <footer className="border-t border-border py-6">
+        <LegalLinks />
+      </footer>
 
       <TransactionFormDialog open={formState.open} transaction={formState.transaction} onClose={closeForm} />
       <AccountDialog open={accountOpen} onClose={() => setAccountOpen(false)} />

@@ -16,6 +16,10 @@ import { sendVerificationEmail } from './email-verification.js'
 
 export const usersRouter = Router()
 
+// Versão vigente dos Termos de uso e da Política de privacidade.
+// Ao publicar uma nova versão dos textos, atualize aqui e em web/src/lib/legal.js.
+const TERMS_VERSION = '2026-10-08'
+
 // nunca devolver o hash da senha para o cliente
 const sanitize = (body) => {
     if (body && typeof body === 'object' && 'password' in body) {
@@ -64,6 +68,21 @@ usersRouter.post('/', async (request, response) => {
     // Conta criada: envia o e-mail de confirmação.
     // Se o envio falhar, a conta continua criada e a pessoa pode pedir outro e-mail.
     if (statusCode === 201) {
+        // Registra quando e qual versão dos termos a pessoa aceitou (prova de consentimento)
+        try {
+            const acceptance = {
+                terms_accepted_at: new Date(),
+                terms_version: TERMS_VERSION,
+            }
+            await prisma.user.update({
+                where: { id: body.id },
+                data: acceptance,
+            })
+            Object.assign(body, acceptance)
+        } catch (error) {
+            console.error(error)
+        }
+
         try {
             await sendVerificationEmail(body)
         } catch (error) {

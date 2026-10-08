@@ -86,7 +86,17 @@ export function SignupPage() {
         <div>
           <label className="flex items-start gap-2 text-sm text-muted">
             <input type="checkbox" className="mt-0.5 h-4 w-4 accent-primary" {...register('terms')} />
-            Li e aceito os termos de uso e a política de privacidade.
+            <span>
+              Li e aceito os{' '}
+              <Link to="/termos" target="_blank" className="font-semibold text-primary hover:underline">
+                Termos de uso
+              </Link>{' '}
+              e a{' '}
+              <Link to="/privacidade" target="_blank" className="font-semibold text-primary hover:underline">
+                Política de privacidade
+              </Link>
+              .
+            </span>
           </label>
           {errors.terms && <p className="mt-1 text-xs font-medium text-expense">{errors.terms.message}</p>}
         </div>
