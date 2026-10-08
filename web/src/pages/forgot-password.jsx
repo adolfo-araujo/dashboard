@@ -46,7 +46,7 @@ export function ForgotPasswordPage() {
     >
       {sentTo ? (
         <div className="space-y-4 text-sm">
-          <MailCheck className="h-8 w-8 text-primary" />
+          <MailCheck className="mx-auto h-8 w-8 text-primary" />
           <p>
             Se existir uma conta com <span className="font-semibold">{sentTo}</span>, você vai receber um
             e-mail com o link em alguns minutos.

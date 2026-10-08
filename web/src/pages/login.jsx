@@ -61,7 +61,7 @@ export function LoginPage() {
         <Field label="Senha" htmlFor="password" error={errors.password?.message}>
           <Input id="password" type="password" autoComplete="current-password" placeholder="••••••" hasError={!!errors.password} {...register('password')} />
         </Field>
-        <div className="-mt-1 text-right">
+        <div className="-mt-1 text-center">
           <Link to="/forgot-password" className="text-sm font-medium text-primary hover:underline">
             Esqueci a senha
           </Link>

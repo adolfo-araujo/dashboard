@@ -49,7 +49,7 @@ export function VerifyEmailNoticePage() {
       }
     >
       <div className="space-y-4 text-sm">
-        <MailCheck className="h-8 w-8 text-primary" />
+        <MailCheck className="mx-auto h-8 w-8 text-primary" />
         <p>
           Enviamos um link de confirmação para <span className="font-semibold">{user?.email}</span>. Abra
           o e-mail e clique em <span className="font-semibold">Confirmar e-mail</span>.

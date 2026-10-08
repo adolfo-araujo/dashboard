@@ -45,7 +45,7 @@ export function VerifyEmailPage() {
     return (
       <AuthLayout title="Não foi possível confirmar" description={errorMessage}>
         <div className="space-y-4 text-sm">
-          <CircleX className="h-8 w-8 text-expense" />
+          <CircleX className="mx-auto h-8 w-8 text-expense" />
           <p className="text-muted">
             O link pode ter expirado ou já ter sido substituído por um mais novo. Entre na sua conta e
             clique em <span className="font-semibold text-foreground">Reenviar e-mail</span>.
@@ -61,7 +61,7 @@ export function VerifyEmailPage() {
   return (
     <AuthLayout title="E-mail confirmado" description="Sua conta está pronta para usar.">
       <div className="space-y-4">
-        <CircleCheck className="h-8 w-8 text-primary" />
+        <CircleCheck className="mx-auto h-8 w-8 text-primary" />
         <Link to={user ? '/' : '/login'} className="block">
           <Button className="w-full" size="lg">
             {user ? 'Ir para o painel' : 'Entrar'}
