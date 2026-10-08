@@ -10,6 +10,7 @@ import { VerifyEmailPage } from './pages/verify-email'
 import { VerifyEmailNoticePage } from './pages/verify-email-notice'
 import { TermsPage } from './pages/terms'
 import { PrivacyPage } from './pages/privacy'
+import { LandingPage } from './pages/landing'
 
 function FullScreenLoader() {
   return (
@@ -19,13 +20,14 @@ function FullScreenLoader() {
   )
 }
 
-function PrivateRoute({ children }) {
+// Página inicial: visitante vê a apresentação; quem está logado vê o painel
+function HomeRoute() {
   const { user, isInitializing } = useAuth()
   if (isInitializing) return <FullScreenLoader />
-  if (!user) return <Navigate to="/login" replace />
+  if (!user) return <LandingPage />
   // conta criada, mas e-mail ainda não confirmado
   if (!user.email_verified_at) return <VerifyEmailNoticePage />
-  return children
+  return <DashboardPage />
 }
 
 function PublicRoute({ children }) {
@@ -37,7 +39,7 @@ function PublicRoute({ children }) {
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+      <Route path="/" element={<HomeRoute />} />
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/signup" element={<PublicRoute><SignupPage /></PublicRoute>} />
       <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /reset-password
+Disallow: /verify-email
+
+Sitemap: https://www.valtrea.com.br/sitemap.xml
