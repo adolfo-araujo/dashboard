@@ -9,6 +9,8 @@ import {
     makeUpdateUserController,
 } from '../factories/controllers/user.js'
 import { auth } from '../middlewares/auth.js'
+import bcrypt from 'bcrypt'
+import { sendEmail } from '../adapters/email-sender.js'
 import { prisma } from '../../prisma/prisma.js'
 import { sendVerificationEmail } from './email-verification.js'
 
@@ -110,16 +112,60 @@ usersRouter.patch('/me', auth, async (request, response) => {
 })
 
 usersRouter.delete('/me', auth, async (request, response) => {
-    const deleteUserController = makeDeleteUserController()
+    try {
+        const password = request.body?.password
+        if (typeof password !== 'string' || password.length === 0) {
+            return response
+                .status(400)
+                .send({ message: 'Informe sua senha para excluir a conta.' })
+        }
 
-    const { statusCode, body } = await deleteUserController.execute({
-        ...request,
-        params: {
-            userId: request.userId,
-        },
-    })
+        const user = await prisma.user.findUnique({
+            where: { id: request.userId },
+        })
+        if (!user) {
+            return response.status(404).send({ message: 'User not found.' })
+        }
 
-    response.status(statusCode).send(sanitize(body))
+        // 403 (e não 401) para o site não confundir com sessão expirada
+        const isPasswordValid = await bcrypt.compare(password, user.password)
+        if (!isPasswordValid) {
+            return response.status(403).send({ message: 'Senha incorreta.' })
+        }
+
+        // Apaga o usuário de verdade. Pelas regras do banco (onDelete: Cascade),
+        // as transações e os links de senha/confirmação são apagados junto.
+        const deleteUserController = makeDeleteUserController()
+        const { statusCode, body } = await deleteUserController.execute({
+            ...request,
+            params: {
+                userId: request.userId,
+            },
+        })
+
+        if (statusCode === 200) {
+            try {
+                await sendEmail({
+                    to: user.email,
+                    subject: 'Sua conta no Valtrea foi excluída',
+                    text: `Olá, ${user.first_name}.\n\nConfirmamos a exclusão da sua conta no Valtrea. Seus dados e todas as suas transações foram apagados de forma permanente.\n\nSe quiser voltar a usar o Valtrea, é só criar uma nova conta.`,
+                    html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;color:#1c2026">
+  <h2 style="color:#55B02E;margin-bottom:8px">Valtrea</h2>
+  <p>Olá, ${user.first_name}.</p>
+  <p>Confirmamos a exclusão da sua conta no Valtrea. Seus dados e todas as suas transações foram <strong>apagados de forma permanente</strong>.</p>
+  <p style="font-size:13px;color:#5f6670">Se quiser voltar a usar o Valtrea, é só criar uma nova conta.</p>
+</div>`,
+                })
+            } catch (error) {
+                console.error(error)
+            }
+        }
+
+        response.status(statusCode).send(sanitize(body))
+    } catch (error) {
+        console.error(error)
+        return response.status(500).send({ message: 'Internal server error' })
+    }
 })
 
 usersRouter.post('/login', async (request, response) => {

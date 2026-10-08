@@ -3,10 +3,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
+import { AlertTriangle } from 'lucide-react'
 import { Dialog } from './ui/dialog'
 import { Button } from './ui/button'
 import { Field, Input } from './ui/input'
-import { ConfirmDialog } from './confirm-dialog'
 import { useAuth } from '../contexts/auth'
 import { getErrorMessage } from '../lib/api'
 
@@ -20,10 +20,83 @@ const schema = z.object({
     .refine((v) => v === '' || v.length >= 6, 'A senha precisa ter pelo menos 6 caracteres.'),
 })
 
-export function AccountDialog({ open, onClose }) {
-  const { user, updateUser, deleteAccount } = useAuth()
-  const [confirmDelete, setConfirmDelete] = useState(false)
+function DeleteAccountDialog({ open, onClose }) {
+  const { deleteAccount } = useAuth()
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
+
+  useEffect(() => {
+    if (open) {
+      setPassword('')
+      setError('')
+    }
+  }, [open])
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    if (!password) {
+      setError('Digite sua senha para confirmar.')
+      return
+    }
+    setIsDeleting(true)
+    try {
+      await deleteAccount(password)
+      toast.success('Conta excluída. Enviamos uma confirmação para o seu e-mail.')
+    } catch (err) {
+      if (err?.response?.status === 403) {
+        setError('Senha incorreta.')
+      } else {
+        toast.error(getErrorMessage(err, 'Não foi possível excluir a conta.'))
+      }
+      setIsDeleting(false)
+    }
+  }
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      title="Excluir sua conta?"
+      description="Esta ação é permanente e não pode ser desfeita."
+    >
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+        <div className="rounded-lg border border-expense/40 bg-expense/10 p-3 text-sm">
+          <p className="font-semibold text-expense">Serão apagados para sempre:</p>
+          <ul className="mt-1 list-disc space-y-0.5 pl-5 text-foreground">
+            <li>seu cadastro (nome, e-mail e senha)</li>
+            <li>todas as suas transações</li>
+          </ul>
+        </div>
+        <Field label="Digite sua senha para confirmar" htmlFor="delete-password" error={error}>
+          <Input
+            id="delete-password"
+            type="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value)
+              setError('')
+            }}
+            hasError={!!error}
+          />
+        </Field>
+        <div className="flex gap-3">
+          <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button type="submit" variant="danger" className="flex-1" isLoading={isDeleting}>
+            Excluir definitivamente
+          </Button>
+        </div>
+      </form>
+    </Dialog>
+  )
+}
+
+export function AccountDialog({ open, onClose }) {
+  const { user, updateUser } = useAuth()
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   const {
     register,
@@ -40,22 +113,15 @@ export function AccountDialog({ open, onClose }) {
 
   const onSubmit = async ({ password, ...values }) => {
     try {
-      await updateUser(password ? { ...values, password } : values)
-      toast.success('Dados atualizados.')
+      const updated = await updateUser(password ? { ...values, password } : values)
+      if (!updated?.email_verified_at) {
+        toast.success('Dados atualizados. Confirme o novo e-mail pelo link que enviamos.')
+      } else {
+        toast.success('Dados atualizados.')
+      }
       onClose()
     } catch (error) {
       toast.error(getErrorMessage(error, 'Não foi possível atualizar seus dados.'))
-    }
-  }
-
-  const handleDelete = async () => {
-    setIsDeleting(true)
-    try {
-      await deleteAccount()
-      toast.success('Conta excluída.')
-    } catch (error) {
-      toast.error(getErrorMessage(error, 'Não foi possível excluir a conta.'))
-      setIsDeleting(false)
     }
   }
 
@@ -89,24 +155,22 @@ export function AccountDialog({ open, onClose }) {
           </Button>
         </form>
 
-        <div className="mt-6 border-t border-border pt-5">
-          <p className="text-sm font-semibold">Excluir conta</p>
-          <p className="mt-1 text-sm text-muted">Remove sua conta e todas as transações. Não dá para desfazer.</p>
-          <Button variant="outline" size="sm" className="mt-3 text-expense" onClick={() => setConfirmDelete(true)}>
+        <div className="mt-6 rounded-xl border border-expense/40 bg-expense/5 p-4">
+          <div className="flex items-center gap-2 text-expense">
+            <AlertTriangle className="h-4 w-4" />
+            <p className="text-sm font-bold">Zona de perigo</p>
+          </div>
+          <p className="mt-2 text-sm text-muted">
+            Excluir a conta apaga seu cadastro e todas as suas transações de forma permanente. Não é possível
+            recuperar depois.
+          </p>
+          <Button variant="danger" size="sm" className="mt-3 w-full sm:w-auto" onClick={() => setConfirmDelete(true)}>
             Excluir minha conta
           </Button>
         </div>
       </Dialog>
 
-      <ConfirmDialog
-        open={confirmDelete}
-        onClose={() => setConfirmDelete(false)}
-        onConfirm={handleDelete}
-        isLoading={isDeleting}
-        title="Excluir sua conta?"
-        description="Todos os seus dados serão apagados permanentemente."
-        confirmLabel="Excluir conta"
-      />
+      <DeleteAccountDialog open={confirmDelete} onClose={() => setConfirmDelete(false)} />
     </>
   )
 }

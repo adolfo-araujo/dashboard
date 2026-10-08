@@ -69,8 +69,8 @@ export function AuthProvider({ children }) {
     return data
   }
 
-  const deleteAccount = async () => {
-    await api.delete('/users/me')
+  const deleteAccount = async (password) => {
+    await api.delete('/users/me', { data: { password } })
     logout()
   }
 
