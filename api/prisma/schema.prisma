@@ -20,6 +20,7 @@ model User {
   passwordResetTokens     PasswordResetToken[]
   emailVerificationTokens EmailVerificationToken[]
   recurringTransactions   RecurringTransaction[]
+  budgets                 Budget[]
 }
 
 model Transaction {
@@ -79,6 +80,18 @@ model EmailVerificationToken {
   created_at DateTime  @default(now())
 
   @@index([user_id])
+}
+
+model Budget {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  category   String   @db.VarChar(30)
+  amount     Decimal  @db.Decimal(10, 2)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([user_id, category])
 }
 
 enum TransactionType {

@@ -28,6 +28,7 @@ const useInvalidate = () => {
     queryClient.invalidateQueries({ queryKey: ['balance'] })
     queryClient.invalidateQueries({ queryKey: ['transactions'] })
     queryClient.invalidateQueries({ queryKey: ['monthly'] })
+    queryClient.invalidateQueries({ queryKey: ['budgets'] })
   }
 }
 
