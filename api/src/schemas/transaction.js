@@ -1,7 +1,8 @@
 import { z } from 'zod'
 import validator from 'validator'
+import { ALL_CATEGORIES, CATEGORIES } from '../constants/categories.js'
 
-export const createTransactionSchema = z.object({
+const baseTransactionSchema = z.object({
     user_id: z
         .string({
             required_error: 'User ID is required.',
@@ -44,13 +45,34 @@ export const createTransactionSchema = z.object({
                 decimal_separator: '.',
             }),
         ),
+    category: z
+        .enum(ALL_CATEGORIES, {
+            errorMap: () => ({ message: 'Categoria inválida.' }),
+        })
+        .nullable()
+        .optional(),
 })
 
-export const updateTransactionSchema = createTransactionSchema
+// Quando tipo e categoria vêm juntos, a categoria precisa pertencer ao tipo
+const categoryMatchesType = (data) =>
+    !data.type || !data.category || CATEGORIES[data.type].includes(data.category)
+
+const categoryError = {
+    message: 'Categoria não corresponde ao tipo da transação.',
+    path: ['category'],
+}
+
+export const createTransactionSchema = baseTransactionSchema.refine(
+    categoryMatchesType,
+    categoryError,
+)
+
+export const updateTransactionSchema = baseTransactionSchema
     .omit({
         user_id: true,
     })
     .partial()
+    .refine(categoryMatchesType, categoryError)
 
 export const getTransactionsByUserIdSchema = z.object({
     user_id: z.string().uuid(),

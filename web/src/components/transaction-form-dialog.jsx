@@ -6,11 +6,12 @@ import { toast } from 'sonner'
 import { PiggyBank, TrendingDown, TrendingUp } from 'lucide-react'
 import { Dialog } from './ui/dialog'
 import { Button } from './ui/button'
-import { Field, Input } from './ui/input'
+import { Field, Input, Select } from './ui/input'
 import { cn } from '../lib/cn'
 import { TRANSACTION_TYPES, toApiDate, toDateOnly, today } from '../lib/format'
 import { useCreateTransaction, useUpdateTransaction } from '../hooks/use-finance'
 import { getErrorMessage } from '../lib/api'
+import { CATEGORIES } from '../lib/categories'
 
 const schema = z.object({
   name: z.string().trim().min(1, 'Informe um nome.').max(50, 'Máximo de 50 caracteres.'),
@@ -20,11 +21,12 @@ const schema = z.object({
     .max(99999999.99, 'Valor muito alto.'),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Informe uma data.'),
   type: z.enum(['EARNING', 'EXPENSE', 'INVESTMENT']),
+  category: z.string().min(1, 'Escolha uma categoria.'),
 })
 
 const typeIcons = { EARNING: TrendingUp, EXPENSE: TrendingDown, INVESTMENT: PiggyBank }
 
-const emptyValues = () => ({ name: '', amount: '', date: today(), type: 'EXPENSE' })
+const emptyValues = () => ({ name: '', amount: '', date: today(), type: 'EXPENSE', category: '' })
 
 export function TransactionFormDialog({ open, onClose, transaction }) {
   const isEditing = Boolean(transaction)
@@ -36,6 +38,9 @@ export function TransactionFormDialog({ open, onClose, transaction }) {
     control,
     handleSubmit,
     reset,
+    watch,
+    setValue,
+    getValues,
     formState: { errors },
   } = useForm({ resolver: zodResolver(schema), defaultValues: emptyValues() })
 
@@ -48,10 +53,21 @@ export function TransactionFormDialog({ open, onClose, transaction }) {
             amount: Number(transaction.amount),
             date: toDateOnly(transaction.date),
             type: transaction.type,
+            category: transaction.category ?? '',
           }
         : emptyValues(),
     )
   }, [open, transaction, reset])
+
+  const selectedType = watch('type')
+  const categoryOptions = CATEGORIES[selectedType] ?? []
+
+  useEffect(() => {
+    const current = getValues('category')
+    if (current && !categoryOptions.some((c) => c.key === current)) {
+      setValue('category', '')
+    }
+  }, [selectedType]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = async (values) => {
     const payload = {
@@ -131,6 +147,17 @@ export function TransactionFormDialog({ open, onClose, transaction }) {
               </div>
             )}
           />
+        </Field>
+
+        <Field label="Categoria" htmlFor="category" error={errors.category?.message}>
+          <Select id="category" hasError={!!errors.category} {...register('category')}>
+            <option value="">Escolha uma categoria</option>
+            {categoryOptions.map((c) => (
+              <option key={c.key} value={c.key}>
+                {c.label}
+              </option>
+            ))}
+          </Select>
         </Field>
 
         <div className="flex gap-3 pt-2">

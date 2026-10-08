@@ -4,6 +4,7 @@ import { Header } from '../components/header'
 import { DateRangePicker } from '../components/date-range-picker'
 import { BalanceCards } from '../components/balance-cards'
 import { BalanceChart } from '../components/balance-chart'
+import { CategoryBreakdown } from '../components/category-breakdown'
 import { TransactionsTable } from '../components/transactions-table'
 import { TransactionFormDialog } from '../components/transaction-form-dialog'
 import { AccountDialog } from '../components/account-dialog'
@@ -57,6 +58,8 @@ export function DashboardPage() {
           <BalanceCards balance={balanceQuery.data} isLoading={balanceQuery.isLoading} />
           <BalanceChart balance={balanceQuery.data} isLoading={balanceQuery.isLoading} />
         </div>
+
+        <CategoryBreakdown transactions={transactionsQuery.data} isLoading={transactionsQuery.isLoading} />
 
         <TransactionsTable
           transactions={transactionsQuery.data}

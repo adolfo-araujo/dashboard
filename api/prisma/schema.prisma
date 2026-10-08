@@ -28,7 +28,10 @@ model Transaction {
   name    String          @db.VarChar(50)
   date    DateTime        @db.Date
   amount  Decimal         @db.Decimal(10, 2)
-  type    TransactionType
+  type     TransactionType
+  category String?         @db.VarChar(30)
+
+  @@index([user_id, date])
 }
 
 model PasswordResetToken {

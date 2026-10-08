@@ -5,7 +5,7 @@ import {
   MousePointerClick,
   PieChart,
   PiggyBank,
-  Search,
+  Tags,
   ShieldCheck,
   Smartphone,
   TrendingDown,
@@ -32,12 +32,12 @@ const features = [
   {
     icon: MousePointerClick,
     title: 'Lançamentos em segundos',
-    text: 'Registre uma transação com nome, valor, data e tipo. Edite ou exclua quando precisar.',
+    text: 'Registre uma transação com nome, valor, data, tipo e categoria. Busque, edite ou exclua quando precisar.',
   },
   {
-    icon: Search,
-    title: 'Busca e filtros',
-    text: 'Encontre qualquer transação pelo nome ou veja só os ganhos, só os gastos ou só os investimentos.',
+    icon: Tags,
+    title: 'Gastos por categoria',
+    text: 'Moradia, alimentação, transporte e outras. Veja quanto foi para cada categoria e onde dá para economizar.',
   },
   {
     icon: Download,
