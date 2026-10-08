@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { Pencil, Plus, Repeat, Search, Trash2 } from 'lucide-react'
+import { Download, Pencil, Plus, Repeat, Search, Trash2 } from 'lucide-react'
 import { Card } from './ui/card'
 import { Button } from './ui/button'
 import { Input, Select } from './ui/input'
@@ -10,6 +10,7 @@ import { useDeleteTransaction } from '../hooks/use-finance'
 import { getErrorMessage } from '../lib/api'
 import { cn } from '../lib/cn'
 import { getCategory } from '../lib/categories'
+import { downloadCsv, transactionsToCsv } from '../lib/csv'
 
 function TypeBadge({ type }) {
   const cfg = TRANSACTION_TYPES[type]
@@ -46,7 +47,7 @@ function Amount({ transaction }) {
   )
 }
 
-export function TransactionsTable({ transactions = [], isLoading, onEdit, onCreate }) {
+export function TransactionsTable({ transactions = [], isLoading, onEdit, onCreate, period }) {
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('ALL')
   const [toDelete, setToDelete] = useState(null)
@@ -62,6 +63,12 @@ export function TransactionsTable({ transactions = [], isLoading, onEdit, onCrea
           getCategory(t.type, t.category).label.toLowerCase().includes(term)),
     )
   }, [transactions, search, typeFilter])
+
+  const handleExport = () => {
+    const suffix = period ? `${period.from}_a_${period.to}` : new Date().toISOString().slice(0, 10)
+    downloadCsv(`valtrea-transacoes-${suffix}.csv`, transactionsToCsv(filtered))
+    toast.success(`${filtered.length} ${filtered.length === 1 ? 'transação exportada' : 'transações exportadas'}.`)
+  }
 
   const handleDelete = async () => {
     try {
@@ -122,6 +129,15 @@ export function TransactionsTable({ transactions = [], isLoading, onEdit, onCrea
             </option>
           ))}
         </Select>
+        <Button
+          variant="secondary"
+          onClick={handleExport}
+          disabled={isLoading || filtered.length === 0}
+          className="shrink-0"
+          title="Baixar as transações exibidas em planilha (CSV)"
+        >
+          <Download className="h-4 w-4" /> Exportar
+        </Button>
       </div>
 
       {isLoading ? (

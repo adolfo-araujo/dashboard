@@ -87,6 +87,7 @@ export function DashboardPage() {
           isLoading={transactionsQuery.isLoading}
           onEdit={openEdit}
           onCreate={openCreate}
+          period={{ from, to }}
         />
       </main>
 

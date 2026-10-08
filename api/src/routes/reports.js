@@ -82,3 +82,27 @@ reportsRouter.get('/monthly', auth, async (request, response) => {
         return response.status(500).send({ message: 'Internal server error' })
     }
 })
+
+// GET /api/reports/export
+// Todas as transações do usuário, para exportação (portabilidade de dados)
+reportsRouter.get('/export', auth, async (request, response) => {
+    try {
+        const transactions = await prisma.transaction.findMany({
+            where: { user_id: request.userId },
+            orderBy: [{ date: 'desc' }, { name: 'asc' }],
+            select: {
+                id: true,
+                name: true,
+                date: true,
+                amount: true,
+                type: true,
+                category: true,
+                recurring_id: true,
+            },
+        })
+        return response.status(200).send(transactions)
+    } catch (error) {
+        console.error(error)
+        return response.status(500).send({ message: 'Internal server error' })
+    }
+})

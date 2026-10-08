@@ -3,12 +3,13 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, Download } from 'lucide-react'
 import { Dialog } from './ui/dialog'
 import { Button } from './ui/button'
 import { Field, Input } from './ui/input'
 import { useAuth } from '../contexts/auth'
-import { getErrorMessage } from '../lib/api'
+import { api, getErrorMessage } from '../lib/api'
+import { downloadCsv, transactionsToCsv } from '../lib/csv'
 
 const schema = z.object({
   first_name: z.string().trim().min(1, 'Informe seu nome.').max(50),
@@ -97,6 +98,25 @@ function DeleteAccountDialog({ open, onClose }) {
 export function AccountDialog({ open, onClose }) {
   const { user, updateUser } = useAuth()
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
+
+  const exportAll = async () => {
+    setIsExporting(true)
+    try {
+      const { data } = await api.get('/reports/export')
+      if (data.length === 0) {
+        toast.info('Você ainda não tem transações para exportar.')
+        return
+      }
+      const date = new Date().toISOString().slice(0, 10)
+      downloadCsv(`valtrea-todas-as-transacoes-${date}.csv`, transactionsToCsv(data))
+      toast.success(`${data.length} ${data.length === 1 ? 'transação exportada' : 'transações exportadas'}.`)
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Não foi possível exportar.'))
+    } finally {
+      setIsExporting(false)
+    }
+  }
 
   const {
     register,
@@ -154,6 +174,16 @@ export function AccountDialog({ open, onClose }) {
             Salvar alterações
           </Button>
         </form>
+
+        <div className="mt-6 border-t border-border pt-5">
+          <p className="text-sm font-bold">Seus dados</p>
+          <p className="mt-1 text-sm text-muted">
+            Baixe todas as suas transações, de todas as datas, em uma planilha que abre no Excel ou no Google Planilhas.
+          </p>
+          <Button variant="secondary" size="sm" className="mt-3 w-full sm:w-auto" onClick={exportAll} isLoading={isExporting}>
+            <Download className="h-4 w-4" /> Baixar todas as transações
+          </Button>
+        </div>
 
         <div className="mt-6 rounded-xl border border-expense/40 bg-expense/5 p-4">
           <div className="flex items-center gap-2 text-expense">
