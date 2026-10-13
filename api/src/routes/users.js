@@ -11,6 +11,13 @@ import {
 import { auth } from '../middlewares/auth.js'
 import bcrypt from 'bcrypt'
 import { sendEmail } from '../adapters/email-sender.js'
+import {
+    checkLoginBlock,
+    clearLoginFailures,
+    clientIp,
+    normalizeEmail,
+    registerLoginFailure,
+} from '../security/login-protection.js'
 import { prisma } from '../../prisma/prisma.js'
 import { sendVerificationEmail } from './email-verification.js'
 
@@ -188,9 +195,34 @@ usersRouter.delete('/me', auth, async (request, response) => {
 })
 
 usersRouter.post('/login', async (request, response) => {
-    const loginUserController = makeLoginUserController()
+    const email = normalizeEmail(request.body?.email)
+    const ip = clientIp(request)
 
+    // Proteção contra tentativas de senha. Se a verificação falhar por algum
+    // motivo, o login continua funcionando (o erro só vai para o log).
+    try {
+        const minutes = await checkLoginBlock(email, ip)
+        if (minutes) {
+            return response.status(429).send({
+                message: `Muitas tentativas com senha errada. Tente novamente em ${minutes} ${minutes === 1 ? 'minuto' : 'minutos'} ou use "Esqueci a senha".`,
+            })
+        }
+    } catch (error) {
+        console.error(error)
+    }
+
+    const loginUserController = makeLoginUserController()
     const { statusCode, body } = await loginUserController.execute(request)
+
+    try {
+        if (statusCode === 401 || statusCode === 404) {
+            await registerLoginFailure(email, ip)
+        } else if (statusCode === 200) {
+            await clearLoginFailures(email)
+        }
+    } catch (error) {
+        console.error(error)
+    }
 
     response.status(statusCode).send(sanitize(body))
 })

@@ -94,6 +94,17 @@ model Budget {
   @@unique([user_id, category])
 }
 
+// Tentativas de login com senha errada (proteção contra força bruta)
+model LoginAttempt {
+  id         String   @id @default(uuid())
+  email      String   @db.VarChar(100)
+  ip         String?  @db.VarChar(64)
+  created_at DateTime @default(now())
+
+  @@index([email, created_at])
+  @@index([ip, created_at])
+}
+
 enum TransactionType {
   EARNING
   EXPENSE
