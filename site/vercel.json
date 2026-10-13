@@ -1,0 +1,11 @@
+{
+  "redirects": [
+    { "source": "/login", "destination": "https://finance.valtrea.com.br/login", "permanent": true },
+    { "source": "/signup", "destination": "https://finance.valtrea.com.br/signup", "permanent": true },
+    { "source": "/termos", "destination": "https://finance.valtrea.com.br/termos", "permanent": true },
+    { "source": "/privacidade", "destination": "https://finance.valtrea.com.br/privacidade", "permanent": true },
+    { "source": "/forgot-password", "destination": "https://finance.valtrea.com.br/forgot-password", "permanent": true },
+    { "source": "/reset-password", "destination": "https://finance.valtrea.com.br/reset-password", "permanent": false },
+    { "source": "/verify-email", "destination": "https://finance.valtrea.com.br/verify-email", "permanent": false }
+  ]
+}

@@ -2,8 +2,8 @@
 // Se o Valtrea passar a operar por uma empresa, troque aqui
 // (ex.: controller: 'JSARAUJO LTDA', controllerDocument: 'CNPJ 00.000.000/0001-00').
 export const LEGAL = {
-  appName: 'Valtrea',
-  site: 'www.valtrea.com.br',
+  appName: 'Valtrea Finance',
+  site: 'finance.valtrea.com.br',
   controller: 'João Adolfo Martins Araújo',
   controllerDocument: null, // CPF ou CNPJ, se quiser exibir
   controllerType: 'pessoa física',

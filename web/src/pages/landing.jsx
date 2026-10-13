@@ -317,7 +317,12 @@ export function LandingPage() {
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-10 sm:px-6 md:flex-row md:justify-between">
           <Logo />
           <LegalLinks />
-          <p className="text-xs text-muted">© 2026 Valtrea</p>
+          <p className="text-xs text-muted">
+            Um produto da{' '}
+            <a href="https://www.valtrea.com.br" className="font-semibold hover:text-foreground hover:underline">
+              Valtrea
+            </a>
+          </p>
         </div>
       </footer>
     </div>

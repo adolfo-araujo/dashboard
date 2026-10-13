@@ -3,4 +3,4 @@ Allow: /
 Disallow: /reset-password
 Disallow: /verify-email
 
-Sitemap: https://www.valtrea.com.br/sitemap.xml
+Sitemap: https://finance.valtrea.com.br/sitemap.xml
