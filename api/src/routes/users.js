@@ -25,7 +25,7 @@ export const usersRouter = Router()
 
 // Versão vigente dos Termos de uso e da Política de privacidade.
 // Ao publicar uma nova versão dos textos, atualize aqui e em web/src/lib/legal.js.
-const TERMS_VERSION = '2026-10-08'
+const TERMS_VERSION = '2026-10-14'
 
 // nunca devolver o hash da senha para o cliente
 const sanitize = (body) => {

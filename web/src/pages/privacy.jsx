@@ -15,6 +15,7 @@ const providers = [
   ['Resend', 'envio de e-mails do sistema', 'São Paulo, Brasil'],
   ['ImprovMX', 'recebimento das mensagens enviadas ao nosso e-mail de contato', 'Estados Unidos'],
   ['Google Fonts', 'fontes tipográficas carregadas pelo site', 'Estados Unidos'],
+  ['Sentry', 'registro de erros técnicos para correção de falhas', 'Estados Unidos'],
 ]
 
 export function PrivacyPage() {

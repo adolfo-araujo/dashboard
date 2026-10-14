@@ -1,6 +1,7 @@
-import 'dotenv/config.js'
+// Carrega o monitoramento antes da API, para ele conseguir acompanhar tudo
+import './instrument.js'
 
-import { app } from './src/app.js'
+const { app } = await import('./src/app.js')
 
 const port = process.env.PORT || 8080
 

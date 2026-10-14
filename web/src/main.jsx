@@ -1,3 +1,5 @@
+// Monitoramento de erros: fica em primeiro lugar para começar a funcionar antes do resto do site
+import { AppErrorBoundary } from './components/error-boundary'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
@@ -22,10 +24,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <App />
+          <AppErrorBoundary>
+            <App />
+          </AppErrorBoundary>
           <Toaster theme="dark" position="top-right" richColors />
         </AuthProvider>
       </BrowserRouter>
+
     </QueryClientProvider>
   </React.StrictMode>,
 )
