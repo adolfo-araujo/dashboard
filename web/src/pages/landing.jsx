@@ -1,19 +1,21 @@
 import { Link } from 'react-router-dom'
 import {
   CalendarRange,
+  Download,
+  EyeOff,
+  FileDown,
   Lock,
   MousePointerClick,
   PieChart,
   PiggyBank,
-  Tags,
+  Repeat,
   ShieldCheck,
-  Smartphone,
+  Tags,
+  Target,
+  Trash2,
   TrendingDown,
   TrendingUp,
-  Trash2,
   Wallet,
-  EyeOff,
-  Download,
 } from 'lucide-react'
 import { Logo } from '../components/logo'
 import { LegalLinks } from '../components/legal-links'
@@ -40,21 +42,36 @@ const features = [
     text: 'Moradia, alimentação, transporte e outras. Veja quanto foi para cada categoria e onde dá para economizar.',
   },
   {
-    icon: Download,
-    title: 'Instale como app',
-    text: 'Adicione o Valtrea à tela inicial do celular ou do computador e abra em tela cheia, como um aplicativo.',
+    icon: Repeat,
+    title: 'Contas fixas no automático',
+    text: 'Cadastre aluguel, salário e assinaturas uma vez. O Valtrea lança todo mês no dia certo, sem duplicar.',
   },
   {
-    icon: Smartphone,
-    title: 'Pensado para o celular',
-    text: 'A mesma experiência em telas pequenas, para lançar um gasto na hora em que ele acontece.',
+    icon: Target,
+    title: 'Orçamento por categoria',
+    text: 'Defina um limite para cada tipo de gasto e acompanhe quanto ainda resta no mês antes de estourar.',
+  },
+  {
+    icon: TrendingUp,
+    title: 'Evolução mês a mês',
+    text: 'Compare ganhos, gastos e investimentos dos últimos meses e veja se o seu saldo está melhorando.',
+  },
+  {
+    icon: FileDown,
+    title: 'Seus dados em planilha',
+    text: 'Baixe todas as suas transações em CSV para abrir no Excel ou no Google Planilhas quando quiser.',
+  },
+  {
+    icon: Download,
+    title: 'No celular, como app',
+    text: 'Adicione o Valtrea à tela inicial do celular ou do computador e lance um gasto na hora em que ele acontece.',
   },
 ]
 
 const steps = [
   { title: 'Crie sua conta', text: 'Cadastre-se com seu e-mail e confirme pelo link que enviamos.' },
   { title: 'Registre suas transações', text: 'Adicione os ganhos, gastos e investimentos do mês.' },
-  { title: 'Acompanhe o saldo', text: 'Veja os totais e o gráfico se atualizarem a cada lançamento.' },
+  { title: 'Planeje o mês', text: 'Cadastre as contas fixas, defina limites por categoria e acompanhe o saldo.' },
 ]
 
 const security = [
@@ -76,6 +93,14 @@ const faq = [
   {
     q: 'Funciona no celular?',
     a: 'Sim, pelo navegador ou instalado como app. No Android, abra o menu do Chrome e toque em "Instalar app". No iPhone, abra no Safari, toque em Compartilhar e depois em "Adicionar à Tela de Início".',
+  },
+  {
+    q: 'Preciso lançar as contas fixas todo mês?',
+    a: 'Não. Cadastre como recorrente (aluguel, salário, assinaturas) e o Valtrea cria o lançamento sozinho no dia escolhido. Dá para pausar ou encerrar quando quiser.',
+  },
+  {
+    q: 'Consigo levar meus dados para outro lugar?',
+    a: 'Sim. Em Minha conta, baixe todas as suas transações em um arquivo CSV, que abre no Excel e no Google Planilhas.',
   },
   {
     q: 'Posso excluir minha conta?',
@@ -201,8 +226,8 @@ export function LandingPage() {
               Saiba para onde vai o seu dinheiro.
             </h1>
             <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted">
-              Registre ganhos, gastos e investimentos e veja o saldo de qualquer período em um painel simples.
-              Gratuito, no computador e no celular.
+              Registre ganhos, gastos e investimentos, automatize as contas fixas e defina limites por categoria.
+              Tudo em um painel simples, gratuito, no computador e no celular.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link to="/signup" className={lb('primary', 'lg', 'w-full sm:w-auto')}>
@@ -221,7 +246,7 @@ export function LandingPage() {
         <section className="border-t border-border">
           <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
             <h2 className="max-w-xl text-3xl font-extrabold tracking-tight">
-              O essencial para acompanhar suas finanças, sem complicação
+              Tudo para organizar suas finanças, sem complicação
             </h2>
             <div className="mt-12 grid gap-x-12 sm:grid-cols-2 lg:grid-cols-3">
               {features.map(({ icon: Icon, title, text }) => (

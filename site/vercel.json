@@ -1,11 +1,66 @@
 {
   "redirects": [
-    { "source": "/login", "destination": "https://finance.valtrea.com.br/login", "permanent": true },
-    { "source": "/signup", "destination": "https://finance.valtrea.com.br/signup", "permanent": true },
-    { "source": "/termos", "destination": "https://finance.valtrea.com.br/termos", "permanent": true },
-    { "source": "/privacidade", "destination": "https://finance.valtrea.com.br/privacidade", "permanent": true },
-    { "source": "/forgot-password", "destination": "https://finance.valtrea.com.br/forgot-password", "permanent": true },
-    { "source": "/reset-password", "destination": "https://finance.valtrea.com.br/reset-password", "permanent": false },
-    { "source": "/verify-email", "destination": "https://finance.valtrea.com.br/verify-email", "permanent": false }
+    {
+      "source": "/login",
+      "destination": "https://finance.valtrea.com.br/login",
+      "permanent": true
+    },
+    {
+      "source": "/signup",
+      "destination": "https://finance.valtrea.com.br/signup",
+      "permanent": true
+    },
+    {
+      "source": "/termos",
+      "destination": "https://finance.valtrea.com.br/termos",
+      "permanent": true
+    },
+    {
+      "source": "/privacidade",
+      "destination": "https://finance.valtrea.com.br/privacidade",
+      "permanent": true
+    },
+    {
+      "source": "/forgot-password",
+      "destination": "https://finance.valtrea.com.br/forgot-password",
+      "permanent": true
+    },
+    {
+      "source": "/reset-password",
+      "destination": "https://finance.valtrea.com.br/reset-password",
+      "permanent": false
+    },
+    {
+      "source": "/verify-email",
+      "destination": "https://finance.valtrea.com.br/verify-email",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=15552000; includeSubDomains"
+        }
+      ]
+    }
   ]
 }

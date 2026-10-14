@@ -8,6 +8,11 @@ import { reportsRouter } from './routes/reports.js'
 import { recurringRouter } from './routes/recurring.js'
 import { budgetsRouter } from './routes/budgets.js'
 import { adminRouter } from './routes/admin.js'
+import {
+    apiLimiter,
+    securityHeaders,
+    sensitiveLimiter,
+} from './middlewares/security.js'
 import swaggerUi from 'swagger-ui-express'
 import fs from 'fs'
 import cors from 'cors'
@@ -17,6 +22,10 @@ const __dirname = dirname(__filename)
 
 const app = express()
 
+// Não anunciar que a API usa Express
+app.disable('x-powered-by')
+app.use(securityHeaders)
+
 app.use(
     cors({
         origin: process.env.CORS_ORIGIN?.split(',') ?? '*',
@@ -24,9 +33,22 @@ app.use(
 )
 app.use(express.json())
 
+// Fica antes do limite de requisições: o cron-job.org chama a cada 10 minutos.
 app.get('/api/health', (request, response) => {
     response.status(200).send({ status: 'ok' })
 })
+
+app.use('/api', apiLimiter)
+app.post(
+    [
+        '/api/users',
+        '/api/users/forgot-password',
+        '/api/users/reset-password',
+        '/api/users/verify-email',
+        '/api/users/me/resend-verification',
+    ],
+    sensitiveLimiter,
+)
 
 app.use('/api/users', passwordResetRouter)
 app.use('/api/users', emailVerificationRouter)

@@ -1,16 +1,54 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "FSC Finance App API",
-        "description": "API for FSC Finance App that allows users to manage their finances.",
-        "version": "1.0.0"
+        "title": "API do Valtrea Finance",
+        "version": "2.0.0",
+        "description": "API do Valtrea Finance (https://finance.valtrea.com.br).\n\n**Autenticação:** faça login em `POST /api/users/login`, copie o `accessToken` e clique em **Authorize** escrevendo `Bearer <token>`.\n\n**Limites:** 300 requisições a cada 5 minutos por IP; cadastro e rotas que enviam e-mail, 20 a cada 15 minutos. Acima disso a resposta é 429.\n\n**Datas:** formato AAAA-MM-DD. Cada usuário só acessa os próprios dados.",
+        "contact": {
+            "name": "Valtrea",
+            "email": "contato@valtrea.com.br"
+        }
     },
+    "basePath": "/",
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "tags": [
+        {
+            "name": "Sistema"
+        },
+        {
+            "name": "Conta"
+        },
+        {
+            "name": "Transações"
+        },
+        {
+            "name": "Relatórios"
+        },
+        {
+            "name": "Recorrentes"
+        },
+        {
+            "name": "Orçamento"
+        },
+        {
+            "name": "Administração"
+        }
+    ],
     "securityDefinitions": {
         "BearerAuth": {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header",
-            "description": "Enter 'Bearer' followed by your token. Example: 'Bearer eyJhbGciOiJIUzI1NiIsInR...' "
+            "description": "Escreva Bearer seguido do token. Exemplo: Bearer eyJhbGciOi..."
         }
     },
     "security": [
@@ -19,37 +57,398 @@
         }
     ],
     "paths": {
+        "/api/health": {
+            "get": {
+                "tags": [
+                    "Sistema"
+                ],
+                "summary": "Saúde da API",
+                "description": "Usado pelo cron-job.org para manter a API ativa. Não conta no limite de requisições.",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "API no ar",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "example": "ok"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
         "/api/users": {
             "post": {
-                "summary": "Create a new user",
-                "tags": ["User"],
+                "tags": [
+                    "Conta"
+                ],
+                "summary": "Cadastro",
+                "description": "Cria a conta, registra o aceite dos termos vigentes e envia o e-mail de confirmação. Limite: 20 pedidos a cada 15 minutos por IP (somado às outras rotas de e-mail).",
                 "parameters": [
                     {
                         "name": "body",
-                        "required": true,
                         "in": "body",
+                        "required": true,
                         "schema": {
-                            "$ref": "#/definitions/CreateUserParams"
+                            "$ref": "#/definitions/Cadastro"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "User created successfully",
+                        "description": "Conta criada",
                         "schema": {
-                            "$ref": "#/definitions/UserWithToken"
+                            "$ref": "#/definitions/UsuarioComTokens"
                         }
                     },
                     "400": {
-                        "description": "Invalid params",
+                        "description": "Dados inválidos ou e-mail já cadastrado",
                         "schema": {
-                            "$ref": "#/definitions/InvalidParamResponse"
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "429": {
+                        "description": "Muitas requisições ou tentativas",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
                         }
                     },
                     "500": {
-                        "description": "Internal server error",
+                        "description": "Erro interno",
                         "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/api/users/login": {
+            "post": {
+                "tags": [
+                    "Conta"
+                ],
+                "summary": "Login",
+                "description": "Devolve os tokens. Após 5 senhas erradas no mesmo e-mail (ou 20 no mesmo IP) em 15 minutos, bloqueia por 15 minutos e avisa o dono da conta por e-mail.",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Login"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login feito",
+                        "schema": {
+                            "$ref": "#/definitions/UsuarioComTokens"
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "401": {
+                        "description": "Senha errada",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "404": {
+                        "description": "E-mail não cadastrado",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "429": {
+                        "description": "Muitas requisições ou tentativas",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/api/users/refresh-token": {
+            "post": {
+                "tags": [
+                    "Conta"
+                ],
+                "summary": "Renovar tokens",
+                "description": "Troca o token de renovação por um novo par de tokens.",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "refreshToken"
+                            ],
+                            "properties": {
+                                "refreshToken": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tokens novos",
+                        "schema": {
+                            "$ref": "#/definitions/Tokens"
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/api/users/forgot-password": {
+            "post": {
+                "tags": [
+                    "Conta"
+                ],
+                "summary": "Esqueci a senha",
+                "description": "Envia o link de redefinição (válido por 30 minutos). Responde igual exista ou não o e-mail; no máximo 1 envio por minuto por conta.",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "email"
+                            ],
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "format": "email"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pedido recebido",
+                        "schema": {
+                            "$ref": "#/definitions/Mensagem"
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "429": {
+                        "description": "Muitas requisições ou tentativas",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/api/users/reset-password": {
+            "post": {
+                "tags": [
+                    "Conta"
+                ],
+                "summary": "Redefinir senha",
+                "description": "Grava a senha nova a partir do link e invalida os outros links pendentes.",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "token",
+                                "password"
+                            ],
+                            "properties": {
+                                "token": {
+                                    "type": "string",
+                                    "pattern": "^[a-f0-9]{64}$",
+                                    "description": "Código do link recebido por e-mail"
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "minLength": 6
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Senha redefinida",
+                        "schema": {
+                            "$ref": "#/definitions/Mensagem"
+                        }
+                    },
+                    "400": {
+                        "description": "Link inválido ou expirado",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "429": {
+                        "description": "Muitas requisições ou tentativas",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/api/users/verify-email": {
+            "post": {
+                "tags": [
+                    "Conta"
+                ],
+                "summary": "Confirmar e-mail",
+                "description": "Confirma o e-mail a partir do link (válido por 24 horas). Clicar duas vezes não dá erro.",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "token"
+                            ],
+                            "properties": {
+                                "token": {
+                                    "type": "string",
+                                    "pattern": "^[a-f0-9]{64}$",
+                                    "description": "Código do link recebido por e-mail"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "E-mail confirmado",
+                        "schema": {
+                            "$ref": "#/definitions/Mensagem"
+                        }
+                    },
+                    "400": {
+                        "description": "Link inválido ou expirado",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "429": {
+                        "description": "Muitas requisições ou tentativas",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/api/users/me/resend-verification": {
+            "post": {
+                "tags": [
+                    "Conta"
+                ],
+                "summary": "Reenviar confirmação de e-mail",
+                "description": "No máximo 1 envio por minuto.",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "E-mail reenviado",
+                        "schema": {
+                            "$ref": "#/definitions/Mensagem"
+                        }
+                    },
+                    "400": {
+                        "description": "E-mail já confirmado",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "429": {
+                        "description": "Muitas requisições ou tentativas",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
                         }
                     }
                 }
@@ -57,171 +456,135 @@
         },
         "/api/users/me": {
             "get": {
-                "tags": ["User"],
-                "summary": "Get authenticated user",
+                "tags": [
+                    "Conta"
+                ],
+                "summary": "Dados da conta",
+                "description": "Dados do usuário logado, sem a senha.",
+                "parameters": [],
                 "responses": {
                     "200": {
-                        "description": "User found",
+                        "description": "Usuário",
                         "schema": {
-                            "$ref": "#/definitions/User"
+                            "$ref": "#/definitions/Usuario"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
                         }
                     },
                     "404": {
-                        "description": "User not found",
+                        "description": "Não encontrado",
                         "schema": {
-                            "$ref": "#/definitions/UserNotFoundResponse"
+                            "$ref": "#/definitions/Erro"
                         }
                     },
                     "500": {
-                        "description": "Internal server error",
+                        "description": "Erro interno",
                         "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
+                            "$ref": "#/definitions/Erro"
                         }
                     }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
-            },
-            "delete": {
-                "summary": "Delete authenticated user",
-                "tags": ["User"],
-                "responses": {
-                    "200": {
-                        "description": "User deleted successfully",
-                        "schema": {
-                            "$ref": "#/definitions/User"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found",
-                        "schema": {
-                            "$ref": "#/definitions/UserNotFoundResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
+                }
             },
             "patch": {
-                "summary": "Update authenticated user",
-                "tags": ["User"],
+                "tags": [
+                    "Conta"
+                ],
+                "summary": "Atualizar conta",
+                "description": "Altera nome, e-mail ou senha. Trocar o e-mail zera a confirmação e envia um novo link.",
                 "parameters": [
                     {
                         "name": "body",
-                        "required": true,
                         "in": "body",
+                        "required": true,
                         "schema": {
-                            "$ref": "#/definitions/CreateUserParams"
+                            "$ref": "#/definitions/AtualizarUsuario"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "User updated successfully",
+                        "description": "Usuário atualizado",
                         "schema": {
-                            "$ref": "#/definitions/User"
+                            "$ref": "#/definitions/Usuario"
                         }
                     },
                     "400": {
-                        "description": "Invalid params",
+                        "description": "Dados inválidos",
                         "schema": {
-                            "$ref": "#/definitions/InvalidParamResponse"
+                            "$ref": "#/definitions/Erro"
                         }
                     },
-                    "404": {
-                        "description": "User not found",
+                    "401": {
+                        "description": "Sem token ou token vencido",
                         "schema": {
-                            "$ref": "#/definitions/UserNotFoundResponse"
+                            "$ref": "#/definitions/Erro"
                         }
                     },
                     "500": {
-                        "description": "Internal server error",
+                        "description": "Erro interno",
                         "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
+                            "$ref": "#/definitions/Erro"
                         }
                     }
                 }
-            }
-        },
-        "/api/users/login": {
-            "post": {
-                "summary": "Login User",
-                "tags": ["User"],
+            },
+            "delete": {
+                "tags": [
+                    "Conta"
+                ],
+                "summary": "Excluir conta",
+                "description": "Exige a senha. Apaga a conta e todos os dados (transações, recorrentes, orçamentos) e envia e-mail de confirmação.",
                 "parameters": [
                     {
                         "name": "body",
-                        "required": true,
                         "in": "body",
+                        "required": true,
                         "schema": {
-                            "$ref": "#/definitions/LoginUserParams"
+                            "type": "object",
+                            "required": [
+                                "password"
+                            ],
+                            "properties": {
+                                "password": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "User logged in successfully",
+                    "200": {
+                        "description": "Conta excluída",
                         "schema": {
-                            "$ref": "#/definitions/UserWithToken"
+                            "$ref": "#/definitions/Usuario"
+                        }
+                    },
+                    "400": {
+                        "description": "Senha não informada",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
                         }
                     },
                     "401": {
-                        "description": "Invalid credentials",
+                        "description": "Sem token ou token vencido",
                         "schema": {
-                            "$ref": "#/definitions/UnauthorizedErrorResponse"
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "403": {
+                        "description": "Senha incorreta",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
                         }
                     },
                     "500": {
-                        "description": "Internal server error",
+                        "description": "Erro interno",
                         "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/users/refresh-token": {
-            "post": {
-                "summary": "Refresh User Token",
-                "tags": ["User"],
-                "parameters": [
-                    {
-                        "name": "body",
-                        "required": true,
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/RefreshTokenParams"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Tokens generated successfully",
-                        "schema": {
-                            "$ref": "#/definitions/Tokens"
-                        }
-                    },
-                    "401": {
-                        "description": "Invalid token",
-                        "schema": {
-                            "$ref": "#/definitions/UnauthorizedErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
+                            "$ref": "#/definitions/Erro"
                         }
                     }
                 }
@@ -229,518 +592,1609 @@
         },
         "/api/users/me/balance": {
             "get": {
-                "summary": "Get authenticated user balance",
-                "tags": ["User"],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Saldo do período",
+                "description": "Totais de ganhos, gastos e investimentos, percentuais e saldo.",
                 "parameters": [
                     {
                         "name": "from",
                         "in": "query",
+                        "type": "string",
                         "required": true,
-                        "description": "Start date for the transactions query (format: YYYY-MM-DD)",
-                        "schema": {
-                            "type": "string",
-                            "format": "date",
-                            "example": "2024-01-01"
-                        }
+                        "description": "Início (AAAA-MM-DD)",
+                        "format": "date"
                     },
                     {
                         "name": "to",
                         "in": "query",
+                        "type": "string",
                         "required": true,
-                        "description": "End date for the transactions query (format: YYYY-MM-DD)",
-                        "schema": {
-                            "type": "string",
-                            "format": "date",
-                            "example": "2024-01-01"
-                        }
+                        "description": "Fim (AAAA-MM-DD)",
+                        "format": "date"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "User balance found",
+                        "description": "Saldo",
                         "schema": {
-                            "$ref": "#/definitions/UserBalance"
+                            "$ref": "#/definitions/Saldo"
                         }
                     },
-                    "404": {
-                        "description": "User not found",
+                    "400": {
+                        "description": "Dados inválidos",
                         "schema": {
-                            "$ref": "#/definitions/UserNotFoundResponse"
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
                         }
                     },
                     "500": {
-                        "description": "Internal server error",
+                        "description": "Erro interno",
                         "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
+                            "$ref": "#/definitions/Erro"
                         }
                     }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/api/transactions/me": {
             "get": {
-                "summary": "Get authenticated user transactions",
-                "tags": ["Transaction"],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Listar transações",
+                "description": "Transações do período, mais recentes primeiro.",
                 "parameters": [
                     {
                         "name": "from",
                         "in": "query",
+                        "type": "string",
                         "required": true,
-                        "description": "Start date for the transactions query (format: YYYY-MM-DD)",
-                        "schema": {
-                            "type": "string",
-                            "format": "date",
-                            "example": "2024-01-01"
-                        }
+                        "description": "Início (AAAA-MM-DD)",
+                        "format": "date"
                     },
                     {
                         "name": "to",
                         "in": "query",
+                        "type": "string",
                         "required": true,
-                        "description": "End date for the transactions query (format: YYYY-MM-DD)",
-                        "schema": {
-                            "type": "string",
-                            "format": "date",
-                            "example": "2024-01-01"
-                        }
+                        "description": "Fim (AAAA-MM-DD)",
+                        "format": "date"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Transactions found",
+                        "description": "Lista",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/Transaction"
+                                "$ref": "#/definitions/Transacao"
                             }
                         }
                     },
-                    "404": {
-                        "description": "User not found",
+                    "400": {
+                        "description": "Dados inválidos",
                         "schema": {
-                            "$ref": "#/definitions/UserNotFoundResponse"
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
                         }
                     },
                     "500": {
-                        "description": "Internal server error",
+                        "description": "Erro interno",
                         "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
+                            "$ref": "#/definitions/Erro"
                         }
                     }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
+                }
             },
             "post": {
-                "summary": "Create a new transaction for the authenticated user",
-                "tags": ["Transaction"],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Criar transação",
+                "description": "A categoria, se enviada, precisa pertencer ao tipo.",
                 "parameters": [
                     {
                         "name": "body",
-                        "required": true,
                         "in": "body",
+                        "required": true,
                         "schema": {
-                            "$ref": "#/definitions/CreateTransactionParams"
+                            "$ref": "#/definitions/NovaTransacao"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "Transaction created successfully",
+                        "description": "Transação criada",
                         "schema": {
-                            "$ref": "#/definitions/Transaction"
+                            "$ref": "#/definitions/Transacao"
                         }
                     },
                     "400": {
-                        "description": "Invalid params",
+                        "description": "Dados inválidos",
                         "schema": {
-                            "$ref": "#/definitions/InvalidParamResponse"
+                            "$ref": "#/definitions/Erro"
                         }
                     },
-                    "404": {
-                        "description": "User not found",
+                    "401": {
+                        "description": "Sem token ou token vencido",
                         "schema": {
-                            "$ref": "#/definitions/UserNotFoundResponse"
+                            "$ref": "#/definitions/Erro"
                         }
                     },
                     "500": {
-                        "description": "Internal server error",
+                        "description": "Erro interno",
                         "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
+                            "$ref": "#/definitions/Erro"
                         }
                     }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/api/transactions/me/{transactionId}": {
             "patch": {
-                "summary": "Update transaction by ID of the authenticated user",
-                "tags": ["Transaction"],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Editar transação",
+                "description": "",
                 "parameters": [
                     {
-                        "in": "path",
                         "name": "transactionId",
-                        "required": true,
+                        "in": "path",
                         "type": "string",
-                        "description": "ID of the transaction to update"
+                        "format": "uuid",
+                        "required": true,
+                        "description": "ID da transação"
                     },
                     {
                         "name": "body",
-                        "required": true,
                         "in": "body",
+                        "required": true,
                         "schema": {
-                            "$ref": "#/definitions/UpdateTransactionParams"
+                            "$ref": "#/definitions/AtualizarTransacao"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Transaction updated successfully",
+                        "description": "Transação atualizada",
                         "schema": {
-                            "$ref": "#/definitions/Transaction"
+                            "$ref": "#/definitions/Transacao"
                         }
                     },
                     "400": {
-                        "description": "Invalid params",
+                        "description": "Dados inválidos",
                         "schema": {
-                            "$ref": "#/definitions/InvalidParamResponse"
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "403": {
+                        "description": "A transação é de outro usuário",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
                         }
                     },
                     "404": {
-                        "description": "Transaction not found",
+                        "description": "Não encontrado",
                         "schema": {
-                            "$ref": "#/definitions/TransactionNotFoundResponse"
+                            "$ref": "#/definitions/Erro"
                         }
                     },
                     "500": {
-                        "description": "Internal server error",
+                        "description": "Erro interno",
                         "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
+                            "$ref": "#/definitions/Erro"
                         }
                     }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
+                }
             },
             "delete": {
-                "summary": "Delete transaction by ID of the authenticated user",
-                "tags": ["Transaction"],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Excluir transação",
+                "description": "",
                 "parameters": [
                     {
-                        "in": "path",
                         "name": "transactionId",
-                        "required": true,
+                        "in": "path",
                         "type": "string",
-                        "description": "ID of the transaction to delete"
+                        "format": "uuid",
+                        "required": true,
+                        "description": "ID da transação"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Transaction deleted successfully",
+                        "description": "Transação excluída",
                         "schema": {
-                            "$ref": "#/definitions/Transaction"
+                            "$ref": "#/definitions/Transacao"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "403": {
+                        "description": "A transação é de outro usuário",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
                         }
                     },
                     "404": {
-                        "description": "Transaction not found",
+                        "description": "Não encontrado",
                         "schema": {
-                            "$ref": "#/definitions/TransactionNotFoundResponse"
+                            "$ref": "#/definitions/Erro"
                         }
                     },
                     "500": {
-                        "description": "Internal server error",
+                        "description": "Erro interno",
                         "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
+                            "$ref": "#/definitions/Erro"
                         }
                     }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
-            }
-        }
-    },
-    "definitions": {
-        "User": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string",
-                    "example": "e29ef739-ffae-45a8-a582-fb56f9660a12"
-                },
-                "first_name": {
-                    "type": "string",
-                    "example": "John"
-                },
-                "last_name": {
-                    "type": "string",
-                    "example": "Doe"
-                },
-                "email": {
-                    "type": "string",
-                    "example": "john@doe.com"
-                },
-                "password": {
-                    "type": "string",
-                    "example": "password"
                 }
             }
         },
-        "UserWithToken": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/User"
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "tokens": {
+        "/api/reports/monthly": {
+            "get": {
+                "tags": [
+                    "Relatórios"
+                ],
+                "summary": "Evolução mensal",
+                "description": "Totais mês a mês; meses sem lançamentos vêm zerados.",
+                "parameters": [
+                    {
+                        "name": "months",
+                        "in": "query",
+                        "type": "integer",
+                        "required": false,
+                        "description": "Quantidade de meses (3 a 24)",
+                        "minimum": 3,
+                        "maximum": 24,
+                        "default": 12
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "type": "string",
+                        "required": false,
+                        "description": "Último dia de referência (AAAA-MM-DD); padrão: hoje",
+                        "format": "date"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Meses, do mais antigo ao mais recente",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Mes"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reports/export": {
+            "get": {
+                "tags": [
+                    "Relatórios"
+                ],
+                "summary": "Exportar transações",
+                "description": "Todas as transações da conta, usado para gerar o CSV.",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Lista",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/TransacaoExportada"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/recurring": {
+            "get": {
+                "tags": [
+                    "Recorrentes"
+                ],
+                "summary": "Listar recorrentes",
+                "description": "Ativas primeiro, depois por dia do mês.",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Lista",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Recorrente"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Recorrentes"
+                ],
+                "summary": "Criar recorrente",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/NovaRecorrente"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Recorrente criada",
+                        "schema": {
+                            "$ref": "#/definitions/Recorrente"
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/recurring/{id}": {
+            "patch": {
+                "tags": [
+                    "Recorrentes"
+                ],
+                "summary": "Editar, pausar ou reativar recorrente",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "type": "string",
+                        "format": "uuid",
+                        "required": true,
+                        "description": "ID da recorrente"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AtualizarRecorrente"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Recorrente atualizada",
+                        "schema": {
+                            "$ref": "#/definitions/Recorrente"
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "404": {
+                        "description": "Não encontrado",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Recorrentes"
+                ],
+                "summary": "Excluir recorrente",
+                "description": "Os lançamentos já gerados continuam, sem vínculo com a recorrente.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "type": "string",
+                        "format": "uuid",
+                        "required": true,
+                        "description": "ID da recorrente"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Recorrente excluída",
+                        "schema": {
+                            "$ref": "#/definitions/Recorrente"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "404": {
+                        "description": "Não encontrado",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/recurring/sync": {
+            "post": {
+                "tags": [
+                    "Recorrentes"
+                ],
+                "summary": "Gerar lançamentos vencidos",
+                "description": "Cria as transações das recorrentes que já venceram até a data informada, sem duplicar. O app chama ao abrir o painel.",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
                             "type": "object",
+                            "required": [
+                                "today"
+                            ],
                             "properties": {
-                                "accessToken": {
+                                "today": {
                                     "type": "string",
-                                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                                },
-                                "refreshToken": {
-                                    "type": "string",
-                                    "example": "dGhpc2lzYXJlZnJlc2h0b2tlbg=="
+                                    "format": "date",
+                                    "example": "2026-10-14"
                                 }
                             }
                         }
                     }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Quantidade criada",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "created": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
                 }
-            ]
+            }
+        },
+        "/api/budgets": {
+            "get": {
+                "tags": [
+                    "Orçamento"
+                ],
+                "summary": "Limites do mês",
+                "description": "Limites definidos e quanto já foi gasto em cada categoria no mês.",
+                "parameters": [
+                    {
+                        "name": "month",
+                        "in": "query",
+                        "type": "string",
+                        "required": true,
+                        "description": "Mês (AAAA-MM)",
+                        "pattern": "^\\d{4}-\\d{2}$"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Orcamento"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Orçamento"
+                ],
+                "summary": "Salvar limites",
+                "description": "Substitui todos os limites de uma vez.",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SalvarOrcamento"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Limites salvos",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "saved": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos ou categoria repetida",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/me": {
+            "get": {
+                "tags": [
+                    "Administração"
+                ],
+                "summary": "Sou administrador?",
+                "description": "Responde sempre 200. Usado para mostrar o atalho no menu.",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Resultado",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "isAdmin": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/metrics": {
+            "get": {
+                "tags": [
+                    "Administração"
+                ],
+                "summary": "Métricas de uso",
+                "description": "Somente para os e-mails da variável ADMIN_EMAILS.",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Métricas",
+                        "schema": {
+                            "$ref": "#/definitions/Metricas"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "403": {
+                        "description": "Não é administrador",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Erro": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Mensagem explicando o problema."
+                }
+            }
+        },
+        "Mensagem": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "Usuario": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "first_name": {
+                    "type": "string",
+                    "example": "Maria"
+                },
+                "last_name": {
+                    "type": "string",
+                    "example": "Silva"
+                },
+                "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "maria@exemplo.com"
+                },
+                "email_verified_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "x-nullable": true
+                },
+                "terms_accepted_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "x-nullable": true
+                },
+                "terms_version": {
+                    "type": "string",
+                    "example": "2026-10-14",
+                    "x-nullable": true
+                },
+                "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "last_seen_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "x-nullable": true
+                }
+            }
         },
         "Tokens": {
             "type": "object",
             "properties": {
                 "accessToken": {
                     "type": "string",
-                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3OGQxNzc1OS03ZTA4LTRlNDEtOTM5YS1iMmZjNWNiODI4MjEiLCJpYXQiOjE3MzI5MjIzMDUsImV4cCI6MTczMjkyMzIwNX0.imPbb_Agn3qoYrU5p48TXhhn4wpP9n4qYR9K9h5NRMc"
+                    "description": "Válido por 15 minutos"
                 },
                 "refreshToken": {
                     "type": "string",
-                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3OGQxNzc1OS03ZTA4LTRlNDEtOTM5YS1iMmZjNWNiODI4MjEiLCJpYXQiOjE3MzI5MjIzMDUsImV4cCI6MTczNTUxNDMwNX0.ugNCojNKTkxFTVF9F2ISmo0aqZjIRynxLNclpNPSsDo"
+                    "description": "Válido por 30 dias"
                 }
             }
         },
-        "UserBalance": {
+        "UsuarioComTokens": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/Usuario"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "tokens": {
+                            "$ref": "#/definitions/Tokens"
+                        }
+                    }
+                }
+            ]
+        },
+        "Cadastro": {
+            "type": "object",
+            "required": [
+                "first_name",
+                "last_name",
+                "email",
+                "password"
+            ],
+            "properties": {
+                "first_name": {
+                    "type": "string",
+                    "example": "Maria"
+                },
+                "last_name": {
+                    "type": "string",
+                    "example": "Silva"
+                },
+                "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "maria@exemplo.com"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6,
+                    "example": "123456"
+                }
+            }
+        },
+        "AtualizarUsuario": {
+            "type": "object",
+            "description": "Envie só os campos que vão mudar. Trocar o e-mail exige nova confirmação.",
+            "properties": {
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string",
+                    "format": "email"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                }
+            }
+        },
+        "Login": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "demo@finance.app"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
+        "Saldo": {
             "type": "object",
             "properties": {
                 "earnings": {
                     "type": "string",
-                    "example": "1000"
+                    "example": "5000"
                 },
                 "expenses": {
                     "type": "string",
-                    "example": "500"
+                    "example": "1000"
                 },
                 "investments": {
                     "type": "string",
-                    "example": "1000"
+                    "example": "500"
                 },
                 "earningsPercentage": {
                     "type": "string",
-                    "example": "50"
+                    "example": "76"
                 },
                 "expensesPercentage": {
                     "type": "string",
-                    "example": "25"
+                    "example": "15"
                 },
                 "investmentsPercentage": {
                     "type": "string",
-                    "example": "25"
+                    "example": "7"
                 },
                 "balance": {
                     "type": "string",
-                    "example": "500"
+                    "example": "3500"
                 }
             }
         },
-        "CreateUserParams": {
-            "type": "object",
-            "properties": {
-                "first_name": {
-                    "type": "string",
-                    "example": "John",
-                    "required": true
-                },
-                "last_name": {
-                    "type": "string",
-                    "example": "Doe",
-                    "required": true
-                },
-                "email": {
-                    "type": "string",
-                    "example": "john@doe.com",
-                    "required": true
-                },
-                "password": {
-                    "type": "string",
-                    "example": "password",
-                    "required": true
-                }
-            }
-        },
-        "LoginUserParams": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "example": "john@doe.com",
-                    "required": true
-                },
-                "password": {
-                    "type": "string",
-                    "example": "password",
-                    "required": true
-                }
-            }
-        },
-        "RefreshTokenParams": {
-            "type": "object",
-            "properties": {
-                "refreshToken": {
-                    "type": "string",
-                    "required": true,
-                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3OGQxNzc1OS03ZTA4LTRlNDEtOTM5YS1iMmZjNWNiODI4MjEiLCJpYXQiOjE3MzI5MjIzMDUsImV4cCI6MTczNTUxNDMwNX0.ugNCojNKTkxFTVF9F2ISmo0aqZjIRynxLNclpNPSsDo"
-                }
-            }
-        },
-        "UserNotFoundResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "User not found"
-                }
-            }
-        },
-        "Transaction": {
+        "Transacao": {
             "type": "object",
             "properties": {
                 "id": {
                     "type": "string",
-                    "example": "e29ef739-ffae-45a8-a582-fb56f9660a12"
+                    "format": "uuid"
                 },
                 "user_id": {
                     "type": "string",
-                    "example": "e29ef739-ffae-45a8-a582-fb56f9660a12"
+                    "format": "uuid"
                 },
                 "name": {
                     "type": "string",
-                    "example": "Salary"
-                },
-                "type": {
-                    "type": "string",
-                    "example": "EARNING",
-                    "description": "EARNING, EXPENSE, INVESTMENT"
-                },
-                "amount": {
-                    "type": "string",
-                    "example": "1000"
-                }
-            }
-        },
-        "CreateTransactionParams": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "example": "Salary",
-                    "required": true
-                },
-                "type": {
-                    "type": "string",
-                    "example": "EARNING",
-                    "description": "EARNING, EXPENSE, INVESTMENT",
-                    "required": true
+                    "example": "Mercado"
                 },
                 "date": {
                     "type": "string",
-                    "example": "2023-12-15T17:08:26.189Z",
-                    "required": true
+                    "format": "date-time",
+                    "example": "2026-10-14T00:00:00.000Z"
                 },
                 "amount": {
-                    "type": "number",
-                    "example": "1000",
-                    "required": true
-                }
-            }
-        },
-        "UpdateTransactionParams": {
-            "type": "object",
-            "properties": {
-                "name": {
                     "type": "string",
-                    "example": "Salary"
+                    "example": "250.9"
                 },
                 "type": {
                     "type": "string",
-                    "example": "EARNING",
-                    "description": "EARNING, EXPENSE, INVESTMENT"
+                    "enum": [
+                        "EARNING",
+                        "EXPENSE",
+                        "INVESTMENT"
+                    ]
+                },
+                "category": {
+                    "type": "string",
+                    "enum": [
+                        "acoes",
+                        "alimentacao",
+                        "assinaturas",
+                        "compras",
+                        "contas",
+                        "cripto",
+                        "educacao",
+                        "freelance",
+                        "fundos",
+                        "impostos",
+                        "lazer",
+                        "moradia",
+                        "outros",
+                        "presentes",
+                        "previdencia",
+                        "reembolso",
+                        "renda_fixa",
+                        "rendimentos",
+                        "reserva",
+                        "salario",
+                        "saude",
+                        "transporte",
+                        "vendas"
+                    ],
+                    "x-nullable": true,
+                    "description": "Categoria. Gastos: moradia, alimentacao, transporte, saude, educacao, lazer, compras, contas, assinaturas, impostos, outros. Ganhos: salario, freelance, vendas, rendimentos, presentes, reembolso, outros. Investimentos: renda_fixa, acoes, fundos, previdencia, cripto, reserva, outros."
+                },
+                "recurring_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "x-nullable": true,
+                    "description": "Preenchido quando a transação foi gerada por uma recorrente"
+                },
+                "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "NovaTransacao": {
+            "type": "object",
+            "required": [
+                "name",
+                "date",
+                "type",
+                "amount"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Mercado"
                 },
                 "date": {
                     "type": "string",
-                    "example": "2023-12-15T17:08:26.189Z"
+                    "format": "date-time",
+                    "example": "2026-10-14T00:00:00.000Z"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "EARNING",
+                        "EXPENSE",
+                        "INVESTMENT"
+                    ],
+                    "example": "EXPENSE"
                 },
                 "amount": {
                     "type": "number",
-                    "example": "1000"
+                    "minimum": 1,
+                    "example": 250.9
+                },
+                "category": {
+                    "type": "string",
+                    "enum": [
+                        "acoes",
+                        "alimentacao",
+                        "assinaturas",
+                        "compras",
+                        "contas",
+                        "cripto",
+                        "educacao",
+                        "freelance",
+                        "fundos",
+                        "impostos",
+                        "lazer",
+                        "moradia",
+                        "outros",
+                        "presentes",
+                        "previdencia",
+                        "reembolso",
+                        "renda_fixa",
+                        "rendimentos",
+                        "reserva",
+                        "salario",
+                        "saude",
+                        "transporte",
+                        "vendas"
+                    ],
+                    "example": "alimentacao",
+                    "x-nullable": true,
+                    "description": "Categoria. Gastos: moradia, alimentacao, transporte, saude, educacao, lazer, compras, contas, assinaturas, impostos, outros. Ganhos: salario, freelance, vendas, rendimentos, presentes, reembolso, outros. Investimentos: renda_fixa, acoes, fundos, previdencia, cripto, reserva, outros. Precisa pertencer ao tipo."
                 }
             }
         },
-        "TransactionNotFoundResponse": {
+        "AtualizarTransacao": {
             "type": "object",
+            "description": "Envie só os campos que vão mudar.",
             "properties": {
-                "message": {
+                "name": {
+                    "type": "string"
+                },
+                "date": {
                     "type": "string",
-                    "example": "Transaction not found"
+                    "format": "date-time"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "EARNING",
+                        "EXPENSE",
+                        "INVESTMENT"
+                    ]
+                },
+                "amount": {
+                    "type": "number",
+                    "minimum": 1
+                },
+                "category": {
+                    "type": "string",
+                    "enum": [
+                        "acoes",
+                        "alimentacao",
+                        "assinaturas",
+                        "compras",
+                        "contas",
+                        "cripto",
+                        "educacao",
+                        "freelance",
+                        "fundos",
+                        "impostos",
+                        "lazer",
+                        "moradia",
+                        "outros",
+                        "presentes",
+                        "previdencia",
+                        "reembolso",
+                        "renda_fixa",
+                        "rendimentos",
+                        "reserva",
+                        "salario",
+                        "saude",
+                        "transporte",
+                        "vendas"
+                    ],
+                    "x-nullable": true
                 }
             }
         },
-        "InvalidParamResponse": {
+        "Mes": {
             "type": "object",
             "properties": {
-                "message": {
+                "month": {
                     "type": "string",
-                    "example": "Invalid param (this message depends on the param that is invalid)"
+                    "example": "2026-10"
+                },
+                "earnings": {
+                    "type": "number",
+                    "example": 5000
+                },
+                "expenses": {
+                    "type": "number",
+                    "example": 3200.5
+                },
+                "investments": {
+                    "type": "number",
+                    "example": 500
+                },
+                "balance": {
+                    "type": "number",
+                    "example": 1299.5
                 }
             }
         },
-        "InternalServerErrorResponse": {
+        "TransacaoExportada": {
             "type": "object",
             "properties": {
-                "message": {
+                "id": {
                     "type": "string",
-                    "example": "Internal server error"
+                    "format": "uuid"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "amount": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "EARNING",
+                        "EXPENSE",
+                        "INVESTMENT"
+                    ]
+                },
+                "category": {
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "recurring_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "x-nullable": true
                 }
             }
         },
-        "UnauthorizedErrorResponse": {
+        "Recorrente": {
             "type": "object",
             "properties": {
-                "message": {
+                "id": {
                     "type": "string",
-                    "example": "Unauthorized"
+                    "format": "uuid"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Aluguel"
+                },
+                "amount": {
+                    "type": "string",
+                    "example": "1500"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "EARNING",
+                        "EXPENSE",
+                        "INVESTMENT"
+                    ]
+                },
+                "category": {
+                    "type": "string",
+                    "enum": [
+                        "acoes",
+                        "alimentacao",
+                        "assinaturas",
+                        "compras",
+                        "contas",
+                        "cripto",
+                        "educacao",
+                        "freelance",
+                        "fundos",
+                        "impostos",
+                        "lazer",
+                        "moradia",
+                        "outros",
+                        "presentes",
+                        "previdencia",
+                        "reembolso",
+                        "renda_fixa",
+                        "rendimentos",
+                        "reserva",
+                        "salario",
+                        "saude",
+                        "transporte",
+                        "vendas"
+                    ]
+                },
+                "day_of_month": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 31,
+                    "example": 5,
+                    "description": "Em meses mais curtos, usa o último dia"
+                },
+                "start_date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2026-10-01"
+                },
+                "end_date": {
+                    "type": "string",
+                    "format": "date",
+                    "x-nullable": true
+                },
+                "active": {
+                    "type": "boolean"
+                },
+                "generated_until": {
+                    "type": "string",
+                    "format": "date",
+                    "x-nullable": true,
+                    "description": "Data da última ocorrência já lançada"
+                },
+                "next_date": {
+                    "type": "string",
+                    "format": "date",
+                    "x-nullable": true,
+                    "description": "Próximo lançamento; nulo se pausada ou encerrada"
+                },
+                "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "NovaRecorrente": {
+            "type": "object",
+            "required": [
+                "name",
+                "amount",
+                "type",
+                "category",
+                "day_of_month",
+                "start_date"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "example": "Aluguel"
+                },
+                "amount": {
+                    "type": "number",
+                    "minimum": 1,
+                    "example": 1500
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "EARNING",
+                        "EXPENSE",
+                        "INVESTMENT"
+                    ],
+                    "example": "EXPENSE"
+                },
+                "category": {
+                    "type": "string",
+                    "enum": [
+                        "acoes",
+                        "alimentacao",
+                        "assinaturas",
+                        "compras",
+                        "contas",
+                        "cripto",
+                        "educacao",
+                        "freelance",
+                        "fundos",
+                        "impostos",
+                        "lazer",
+                        "moradia",
+                        "outros",
+                        "presentes",
+                        "previdencia",
+                        "reembolso",
+                        "renda_fixa",
+                        "rendimentos",
+                        "reserva",
+                        "salario",
+                        "saude",
+                        "transporte",
+                        "vendas"
+                    ],
+                    "example": "moradia"
+                },
+                "day_of_month": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 31,
+                    "example": 5
+                },
+                "start_date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2026-10-01"
+                },
+                "end_date": {
+                    "type": "string",
+                    "format": "date",
+                    "x-nullable": true
+                },
+                "active": {
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+        "AtualizarRecorrente": {
+            "type": "object",
+            "description": "Envie só os campos que vão mudar. Reativar uma recorrente pausada não lança os meses em que ela ficou parada.",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "number",
+                    "minimum": 1
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "EARNING",
+                        "EXPENSE",
+                        "INVESTMENT"
+                    ]
+                },
+                "category": {
+                    "type": "string",
+                    "enum": [
+                        "acoes",
+                        "alimentacao",
+                        "assinaturas",
+                        "compras",
+                        "contas",
+                        "cripto",
+                        "educacao",
+                        "freelance",
+                        "fundos",
+                        "impostos",
+                        "lazer",
+                        "moradia",
+                        "outros",
+                        "presentes",
+                        "previdencia",
+                        "reembolso",
+                        "renda_fixa",
+                        "rendimentos",
+                        "reserva",
+                        "salario",
+                        "saude",
+                        "transporte",
+                        "vendas"
+                    ]
+                },
+                "day_of_month": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 31
+                },
+                "start_date": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "end_date": {
+                    "type": "string",
+                    "format": "date",
+                    "x-nullable": true
+                },
+                "active": {
+                    "type": "boolean",
+                    "example": false
+                }
+            }
+        },
+        "Orcamento": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string",
+                    "enum": [
+                        "moradia",
+                        "alimentacao",
+                        "transporte",
+                        "saude",
+                        "educacao",
+                        "lazer",
+                        "compras",
+                        "contas",
+                        "assinaturas",
+                        "impostos",
+                        "outros"
+                    ],
+                    "example": "alimentacao"
+                },
+                "amount": {
+                    "type": "number",
+                    "example": 800,
+                    "description": "Limite mensal"
+                },
+                "spent": {
+                    "type": "number",
+                    "example": 615.4,
+                    "description": "Gasto na categoria no mês pedido"
+                }
+            }
+        },
+        "SalvarOrcamento": {
+            "type": "object",
+            "required": [
+                "budgets"
+            ],
+            "properties": {
+                "budgets": {
+                    "type": "array",
+                    "description": "Lista completa de limites. Categorias que não vierem na lista ficam sem limite.",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "category",
+                            "amount"
+                        ],
+                        "properties": {
+                            "category": {
+                                "type": "string",
+                                "enum": [
+                                    "moradia",
+                                    "alimentacao",
+                                    "transporte",
+                                    "saude",
+                                    "educacao",
+                                    "lazer",
+                                    "compras",
+                                    "contas",
+                                    "assinaturas",
+                                    "impostos",
+                                    "outros"
+                                ],
+                                "example": "alimentacao"
+                            },
+                            "amount": {
+                                "type": "number",
+                                "minimum": 1,
+                                "example": 800
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "Metricas": {
+            "type": "object",
+            "description": "Somente números agregados; nenhum dado individual.",
+            "properties": {
+                "generatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "users": {
+                    "type": "object",
+                    "properties": {
+                        "total": {
+                            "type": "integer"
+                        },
+                        "verified": {
+                            "type": "integer"
+                        },
+                        "new7": {
+                            "type": "integer"
+                        },
+                        "new30": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "activity": {
+                    "type": "object",
+                    "properties": {
+                        "active7": {
+                            "type": "integer"
+                        },
+                        "active30": {
+                            "type": "integer"
+                        },
+                        "launchers7": {
+                            "type": "integer"
+                        },
+                        "transactions7": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "retention": {
+                    "type": "object",
+                    "properties": {
+                        "matureUsers": {
+                            "type": "integer",
+                            "description": "Contas com mais de 30 dias"
+                        },
+                        "matureActive": {
+                            "type": "integer",
+                            "description": "Dessas, as que acessaram nos últimos 7 dias"
+                        }
+                    }
+                },
+                "features": {
+                    "type": "object",
+                    "properties": {
+                        "transactions": {
+                            "type": "integer"
+                        },
+                        "recurring": {
+                            "type": "integer"
+                        },
+                        "budgets": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "signupsByWeek": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "week": {
+                                "type": "string",
+                                "format": "date",
+                                "description": "Segunda-feira da semana"
+                            },
+                            "count": {
+                                "type": "integer"
+                            }
+                        }
+                    }
                 }
             }
         }
