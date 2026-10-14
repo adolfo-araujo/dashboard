@@ -11,6 +11,7 @@ import { VerifyEmailNoticePage } from './pages/verify-email-notice'
 import { TermsPage } from './pages/terms'
 import { PrivacyPage } from './pages/privacy'
 import { LandingPage } from './pages/landing'
+import { AdminPage } from './pages/admin'
 
 function FullScreenLoader() {
   return (
@@ -47,6 +48,7 @@ export default function App() {
       <Route path="/verify-email" element={<VerifyEmailPage />} />
       <Route path="/termos" element={<TermsPage />} />
       <Route path="/privacidade" element={<PrivacyPage />} />
+      <Route path="/admin" element={<AdminPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

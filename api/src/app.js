@@ -7,6 +7,7 @@ import { emailVerificationRouter } from './routes/email-verification.js'
 import { reportsRouter } from './routes/reports.js'
 import { recurringRouter } from './routes/recurring.js'
 import { budgetsRouter } from './routes/budgets.js'
+import { adminRouter } from './routes/admin.js'
 import swaggerUi from 'swagger-ui-express'
 import fs from 'fs'
 import cors from 'cors'
@@ -34,6 +35,7 @@ app.use('/api/transactions', transactionsRouter)
 app.use('/api/reports', reportsRouter)
 app.use('/api/recurring', recurringRouter)
 app.use('/api/budgets', budgetsRouter)
+app.use('/api/admin', adminRouter)
 
 const swaggerDocument = JSON.parse(
     fs.readFileSync(join(__dirname, '../docs/swagger.json'), 'utf8'),
