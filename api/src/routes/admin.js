@@ -27,6 +27,23 @@ async function requireAdmin(request, response, next) {
     }
 }
 
+// GET /api/admin/me
+// Diz se a conta logada é administradora (usado para mostrar o atalho no menu).
+// Responde sempre 200, para não gerar erro no navegador de quem não é admin.
+adminRouter.get('/me', auth, async (request, response) => {
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: request.userId },
+            select: { email: true },
+        })
+        const isAdmin = Boolean(user) && adminEmails().includes(user.email.toLowerCase())
+        return response.status(200).send({ isAdmin })
+    } catch (error) {
+        console.error(error)
+        return response.status(500).send({ message: 'Internal server error' })
+    }
+})
+
 const DAY = 24 * 60 * 60 * 1000
 const daysAgo = (days) => new Date(Date.now() - days * DAY)
 

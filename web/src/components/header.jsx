@@ -1,12 +1,26 @@
 import { useEffect, useRef, useState } from 'react'
-import { LogOut, UserRound } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { LogOut, ShieldCheck, UserRound } from 'lucide-react'
 import { Logo } from './logo'
 import { useAuth } from '../contexts/auth'
+import { api } from '../lib/api'
 
 export function Header({ onOpenAccount }) {
   const { user, logout } = useAuth()
   const [open, setOpen] = useState(false)
   const menuRef = useRef(null)
+
+  // Mostra o atalho da administração só para quem é admin.
+  // Quem decide é a API; esconder o link é só conveniência.
+  const { data: adminInfo } = useQuery({
+    queryKey: ['admin-me'],
+    queryFn: async () => (await api.get('/admin/me')).data,
+    enabled: Boolean(user),
+    retry: false,
+    staleTime: 10 * 60 * 1000,
+  })
+  const isAdmin = adminInfo?.isAdmin === true
 
   useEffect(() => {
     if (!open) return
@@ -46,7 +60,7 @@ export function Header({ onOpenAccount }) {
           {open && (
             <div
               role="menu"
-              className="absolute right-0 z-40 mt-2 w-48 overflow-hidden rounded-lg border border-border bg-surface-2 py-1 shadow-xl"
+              className="absolute right-0 z-40 mt-2 w-52 overflow-hidden rounded-lg border border-border bg-surface-2 py-1 shadow-xl"
             >
               <button
                 role="menuitem"
@@ -58,6 +72,16 @@ export function Header({ onOpenAccount }) {
               >
                 <UserRound className="h-4 w-4" /> Minha conta
               </button>
+              {isAdmin && (
+                <Link
+                  role="menuitem"
+                  to="/admin"
+                  onClick={() => setOpen(false)}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-border"
+                >
+                  <ShieldCheck className="h-4 w-4 text-primary" /> Administração
+                </Link>
+              )}
               <button
                 role="menuitem"
                 onClick={logout}
