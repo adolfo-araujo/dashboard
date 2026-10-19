@@ -317,6 +317,46 @@ const otherStillWorks = await login(otherEmail)
 check('bloqueio não afeta outras contas', otherStillWorks.status === 200, show(otherStillWorks))
 
 // ------------------------------------------------------------
+section('Integração Valtrea Pay')
+
+const payOff = await request('GET', '/integrations/pay', { token })
+check('começa desconectado', payOff.status === 200 && payOff.body?.connected === false, show(payOff))
+
+const payToken = await request('POST', '/integrations/pay/token', { token })
+check('gera código de conexão', payToken.status === 201 && payToken.body?.token?.startsWith('vfp_'), show(payToken))
+const code = payToken.body?.token
+
+const payTx = { external_id: `pay:${Date.now()}:SAIDA`, name: 'Valtrea Pay · Bruno', amount: 12.34, type: 'EXPENSE', date: today }
+const sent = await request('POST', '/integrations/pay/transactions', { token: code, body: payTx })
+check('Pay lança um pagamento', sent.status === 201 && sent.body?.amount === '12.34', show(sent))
+const resent = await request('POST', '/integrations/pay/transactions', { token: code, body: payTx })
+check('reenviar o mesmo pagamento não duplica', resent.status === 200 && resent.body?.id === sent.body?.id, show(resent))
+
+const userToken = await request('POST', '/integrations/pay/transactions', { token, body: payTx })
+check('login do Finance não serve como código do Pay', userToken.status === 401, show(userToken))
+const codeAsLogin = await request('GET', '/users/me', { token: code })
+check('código do Pay não serve como login', codeAsLogin.status === 401, show(codeAsLogin))
+
+const bal = await request('PUT', '/integrations/pay/balance', { token: code, body: { balance: 87.66, at: new Date().toISOString() } })
+check('Pay atualiza o saldo', bal.status === 200 && bal.body?.updated === true, show(bal))
+const oldBal = await request('PUT', '/integrations/pay/balance', { token: code, body: { balance: 1, at: '2020-01-01T00:00:00Z' } })
+check('saldo antigo é ignorado', oldBal.status === 200 && oldBal.body?.updated === false, show(oldBal))
+
+const payOn = await request('GET', '/integrations/pay', { token })
+check('painel mostra conectado com saldo', payOn.body?.connected === true && payOn.body?.balance === 87.66, show(payOn))
+
+const otherSeesNothing = await request('GET', '/integrations/pay', { token: otherToken })
+check('outro usuário não vê a conexão', otherSeesNothing.body?.connected === false, show(otherSeesNothing))
+
+const newCode = await request('POST', '/integrations/pay/token', { token })
+const oldCode = await request('PUT', '/integrations/pay/balance', { token: code, body: { balance: 1, at: new Date().toISOString() } })
+check('gerar código novo invalida o anterior', newCode.status === 201 && oldCode.status === 401, show(oldCode))
+
+const unlink = await request('DELETE', '/integrations/pay', { token })
+const afterUnlink = await request('PUT', '/integrations/pay/balance', { token: newCode.body?.token, body: { balance: 1, at: new Date().toISOString() } })
+check('desconectar invalida o código', unlink.status === 200 && afterUnlink.status === 401, show(afterUnlink))
+
+// ------------------------------------------------------------
 section('Exclusão de conta')
 
 const delWithout = await request('DELETE', '/users/me', { token })

@@ -8,6 +8,7 @@ import { reportsRouter } from './routes/reports.js'
 import { recurringRouter } from './routes/recurring.js'
 import { budgetsRouter } from './routes/budgets.js'
 import { adminRouter } from './routes/admin.js'
+import { payEventsRouter, payIntegrationRouter } from './routes/pay-integration.js'
 import {
     apiLimiter,
     securityHeaders,
@@ -38,6 +39,10 @@ app.get('/api/health', (request, response) => {
     response.status(200).send({ status: 'ok' })
 })
 
+// Também antes do limite por IP: todos os envios do Valtrea Pay saem do mesmo servidor.
+// Cada chamada exige um código de conexão de 192 bits, que não dá para adivinhar.
+app.use('/api/integrations/pay', payEventsRouter)
+
 app.use('/api', apiLimiter)
 app.post(
     [
@@ -58,6 +63,7 @@ app.use('/api/reports', reportsRouter)
 app.use('/api/recurring', recurringRouter)
 app.use('/api/budgets', budgetsRouter)
 app.use('/api/admin', adminRouter)
+app.use('/api/integrations/pay', payIntegrationRouter)
 
 const swaggerDocument = JSON.parse(
     fs.readFileSync(join(__dirname, '../docs/swagger.json'), 'utf8'),

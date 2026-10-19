@@ -1351,6 +1351,181 @@
                     }
                 }
             }
+        },
+        "/api/integrations/pay": {
+            "get": {
+                "tags": [
+                    "Integração Valtrea Pay"
+                ],
+                "summary": "Status da conexão",
+                "description": "Se a conta está ligada à carteira Valtrea Pay e o último saldo recebido.",
+                "responses": {
+                    "200": {
+                        "description": "Status"
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Integração Valtrea Pay"
+                ],
+                "summary": "Desconectar",
+                "description": "Apaga o código de conexão. As transações já lançadas continuam.",
+                "responses": {
+                    "200": {
+                        "description": "Desconectado"
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/integrations/pay/token": {
+            "post": {
+                "tags": [
+                    "Integração Valtrea Pay"
+                ],
+                "summary": "Gerar código de conexão",
+                "description": "Gera o código que a pessoa cola no app Pay (aparece só nesta resposta). Um código novo invalida o anterior.",
+                "responses": {
+                    "201": {
+                        "description": "Código gerado"
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/integrations/pay/transactions": {
+            "post": {
+                "tags": [
+                    "Integração Valtrea Pay"
+                ],
+                "summary": "Lançar pagamento do Pay",
+                "description": "Chamada pela API do Valtrea Pay com o código de conexão no cabeçalho Authorization. O mesmo external_id não é lançado duas vezes.",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "external_id",
+                                "name",
+                                "amount",
+                                "type",
+                                "date"
+                            ],
+                            "properties": {
+                                "external_id": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "amount": {
+                                    "type": "number"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "EARNING",
+                                        "EXPENSE"
+                                    ]
+                                },
+                                "date": {
+                                    "type": "string",
+                                    "example": "2026-10-18"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Já lançado antes"
+                    },
+                    "201": {
+                        "description": "Lançado"
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "401": {
+                        "description": "Código inválido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/integrations/pay/balance": {
+            "put": {
+                "tags": [
+                    "Integração Valtrea Pay"
+                ],
+                "summary": "Atualizar saldo da carteira",
+                "description": "Chamada pela API do Valtrea Pay. Saldos mais antigos que o guardado são ignorados.",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "balance",
+                                "at"
+                            ],
+                            "properties": {
+                                "balance": {
+                                    "type": "number"
+                                },
+                                "at": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Recebido"
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "401": {
+                        "description": "Código inválido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
