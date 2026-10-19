@@ -23,6 +23,7 @@ model User {
   emailVerificationTokens EmailVerificationToken[]
   recurringTransactions   RecurringTransaction[]
   budgets                 Budget[]
+  payIntegration          PayIntegration?
 }
 
 model Transaction {
@@ -37,10 +38,26 @@ model Transaction {
   category     String?               @db.VarChar(30)
   recurring_id String?
   recurring    RecurringTransaction? @relation(fields: [recurring_id], references: [id], onDelete: SetNull)
+  // Identificador da origem (ex.: "pay:<id do pagamento>:SAIDA"). Impede lançar o mesmo pagamento duas vezes.
+  external_id  String?               @db.VarChar(80)
 
   @@unique([recurring_id, date])
+  @@unique([user_id, external_id])
   @@index([user_id, date])
   @@index([created_at])
+}
+
+// Conexão com a carteira Valtrea Pay. O token é gerado aqui e colado no app Pay; só o hash fica guardado.
+// Ele só permite lançar pagamentos e atualizar o saldo da carteira, nunca ler dados do Finance.
+model PayIntegration {
+  id           String    @id @default(uuid())
+  user_id      String    @unique
+  user         User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  token_hash   String    @unique @db.VarChar(64)
+  balance      Decimal?  @db.Decimal(19, 2)
+  balance_at   DateTime?
+  last_used_at DateTime?
+  created_at   DateTime  @default(now())
 }
 
 model RecurringTransaction {
