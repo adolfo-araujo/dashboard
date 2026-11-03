@@ -17,7 +17,7 @@ const schema = z
     email: z.string().trim().email('Informe um e-mail válido.').max(100),
     password: passwordSchema,
     passwordConfirmation: z.string().trim(),
-    terms: z.literal(true, { errorMap: () => ({ message: 'Aceite os termos para continuar.' }) }),
+    terms: z.literal(true, { error: 'Aceite os termos para continuar.' }),
   })
   .refine((v) => v.password === v.passwordConfirmation, {
     message: 'As senhas não coincidem.',

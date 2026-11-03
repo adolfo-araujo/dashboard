@@ -4,7 +4,7 @@ import { z } from 'zod'
 // (72 é o limite do bcrypt: o que passar disso seria ignorado sem aviso.)
 // O login continua aceitando senhas antigas de 6 caracteres.
 export const passwordSchema = z
-    .string({ required_error: 'Informe uma senha.' })
+    .string({ error: (issue) => (issue.input === undefined ? 'Informe uma senha.' : undefined) })
     .min(8, { message: 'A senha precisa ter pelo menos 8 caracteres.' })
     .max(72, { message: 'A senha pode ter no máximo 72 caracteres.' })
     .refine((value) => /[a-zA-ZÀ-ÿ]/.test(value) && /[0-9]/.test(value), {
@@ -13,25 +13,19 @@ export const passwordSchema = z
 
 export const createUserSchema = z.object({
     first_name: z
-        .string({
-            required_error: 'First name is required.',
-        })
+        .string({ error: (issue) => (issue.input === undefined ? 'First name is required.' : undefined) })
         .trim()
         .min(1, {
             message: 'First name is required.',
         }),
     last_name: z
-        .string({
-            required_error: 'Last name is required.',
-        })
+        .string({ error: (issue) => (issue.input === undefined ? 'Last name is required.' : undefined) })
         .trim()
         .min(1, {
             message: 'Last name is required',
         }),
     email: z
-        .string({
-            required_error: 'E-mail is required.',
-        })
+        .string({ error: (issue) => (issue.input === undefined ? 'E-mail is required.' : undefined) })
         .email({
             message: 'Please provide a valid e-mail.',
         })
@@ -42,9 +36,7 @@ export const createUserSchema = z.object({
     password: passwordSchema,
 })
 
-export const updateUserSchema = createUserSchema.partial().strict({
-    message: 'Some provided field is not allowed.',
-})
+export const updateUserSchema = createUserSchema.partial().strict()
 
 export const loginSchema = z.object({
     email: z

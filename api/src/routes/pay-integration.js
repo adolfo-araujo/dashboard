@@ -124,7 +124,7 @@ const transactionSchema = z.object({
 payEventsRouter.post('/transactions', payAuth, async (request, response) => {
     const parsed = transactionSchema.safeParse(request.body)
     if (!parsed.success) {
-        return response.status(400).send({ message: parsed.error.errors[0].message })
+        return response.status(400).send({ message: parsed.error.issues[0].message })
     }
     const data = parsed.data
     try {
@@ -163,7 +163,7 @@ const balanceSchema = z.object({
 payEventsRouter.put('/balance', payAuth, async (request, response) => {
     const parsed = balanceSchema.safeParse(request.body)
     if (!parsed.success) {
-        return response.status(400).send({ message: parsed.error.errors[0].message })
+        return response.status(400).send({ message: parsed.error.issues[0].message })
     }
     try {
         const at = new Date(parsed.data.at)

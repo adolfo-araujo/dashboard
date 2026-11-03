@@ -55,7 +55,7 @@ const baseSchema = z.object({
     amount: z.number().min(1, 'O valor mínimo é R$ 1,00.').max(99999999.99),
     type: z.enum(['EARNING', 'EXPENSE', 'INVESTMENT']),
     category: z.enum(ALL_CATEGORIES, {
-        errorMap: () => ({ message: 'Categoria inválida.' }),
+        error: 'Categoria inválida.',
     }),
     day_of_month: z.number().int().min(1).max(31),
     start_date: z.string().regex(DATE, 'Data de início inválida.'),
@@ -78,7 +78,7 @@ const updateSchema = baseSchema
     .refine(validRange, { message: 'A data de término deve ser depois do início.', path: ['end_date'] })
 
 const badRequest = (response, error) =>
-    response.status(400).send({ message: error.errors[0].message })
+    response.status(400).send({ message: error.issues[0].message })
 
 const findOwn = (id, userId) =>
     prisma.recurringTransaction.findFirst({ where: { id, user_id: userId } })

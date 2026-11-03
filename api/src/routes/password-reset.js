@@ -50,7 +50,7 @@ passwordResetRouter.post('/forgot-password', async (request, response) => {
     if (!parsed.success) {
         return response
             .status(400)
-            .send({ message: parsed.error.errors[0].message })
+            .send({ message: parsed.error.issues[0].message })
     }
 
     try {
@@ -105,7 +105,7 @@ passwordResetRouter.post('/reset-password', async (request, response) => {
     if (!parsed.success) {
         return response
             .status(400)
-            .send({ message: parsed.error.errors[0].message })
+            .send({ message: parsed.error.issues[0].message })
     }
 
     try {

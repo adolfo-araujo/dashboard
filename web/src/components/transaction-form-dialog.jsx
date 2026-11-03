@@ -16,7 +16,7 @@ import { CATEGORIES } from '../lib/categories'
 const schema = z.object({
   name: z.string().trim().min(1, 'Informe um nome.').max(50, 'Máximo de 50 caracteres.'),
   amount: z.coerce
-    .number({ invalid_type_error: 'Informe um valor.' })
+    .number({ error: 'Informe um valor.' })
     .min(1, 'O valor mínimo é R$ 1,00.')
     .max(99999999.99, 'Valor muito alto.'),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Informe uma data.'),

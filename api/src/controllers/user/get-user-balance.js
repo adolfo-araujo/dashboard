@@ -36,7 +36,7 @@ export class GetUserBalanceController {
             }
             if (error instanceof ZodError) {
                 return badRequest({
-                    message: error.errors[0].message,
+                    message: error.issues[0].message,
                 })
             }
 
