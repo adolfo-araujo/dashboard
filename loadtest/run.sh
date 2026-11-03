@@ -7,6 +7,7 @@
 #   CPUS / MEMORY  limite de cada cópia da API (ex.: 0.1 e 512m = plano Free do Render)
 #   INSTANCES      quantas cópias da API, atrás de um balanceador (padrão 1)
 #   DB_LATENCY_MS  atraso extra entre API e banco, para imitar a distância Render ↔ Neon
+#   DB_POOL        conexões com o banco por cópia da API (parâmetro connection_limit do Prisma)
 #   RAMP / HOLD    tempo de chegada das pessoas e tempo de uso simultâneo
 #   LABEL          nome do cenário no relatório
 set -euo pipefail
@@ -16,6 +17,7 @@ CPUS=${CPUS:-0.5}
 MEMORY=${MEMORY:-512m}
 INSTANCES=${INSTANCES:-1}
 DB_LATENCY_MS=${DB_LATENCY_MS:-0}
+DB_POOL=${DB_POOL:-20}
 RAMP=${RAMP:-1m}
 HOLD=${HOLD:-3m}
 LABEL=${LABEL:-"API ${CPUS} CPU"}
@@ -24,6 +26,7 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 
 mkdir -p "$OUT"
 DB_URL="postgresql://postgres:password@db:5432/finance"
+API_DB_URL="${DB_URL}?connection_limit=${DB_POOL}&pool_timeout=20"
 
 cleanup() { docker rm -f db lb $(seq -f "api%g" 1 "$INSTANCES") >/dev/null 2>&1 || true; docker network rm lt >/dev/null 2>&1 || true; }
 trap cleanup EXIT
@@ -48,7 +51,7 @@ docker run --rm --network lt -e DATABASE_URL="$DB_URL" -e LOAD_USERS="$USERS" va
 
 for i in $(seq 1 "$INSTANCES"); do
   docker run -d --name "api$i" --network lt --cpus "$CPUS" --memory "$MEMORY" \
-    -e DATABASE_URL="$DB_URL" -e JWT_ACCESS_TOKEN_SECRET=carga-access -e JWT_REFRESH_TOKEN_SECRET=carga-refresh \
+    -e DATABASE_URL="$API_DB_URL" -e JWT_ACCESS_TOKEN_SECRET=carga-access -e JWT_REFRESH_TOKEN_SECRET=carga-refresh \
     -e PORT=8080 -e NODE_ENV=production valtrea-api node index.js >/dev/null
 done
 
@@ -102,7 +105,7 @@ OOM=$(for i in $(seq 1 "$INSTANCES"); do docker inspect "api$i" --format '{{.Sta
   echo "| Pico de memória de uma cópia | ${PEAK_MEM:-—} MiB (limite: ${MEMORY}) |"
   echo "| Estado das cópias (sem memória? reinícios, no ar?) | ${OOM} |"
   echo
-  echo "_Cenário: ${INSTANCES} × API com ${CPUS} CPU e ${MEMORY}; banco Postgres 16 com 1 CPU; atraso API↔banco de ${DB_LATENCY_MS} ms; ${RAMP} de chegada e ${HOLD} de uso simultâneo._"
+  echo "_Cenário: ${INSTANCES} × API com ${CPUS} CPU e ${MEMORY}; banco Postgres 16 com 1 CPU; atraso API↔banco de ${DB_LATENCY_MS} ms; ${DB_POOL} conexões com o banco por cópia; ${RAMP} de chegada e ${HOLD} de uso simultâneo._"
 } >> "$OUT/resumo.md"
 
 grep -h "lento" <(for i in $(seq 1 "$INSTANCES"); do docker logs "api$i" 2>&1; done) | sed -E 's/ levou [0-9]+ ms.*//' | sort | uniq -c | sort -rn | head -10 > "$OUT/rotas-lentas.txt" || true
@@ -110,6 +113,7 @@ if [ -s "$OUT/rotas-lentas.txt" ]; then
   { echo; echo "<details><summary>Rotas que passaram de 1 s (alerta do Sentry)</summary>"; echo; echo '```'; cat "$OUT/rotas-lentas.txt"; echo '```'; echo "</details>"; } >> "$OUT/resumo.md"
 fi
 
+for i in $(seq 1 "$INSTANCES"); do docker logs "api$i" > "$OUT/api$i.log" 2>&1 || true; done
 cat "$OUT/resumo.md"
 [ -n "${GITHUB_STEP_SUMMARY:-}" ] && cat "$OUT/resumo.md" >> "$GITHUB_STEP_SUMMARY"
 exit $K6_EXIT

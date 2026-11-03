@@ -25,9 +25,13 @@ on:
           - 1000 pessoas - Pro (2 CPU)
           - 1000 pessoas - 2x Standard (2 x 1 CPU)
       latencia_banco_ms:
-        description: Atraso API ↔ banco em ms (vazio = medir na produção)
+        description: Atraso API ↔ banco em ms (vazio = medir na produção; 2 = mesma região)
         required: false
         default: ''
+      conexoes_banco:
+        description: Conexões com o banco por cópia da API (connection_limit)
+        required: false
+        default: '20'
 
 permissions:
   contents: read
@@ -54,6 +58,7 @@ jobs:
       - id: m
         env:
           ESCOLHA: ${{ inputs.cenario || 'todos' }}
+          EVENTO: ${{ github.event_name }}
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import json, os
@@ -66,6 +71,15 @@ jobs:
             {"nome": "1000 pessoas - Pro (2 CPU)", "users": 1000, "cpus": "2", "memory": "4g", "instances": 1},
             {"nome": "1000 pessoas - 2x Standard (2 x 1 CPU)", "users": 1000, "cpus": "1", "memory": "2g", "instances": 2},
           ]
+          # Na branch de medição: compara o banco longe (latência medida) com o banco na mesma região (2 ms)
+          if os.environ.get("EVENTO") == "push":
+            base = [c for c in todos if c["nome"] in (
+              "100 pessoas - Free (0.1 CPU)", "100 pessoas - Starter (0.5 CPU)",
+              "1000 pessoas - Starter (0.5 CPU)", "1000 pessoas - Standard (1 CPU)",
+              "1000 pessoas - Pro (2 CPU)", "1000 pessoas - 2x Standard (2 x 1 CPU)")]
+            base.insert(2, {"nome": "1000 pessoas - Starter (0.5 CPU)", "users": 1000, "cpus": "0.5", "memory": "512m", "instances": 1})
+            todos = [dict(c, nome=c["nome"] + " - banco na mesma região", latency="2") for c in base] + \
+                    [dict(c, nome=c["nome"] + " - banco em São Paulo") for c in base[:2]]
           escolha = os.environ["ESCOLHA"]
           sel = todos if escolha == "todos" else [c for c in todos if c["nome"] == escolha]
           print("matriz=" + json.dumps({"include": sel}))
@@ -88,7 +102,8 @@ jobs:
           CPUS: ${{ matrix.cpus }}
           MEMORY: ${{ matrix.memory }}
           INSTANCES: ${{ matrix.instances }}
-          DB_LATENCY_MS: ${{ inputs.latencia_banco_ms || needs.producao.outputs.db_rtt || '0' }}
+          DB_LATENCY_MS: ${{ matrix.latency || inputs.latencia_banco_ms || needs.producao.outputs.db_rtt || '0' }}
+          DB_POOL: ${{ inputs.conexoes_banco || '20' }}
           LABEL: ${{ matrix.nome }}
         run: |
           ulimit -n 65535
@@ -96,5 +111,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ${{ format('resultado-{0}-{1}cpu-{2}x', matrix.users, matrix.cpus, matrix.instances) }}
+          name: ${{ format('resultado-{0}-{1}cpu-{2}x-{3}ms', matrix.users, matrix.cpus, matrix.instances, matrix.latency || 'medida') }}
           path: loadtest/resultado/

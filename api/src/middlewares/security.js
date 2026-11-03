@@ -65,7 +65,8 @@ export function rateLimit({ name, windowMs, max, message }) {
 export const apiLimiter = rateLimit({
     name: 'geral',
     windowMs: 5 * 60 * 1000,
-    max: 300,
+    // Só o ambiente de testes automáticos aumenta o limite (variável API_RATE_LIMIT).
+    max: Number(process.env.API_RATE_LIMIT) || 300,
 })
 
 // Rotas abertas que criam contas ou disparam e-mails: 20 a cada 15 minutos por IP.
