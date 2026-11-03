@@ -73,3 +73,88 @@ jobs:
           node-version: 20
       - run: npm install
       - run: npm run build
+
+  e2e:
+    name: QA no navegador (computador e celular)
+    # Playwright ainda não roda no Ubuntu 26.04
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: finance-app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:password@localhost:5432/finance-app
+      JWT_ACCESS_TOKEN_SECRET: ci-access-secret
+      JWT_REFRESH_TOKEN_SECRET: ci-refresh-secret
+      PORT: 8080
+      API_RATE_LIMIT: '100000'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Subir a API
+        working-directory: api
+        run: |
+          npm ci
+          npx prisma migrate deploy
+          node prisma/seed.js
+          nohup node index.js > ../api.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:8080/api/health && break; sleep 1; done
+      - name: Subir o app
+        working-directory: web
+        run: |
+          npm install
+          nohup npm run dev -- --port 5173 --strictPort > ../web.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://localhost:5173/ >/dev/null && break; sleep 1; done
+      - name: Rodar os testes no navegador
+        working-directory: e2e
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+          npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: relatorio-qa-navegador
+          path: |
+            e2e/playwright-report/
+            e2e/test-results/
+            api.log
+            web.log
+
+  carga:
+    name: Teste de carga (100 pessoas, plano Starter)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: grafana/setup-k6-action@v1
+      # 100 pessoas usando ao mesmo tempo por 90 s, API com 0,5 CPU e 512 MB (Starter do Render)
+      # e 120 ms até o banco (distância real Render ↔ Neon São Paulo, medida em 03/11/2026).
+      # Reprova se 5% das respostas passarem de 1 s ou se mais de 1% der erro.
+      - name: Rodar teste de carga
+        env:
+          USERS: '100'
+          CPUS: '0.5'
+          MEMORY: 512m
+          DB_LATENCY_MS: '120'
+          RAMP: 30s
+          HOLD: 90s
+          LABEL: Teste de carga desta mudança
+        run: |
+          ulimit -n 65535
+          bash loadtest/run.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: teste-de-carga
+          path: loadtest/resultado/

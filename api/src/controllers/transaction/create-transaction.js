@@ -15,9 +15,11 @@ export class CreateTransactionController {
 
     async execute(httpRequest) {
         try {
-            const params = httpRequest.body
-
-            await createTransactionSchema.parseAsync(params)
+            // Usa só os campos validados: qualquer outro campo enviado
+            // (ex.: recurring_id, created_at) é descartado.
+            const params = await createTransactionSchema.parseAsync(
+                httpRequest.body,
+            )
 
             const transaction =
                 await this.createTransactionUseCase.execute(params)

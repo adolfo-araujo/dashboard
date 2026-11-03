@@ -9,44 +9,23 @@ export class PostgresGetUserBalanceRepository {
                 lte: new Date(to),
             },
         }
-        const {
-            _sum: { amount: totalExpenses },
-        } = await prisma.transaction.aggregate({
+        // Uma consulta só, agrupada por tipo (antes eram três consultas seguidas)
+        const sums = await prisma.transaction.groupBy({
+            by: ['type'],
             where: {
                 user_id: userId,
-                type: TransactionType.EXPENSE,
                 ...dateFilter,
             },
             _sum: {
                 amount: true,
             },
         })
+        const sumOf = (type) =>
+            sums.find((row) => row.type === type)?._sum.amount ?? null
 
-        const {
-            _sum: { amount: totalEarnings },
-        } = await prisma.transaction.aggregate({
-            where: {
-                user_id: userId,
-                type: TransactionType.EARNING,
-                ...dateFilter,
-            },
-            _sum: {
-                amount: true,
-            },
-        })
-
-        const {
-            _sum: { amount: totalInvestments },
-        } = await prisma.transaction.aggregate({
-            where: {
-                user_id: userId,
-                type: TransactionType.INVESTMENT,
-                ...dateFilter,
-            },
-            _sum: {
-                amount: true,
-            },
-        })
+        const totalExpenses = sumOf(TransactionType.EXPENSE)
+        const totalEarnings = sumOf(TransactionType.EARNING)
+        const totalInvestments = sumOf(TransactionType.INVESTMENT)
 
         const _totalEarnings = totalEarnings || new Prisma.Decimal(0)
         const _totalExpenses = totalExpenses || new Prisma.Decimal(0)

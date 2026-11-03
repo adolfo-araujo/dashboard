@@ -24,8 +24,10 @@ export function AuthProvider({ children }) {
       try {
         const { data } = await api.get('/users/me')
         setUser(data)
-      } catch {
-        tokenStorage.clear()
+      } catch (error) {
+        // Só desloga se a sessão for recusada. Se a API estiver fora do ar ou sem
+        // internet, mantém o login para a próxima tentativa.
+        if (error.response?.status === 401) tokenStorage.clear()
       } finally {
         setIsInitializing(false)
       }
