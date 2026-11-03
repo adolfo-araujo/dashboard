@@ -29,6 +29,8 @@ jobs:
       JWT_ACCESS_TOKEN_SECRET: ci-access-secret
       JWT_REFRESH_TOKEN_SECRET: ci-refresh-secret
       ADMIN_EMAILS: smoke-admin@test.dev
+      # inicia o Sentry de verdade (endereço fictício) para pegar incompatibilidades
+      SENTRY_DSN: https://public@o0.ingest.sentry.io/0
       PORT: 8080
     steps:
       - uses: actions/checkout@v4
