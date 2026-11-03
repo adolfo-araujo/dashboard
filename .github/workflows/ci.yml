@@ -115,6 +115,12 @@ jobs:
           npm install
           nohup npm run dev -- --port 5173 --strictPort > ../web.log 2>&1 &
           for i in $(seq 1 60); do curl -sf http://localhost:5173/ >/dev/null && break; sleep 1; done
+      - name: Subir o site da empresa
+        working-directory: site
+        run: |
+          npm install
+          nohup npx vite --port 5174 --strictPort > ../site.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://localhost:5174/ >/dev/null && break; sleep 1; done
       - name: Rodar os testes no navegador
         working-directory: e2e
         run: |
