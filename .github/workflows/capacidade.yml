@@ -7,8 +7,6 @@ name: Teste de capacidade
 # Para rodar: GitHub > Actions > Teste de capacidade > Run workflow.
 
 on:
-  push:
-    branches: [qa-carga-cache] # TEMPORÁRIO: medição inicial
   workflow_dispatch:
     inputs:
       cenario:
@@ -58,7 +56,6 @@ jobs:
       - id: m
         env:
           ESCOLHA: ${{ inputs.cenario || 'todos' }}
-          EVENTO: ${{ github.event_name }}
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import json, os
@@ -71,13 +68,6 @@ jobs:
             {"nome": "1000 pessoas - Pro (2 CPU)", "users": 1000, "cpus": "2", "memory": "4g", "instances": 1},
             {"nome": "1000 pessoas - 2x Standard (2 x 1 CPU)", "users": 1000, "cpus": "1", "memory": "2g", "instances": 2},
           ]
-          # Na branch de medição: 1000 pessoas sem mudar o banco de região
-          if os.environ.get("EVENTO") == "push":
-            todos = [
-              {"nome": "1000 pessoas - Pro (2 CPU) - banco em São Paulo", "users": 1000, "cpus": "2", "memory": "4g", "instances": 1},
-              {"nome": "1000 pessoas - 2x Standard - banco em São Paulo", "users": 1000, "cpus": "1", "memory": "2g", "instances": 2},
-              {"nome": "1000 pessoas - Pro (2 CPU) - banco em São Paulo, 60 conexões", "users": 1000, "cpus": "2", "memory": "4g", "instances": 1, "pool": "60"},
-            ]
           escolha = os.environ["ESCOLHA"]
           sel = todos if escolha == "todos" else [c for c in todos if c["nome"] == escolha]
           print("matriz=" + json.dumps({"include": sel}))

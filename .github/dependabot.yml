@@ -10,6 +10,10 @@ updates:
       time: '09:00'
       timezone: America/Sao_Paulo
     open-pull-requests-limit: 5
+    ignore:
+      # Versões novas grandes (ex.: React 19, Tailwind 4) mudam o código; atualizar com calma, não por PR automático
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
     groups:
       api-pequenas:
         update-types: [minor, patch]
@@ -22,6 +26,10 @@ updates:
       time: '09:00'
       timezone: America/Sao_Paulo
     open-pull-requests-limit: 5
+    ignore:
+      # Versões novas grandes (ex.: React 19, Tailwind 4) mudam o código; atualizar com calma, não por PR automático
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
     groups:
       web-pequenas:
         update-types: [minor, patch]
@@ -34,6 +42,10 @@ updates:
       time: '09:00'
       timezone: America/Sao_Paulo
     open-pull-requests-limit: 5
+    ignore:
+      # Versões novas grandes (ex.: React 19, Tailwind 4) mudam o código; atualizar com calma, não por PR automático
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
     groups:
       site-pequenas:
         update-types: [minor, patch]

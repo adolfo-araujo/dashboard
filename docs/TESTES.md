@@ -51,3 +51,26 @@ Para receber o e-mail na hora:
 Depois de corrigir uma lentidão, marque o aviso como **Resolved** no Sentry: se voltar a acontecer, você recebe outro e-mail.
 
 Para mudar o limite, defina `SLOW_RESPONSE_MS` no Render (em milissegundos).
+
+## Resultados de 03/11/2026
+
+Pessoas usando ao mesmo tempo, cada uma abrindo o painel e lançando transações a cada 5 a 15 segundos. "p95" = 95% das respostas de leitura saíram em até esse tempo.
+
+| Pessoas | Plano da API | Banco | Resultado | p95 leitura | Erros |
+| --- | --- | --- | --- | --- | --- |
+| 100 | Free (0,1 CPU) | São Paulo (120 ms) | Reprovado | 55 s | 3,8% |
+| 100 | Free (0,1 CPU) | Mesma região (2 ms) | Reprovado | 43 s | 3,0% |
+| 100 | Starter (0,5 CPU) | São Paulo (120 ms) | **Aprovado** | 273 ms | 0% |
+| 100 | Starter (0,5 CPU) | Mesma região (2 ms) | **Aprovado** | 25 ms | 0% |
+| 1000 | Starter (0,5 CPU) | Mesma região | Reprovado | 60 s | 46% |
+| 1000 | Standard (1 CPU) | Mesma região | Reprovado | 19 s | 4,4% |
+| 1000 | Pro (2 CPU) | São Paulo, 60 conexões | Reprovado | 6,3 s | 0,8% |
+| 1000 | 2 × Standard | São Paulo | Reprovado | 14 s | 2,7% |
+| 1000 | Pro (2 CPU) | Mesma região | **Aprovado** | 87 ms | 0% |
+| 1000 | 2 × Standard | Mesma região | **Aprovado** | 86 ms | 0% |
+
+Conclusões:
+
+- O plano Free não aguenta 100 pessoas: a CPU (0,1) fica no limite só conferindo senhas no login.
+- O Starter aguenta 100 pessoas mesmo com o banco em São Paulo, desde que a API use 20 conexões com o banco (padrão a partir deste teste, em `api/prisma/prisma.js`). Com o padrão anterior do Prisma, nem 1 CPU aguentava.
+- Para 1.000 pessoas, o banco precisa estar na mesma região da API (hoje: API no Render em Oregon, EUA; banco no Neon em São Paulo, a cerca de 120 ms por consulta), com o plano Pro ou duas cópias Standard.
