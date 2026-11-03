@@ -16,7 +16,7 @@ Revisão de 03/11/2026 com os 19 pontos mais comuns de falha em sites e sistemas
 | 10 | CSRF | Não se aplica: a sessão vai no cabeçalho Authorization, não em cookie |
 | 11 | Upload sem validação | Não se aplica: o sistema não recebe arquivos |
 | 12 | Revelar informação | Erros genéricos (500 sem detalhes, 404 em JSON); login responde igual para e-mail inexistente e senha errada; sem cabeçalho X-Powered-By; Sentry sem senhas, tokens ou corpo das requisições |
-| 13 | Dependências vulneráveis | Auditoria no CI (reprova falha crítica) e Dependabot semanal |
+| 13 | Dependências vulneráveis | Nenhuma falha conhecida hoje; auditoria no CI (reprova falha crítica) e Dependabot semanal |
 | 14 | Tokens | Curta duração, segredos diferentes para acesso e renovação, aviso no Sentry se os segredos tiverem menos de 32 caracteres. Guardados no navegador e protegidos pela CSP contra scripts de terceiros |
 | 15 | Rate limit | 300 requisições a cada 5 min por IP; 20 a cada 15 min no cadastro e nos e-mails; limite próprio para o Valtrea Pay |
 | 16 | Dados sensíveis expostos | Respostas nunca trazem a senha; painel de administração só com números agregados; backup criptografado |
@@ -26,9 +26,11 @@ Revisão de 03/11/2026 com os 19 pontos mais comuns de falha em sites e sistemas
 
 Também: HTTPS obrigatório (HSTS), CSP no app e no site, proteção contra exibição em iframe, `nosniff` e política de referência em todas as respostas.
 
-## Pendências conhecidas
+## Dependências
 
-- **zod 3 na API:** há um alerta de nível alto que só se resolve migrando para o zod 4, que muda a forma de escrever as validações. Fazer com calma, com os testes do CI.
-- **glob e minimatch (moderado):** vêm de dentro do Sentry e só são usados na inicialização, sem receber dados dos usuários.
-- **No app (navegador):** `follow-redirects` (alto) só é usado pelo axios no Node, não no navegador; `react-router` (moderado) afeta links com endereço digitado pelo usuário ou renderização no servidor, que o Valtrea não usa. Somem com as atualizações do Dependabot.
-- **zod:** o alerta é de consumo de memória com listas enormes; a API já recusa requisições acima de 100 KB, o que limita o efeito.
+Em 03/11/2026, `npm audit` sem nenhuma falha conhecida na API, no app e no site:
+
+- API: zod 4, bcrypt 6, `uuid` substituído pelo `randomUUID` nativo, `npm audit fix`, e versões corrigidas de `glob` e `minimatch` forçadas (`overrides` no `package.json`) dentro do plugin de build do Sentry.
+- App: zod 4, react-router 7, axios e react-hook-form atualizados, e `follow-redirects` corrigido por `overrides`.
+
+Quando o Dependabot atualizar essas bibliotecas, confira se os `overrides` ainda são necessários (`npm ls glob minimatch` e `npm ls follow-redirects`).
