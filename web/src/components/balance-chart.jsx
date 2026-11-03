@@ -59,9 +59,13 @@ export function BalanceChart({ balance, isLoading }) {
             Sem dados
           </div>
         ) : (
+          <div role="img" aria-label="Gráfico de distribuição entre ganhos, gastos e investimentos; os valores estão listados ao lado" className="h-full w-full">
+          <div aria-hidden="true" className="h-full w-full">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
+                // fora da ordem do Tab: os valores já estão na lista ao lado
+                rootTabIndex={-1}
                 data={data}
                 dataKey="value"
                 nameKey="key"
@@ -86,6 +90,8 @@ export function BalanceChart({ balance, isLoading }) {
               />
             </PieChart>
           </ResponsiveContainer>
+          </div>
+          </div>
         )}
       </div>
 

@@ -31,7 +31,7 @@ function Logo({ className = '' }) {
 
 const btn = {
   primary:
-    'inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 font-semibold text-white transition-colors hover:bg-primary-hover',
+    'inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 font-semibold text-background transition-colors hover:bg-primary-hover',
   secondary:
     'inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-surface-2 px-5 font-semibold text-foreground transition-colors hover:bg-border',
 }
@@ -40,7 +40,7 @@ const services = [
   {
     icon: Globe,
     title: 'Sites e páginas de venda',
-    text: 'Site institucional, página de lançamento ou portfólio. Rápido, bonito no celular e pronto para aparecer no Google.',
+    text: 'Site institucional, página de lançamento ou portfólio. Rápido, bonito no celular e preparado para ser encontrado no Google.',
   },
   {
     icon: LayoutDashboard,
@@ -75,7 +75,7 @@ const commitments = [
 
 const financeFeatures = [
   'Saldo, gráficos e evolução mês a mês',
-  'Categorias e orçamento mensal com alertas',
+  'Categorias e orçamento mensal com aviso ao passar do limite',
   'Lançamentos recorrentes automáticos',
   'Exportação em planilha e app instalável',
 ]
@@ -98,7 +98,7 @@ export default function App() {
             <a href="#como-trabalhamos" className="hidden rounded-lg px-3 py-2 text-muted hover:text-foreground md:inline">
               Como trabalhamos
             </a>
-            <a href="#contato" className="ml-2 inline-flex h-9 items-center rounded-lg bg-primary px-4 text-white hover:bg-primary-hover">
+            <a href="#contato" className="ml-2 inline-flex h-9 items-center rounded-lg bg-primary px-4 text-background hover:bg-primary-hover">
               Fale conosco
             </a>
           </nav>

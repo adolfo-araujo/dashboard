@@ -3,10 +3,11 @@ import { Loader2 } from 'lucide-react'
 import { cn } from '../../lib/cn'
 
 const variants = {
-  primary: 'bg-primary text-white hover:bg-primary-hover',
+  // texto escuro no verde: contraste 7:1 (texto branco ficava em 2,7:1)
+  primary: 'bg-primary text-background hover:bg-primary-hover',
   secondary: 'bg-surface-2 text-foreground border border-border hover:bg-border',
   ghost: 'text-muted hover:text-foreground hover:bg-surface-2',
-  danger: 'bg-expense text-white hover:bg-expense/90',
+  danger: 'bg-danger text-white hover:bg-danger-hover',
   outline: 'border border-border text-foreground hover:bg-surface-2',
 }
 

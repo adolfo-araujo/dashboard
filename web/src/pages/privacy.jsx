@@ -41,7 +41,15 @@ export function PrivacyPage() {
         </p>
         <p>
           <strong>Dados que você cadastra no uso do serviço:</strong> as transações que você registra, com
-          nome, valor, data e tipo (ganho, gasto ou investimento).
+          nome, valor, data, tipo (ganho, gasto ou investimento) e categoria, além das contas recorrentes e
+          dos limites de orçamento que você definir.
+        </p>
+        <p>
+          <strong>Dados recebidos da carteira Valtrea Pay (só se você conectar):</strong> se você gerar um
+          código de conexão no painel e informá-lo no Valtrea Pay, passamos a receber de lá os pagamentos
+          enviados e recebidos na carteira (nome, valor, data e tipo, que viram transações no{' '}
+          {LEGAL.appName}) e o saldo atual da carteira. Do código de conexão guardamos apenas uma versão
+          criptografada (hash).
         </p>
         <p>
           <strong>Dados de controle da conta:</strong> data de confirmação do e-mail, data e versão em que
@@ -53,10 +61,12 @@ export function PrivacyPage() {
           registrados automaticamente pelos nossos provedores de infraestrutura para fins de segurança e
           funcionamento.
         </p>
-        <p>
-          <strong>Armazenamento no seu dispositivo:</strong> guardamos no navegador apenas o que é necessário
+        <p id="cookies" className="scroll-mt-6">
+          <strong>Cookies e armazenamento no seu dispositivo:</strong> guardamos no navegador apenas o que é necessário
           para manter você conectado (identificadores de sessão) e permitir que o app funcione instalado. Não
-          usamos cookies de publicidade nem ferramentas de rastreamento de terceiros.
+          usamos cookies de publicidade nem ferramentas de rastreamento de terceiros. Também guardamos se você
+          já viu o aviso de cookies, para não mostrá-lo de novo. Como tudo isso é essencial para o serviço
+          funcionar, não pedimos consentimento; se você limpar os dados do navegador, será desconectado.
         </p>
       </Section>
 
@@ -67,6 +77,7 @@ export function PrivacyPage() {
             'Enviar e-mails essenciais, como confirmação de cadastro, recuperação de senha e confirmação de exclusão de conta (execução de contrato).',
             'Proteger o serviço contra fraudes, abusos e acessos indevidos (legítimo interesse, art. 7º, IX).',
             'Cumprir obrigações legais e atender a ordens de autoridades competentes (art. 7º, II).',
+            'Lançar automaticamente os pagamentos da carteira Valtrea Pay e mostrar o saldo dela, quando você conecta as duas contas (execução de contrato, a seu pedido).',
             'Responder às mensagens que você nos enviar.',
           ]}
         />
@@ -102,6 +113,11 @@ export function PrivacyPage() {
           </table>
         </div>
         <p>
+          <strong>Valtrea Pay:</strong> a integração funciona em um só sentido. O Valtrea Pay envia pagamentos
+          e saldo para o {LEGAL.appName}, mas o código de conexão não permite ler nenhum dado seu daqui: suas
+          transações, orçamentos e dados de cadastro não são enviados ao Valtrea Pay.
+        </p>
+        <p>
           Também podemos compartilhar dados quando exigido por lei, ordem judicial ou requisição de
           autoridade competente.
         </p>
@@ -123,6 +139,7 @@ export function PrivacyPage() {
             'As sessões expiram automaticamente e são renovadas de forma segura.',
             'Links de recuperação de senha e de confirmação de e-mail expiram e só podem ser usados uma vez.',
             'Cada usuário só tem acesso às próprias transações.',
+            'Tentativas seguidas de senha errada bloqueiam o login temporariamente, e o número de acessos por endereço IP é limitado para impedir abusos.',
           ]}
         />
         <p>
@@ -138,6 +155,10 @@ export function PrivacyPage() {
           todas as transações são <strong>apagados de forma permanente do nosso banco de dados</strong>{' '}
           imediatamente. Cópias de segurança mantidas pelos provedores de infraestrutura são eliminadas
           automaticamente após um período limitado.
+        </p>
+        <p>
+          Ao desconectar o Valtrea Pay, o código de conexão é apagado e o saldo da carteira deixa de ser
+          exibido; as transações que já tinham sido lançadas continuam na sua conta até você excluí-las.
         </p>
         <p>
           Links de recuperação de senha e de confirmação de e-mail expiram em 30 minutos e 24 horas,

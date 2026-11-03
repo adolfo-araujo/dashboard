@@ -84,6 +84,8 @@ export function MonthlyEvolution() {
             Nenhum lançamento nos últimos {months} meses.
           </div>
         ) : (
+          <div role="img" aria-label={`Gráfico de ganhos, gastos, investimentos e saldo dos últimos ${months} meses`} className="h-full w-full">
+          <div aria-hidden="true" className="h-full w-full">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={data} margin={{ top: 8, right: 4, left: -8, bottom: 0 }}>
               <CartesianGrid stroke="#272C34" vertical={false} />
@@ -114,6 +116,8 @@ export function MonthlyEvolution() {
               />
             </ComposedChart>
           </ResponsiveContainer>
+          </div>
+          </div>
         )}
       </div>
 

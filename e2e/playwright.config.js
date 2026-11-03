@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url'
 import { defineConfig, devices } from '@playwright/test'
 
 // Testes de ponta a ponta no navegador (QA do sistema inteiro).
@@ -16,6 +17,8 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     locale: 'pt-BR',
     timezoneId: 'America/Sao_Paulo',
+    // O aviso de cookies já aparece fechado nos testes (ele tem um teste próprio)
+    storageState: fileURLToPath(new URL('./estado-inicial.json', import.meta.url)),
   },
   projects: [
     { name: 'computador', use: { ...devices['Desktop Chrome'] } },

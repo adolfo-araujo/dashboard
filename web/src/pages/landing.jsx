@@ -111,7 +111,7 @@ const faq = [
 // Links com aparência de botão (evita colocar <button> dentro de <a>)
 const linkButton = {
   base: 'inline-flex items-center justify-center rounded-lg font-semibold transition-colors',
-  primary: 'bg-primary text-white hover:bg-primary-hover',
+  primary: 'bg-primary text-background hover:bg-primary-hover',
   secondary: 'border border-border bg-surface-2 text-foreground hover:bg-border',
   sm: 'h-8 px-3 text-sm',
   lg: 'h-11 px-5 text-base',

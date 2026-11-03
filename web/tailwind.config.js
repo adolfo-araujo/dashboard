@@ -15,7 +15,9 @@ export default {
         muted: '#8D939D',
         primary: { DEFAULT: '#55B02E', hover: '#4A9A28' },
         earning: '#55B02E',
-        expense: '#E93030',
+        // texto vermelho mais claro para ter contraste suficiente no fundo escuro (WCAG AA)
+        expense: '#F25C5C',
+        danger: { DEFAULT: '#C62828', hover: '#B71C1C' },
         investment: '#3B82F6',
       },
     },

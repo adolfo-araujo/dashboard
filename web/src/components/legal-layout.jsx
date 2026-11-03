@@ -1,10 +1,17 @@
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { Logo } from './logo'
 import { LegalLinks } from './legal-links'
 import { LEGAL } from '../lib/legal'
 
 export function LegalLayout({ title, children }) {
+  // Links como /privacidade#cookies rolam até o trecho certo
+  const { hash } = useLocation()
+  useEffect(() => {
+    if (hash) document.getElementById(hash.slice(1))?.scrollIntoView()
+  }, [hash])
+
   return (
     <div className="min-h-screen">
       <header className="border-b border-border bg-surface">

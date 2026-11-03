@@ -23,7 +23,7 @@ function CrashScreen() {
       </p>
       <button
         onClick={() => window.location.reload()}
-        className="mt-6 inline-flex h-10 items-center rounded-lg bg-primary px-5 text-sm font-semibold text-white hover:bg-primary-hover"
+        className="mt-6 inline-flex h-10 items-center rounded-lg bg-primary px-5 text-sm font-semibold text-background hover:bg-primary-hover"
       >
         Recarregar a página
       </button>
