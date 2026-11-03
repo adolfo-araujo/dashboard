@@ -64,6 +64,8 @@ export function BalanceChart({ balance, isLoading }) {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
+                // fora da ordem do Tab: os valores já estão na lista ao lado
+                rootTabIndex={-1}
                 data={data}
                 dataKey="value"
                 nameKey="key"
