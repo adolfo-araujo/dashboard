@@ -61,10 +61,12 @@ export function PrivacyPage() {
           registrados automaticamente pelos nossos provedores de infraestrutura para fins de segurança e
           funcionamento.
         </p>
-        <p>
-          <strong>Armazenamento no seu dispositivo:</strong> guardamos no navegador apenas o que é necessário
+        <p id="cookies" className="scroll-mt-6">
+          <strong>Cookies e armazenamento no seu dispositivo:</strong> guardamos no navegador apenas o que é necessário
           para manter você conectado (identificadores de sessão) e permitir que o app funcione instalado. Não
-          usamos cookies de publicidade nem ferramentas de rastreamento de terceiros.
+          usamos cookies de publicidade nem ferramentas de rastreamento de terceiros. Também guardamos se você
+          já viu o aviso de cookies, para não mostrá-lo de novo. Como tudo isso é essencial para o serviço
+          funcionar, não pedimos consentimento; se você limpar os dados do navegador, será desconectado.
         </p>
       </Section>
 

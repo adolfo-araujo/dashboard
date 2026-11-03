@@ -1,0 +1,7 @@
+{
+  "cookies": [],
+  "origins": [
+    { "origin": "http://localhost:5173", "localStorage": [{ "name": "valtrea:aviso-cookies", "value": "1" }] },
+    { "origin": "http://localhost:5174", "localStorage": [{ "name": "valtrea:aviso-cookies", "value": "1" }] }
+  ]
+}
