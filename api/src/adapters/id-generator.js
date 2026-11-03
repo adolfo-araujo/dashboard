@@ -1,7 +1,8 @@
-import { v4 as uuidv4 } from 'uuid'
+import { randomUUID } from 'crypto'
 
+// UUID v4 com o gerador nativo do Node (dispensa a biblioteca uuid)
 export class IdGeneratorAdapter {
     execute() {
-        return uuidv4()
+        return randomUUID()
     }
 }

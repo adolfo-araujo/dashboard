@@ -408,7 +408,7 @@ await request('DELETE', '/users/me', { token: otherToken, body: { password: PASS
 // ------------------------------------------------------------
 section('Conta de demonstração')
 
-const demo = await login('demo@finance.app')
+const demo = await login('demo@finance.app', '123456')
 check('usuário demo do seed', demo.status === 200, show(demo))
 
 if (failures) {

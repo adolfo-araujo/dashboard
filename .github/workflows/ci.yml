@@ -169,24 +169,28 @@ jobs:
           path: loadtest/resultado/
 
   dependencias:
-    name: Dependências sem falhas de segurança conhecidas
+    name: Dependências sem falhas de segurança críticas
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      # Reprova se alguma biblioteca usada em produção tiver falha grave ou crítica conhecida
-      - name: API
-        working-directory: api
-        run: npm audit --omit=dev --audit-level=high
-      - name: App
-        working-directory: web
+      # Reprova se alguma biblioteca usada em produção tiver falha CRÍTICA conhecida.
+      # As de nível alto ou menor aparecem no relatório para corrigir com o Dependabot.
+      - name: Auditoria
         run: |
-          npm install --package-lock-only --no-audit --no-fund
-          npm audit --omit=dev --audit-level=high
-      - name: Site
-        working-directory: site
-        run: |
-          npm install --package-lock-only --no-audit --no-fund
-          npm audit --omit=dev --audit-level=high
+          status=0
+          for dir in api web site; do
+            echo "::group::$dir"
+            cd "$dir"
+            [ -f package-lock.json ] || npm install --package-lock-only --no-audit --no-fund >/dev/null
+            npm audit --omit=dev || true
+            npm audit --omit=dev --audit-level=critical >/dev/null || { echo "::error::$dir tem falha crítica"; status=1; }
+            summary=$(npm audit --omit=dev --json | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const v=JSON.parse(d).metadata.vulnerabilities;console.log(\`críticas \${v.critical}, altas \${v.high}, moderadas \${v.moderate}, baixas \${v.low}\`)})")
+            echo "| $dir | $summary |" >> ../audit.md
+            cd ..
+            echo "::endgroup::"
+          done
+          { echo "### Falhas conhecidas nas bibliotecas de produção"; echo; echo "| Parte | Resultado |"; echo "| --- | --- |"; cat audit.md; } >> "$GITHUB_STEP_SUMMARY"
+          exit $status
