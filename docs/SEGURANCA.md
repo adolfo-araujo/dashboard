@@ -30,3 +30,5 @@ Também: HTTPS obrigatório (HSTS), CSP no app e no site, proteção contra exib
 
 - **zod 3 na API:** há um alerta de nível alto que só se resolve migrando para o zod 4, que muda a forma de escrever as validações. Fazer com calma, com os testes do CI.
 - **glob e minimatch (moderado):** vêm de dentro do Sentry e só são usados na inicialização, sem receber dados dos usuários.
+- **No app (navegador):** `follow-redirects` (alto) só é usado pelo axios no Node, não no navegador; `react-router` (moderado) afeta links com endereço digitado pelo usuário ou renderização no servidor, que o Valtrea não usa. Somem com as atualizações do Dependabot.
+- **zod:** o alerta é de consumo de memória com listas enormes; a API já recusa requisições acima de 100 KB, o que limita o efeito.
