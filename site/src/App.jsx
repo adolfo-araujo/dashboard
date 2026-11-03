@@ -40,7 +40,7 @@ const services = [
   {
     icon: Globe,
     title: 'Sites e páginas de venda',
-    text: 'Site institucional, página de lançamento ou portfólio. Rápido, bonito no celular e pronto para aparecer no Google.',
+    text: 'Site institucional, página de lançamento ou portfólio. Rápido, bonito no celular e preparado para ser encontrado no Google.',
   },
   {
     icon: LayoutDashboard,
@@ -75,7 +75,7 @@ const commitments = [
 
 const financeFeatures = [
   'Saldo, gráficos e evolução mês a mês',
-  'Categorias e orçamento mensal com alertas',
+  'Categorias e orçamento mensal com aviso ao passar do limite',
   'Lançamentos recorrentes automáticos',
   'Exportação em planilha e app instalável',
 ]
