@@ -10,10 +10,10 @@ test('página inicial abre e cabe na tela', async ({ page }) => {
 
 test('termos de uso e política de privacidade abrem', async ({ page }) => {
   await page.goto('/termos')
-  await expect(page.getByRole('heading', { name: /Termos/ }).first()).toBeVisible()
+  await expect(page.getByRole('heading', { name: /termos/i }).first()).toBeVisible()
   await expectNoHorizontalScroll(page)
   await page.goto('/privacidade')
-  await expect(page.getByRole('heading', { name: /Privacidade/ }).first()).toBeVisible()
+  await expect(page.getByRole('heading', { name: /privacidade/i }).first()).toBeVisible()
   await expectNoHorizontalScroll(page)
 })
 

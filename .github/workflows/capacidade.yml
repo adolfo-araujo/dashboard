@@ -71,15 +71,13 @@ jobs:
             {"nome": "1000 pessoas - Pro (2 CPU)", "users": 1000, "cpus": "2", "memory": "4g", "instances": 1},
             {"nome": "1000 pessoas - 2x Standard (2 x 1 CPU)", "users": 1000, "cpus": "1", "memory": "2g", "instances": 2},
           ]
-          # Na branch de medição: compara o banco longe (latência medida) com o banco na mesma região (2 ms)
+          # Na branch de medição: 1000 pessoas sem mudar o banco de região
           if os.environ.get("EVENTO") == "push":
-            base = [c for c in todos if c["nome"] in (
-              "100 pessoas - Free (0.1 CPU)", "100 pessoas - Starter (0.5 CPU)",
-              "1000 pessoas - Starter (0.5 CPU)", "1000 pessoas - Standard (1 CPU)",
-              "1000 pessoas - Pro (2 CPU)", "1000 pessoas - 2x Standard (2 x 1 CPU)")]
-            base.insert(2, {"nome": "1000 pessoas - Starter (0.5 CPU)", "users": 1000, "cpus": "0.5", "memory": "512m", "instances": 1})
-            todos = [dict(c, nome=c["nome"] + " - banco na mesma região", latency="2") for c in base] + \
-                    [dict(c, nome=c["nome"] + " - banco em São Paulo") for c in base[:2]]
+            todos = [
+              {"nome": "1000 pessoas - Pro (2 CPU) - banco em São Paulo", "users": 1000, "cpus": "2", "memory": "4g", "instances": 1},
+              {"nome": "1000 pessoas - 2x Standard - banco em São Paulo", "users": 1000, "cpus": "1", "memory": "2g", "instances": 2},
+              {"nome": "1000 pessoas - Pro (2 CPU) - banco em São Paulo, 60 conexões", "users": 1000, "cpus": "2", "memory": "4g", "instances": 1, "pool": "60"},
+            ]
           escolha = os.environ["ESCOLHA"]
           sel = todos if escolha == "todos" else [c for c in todos if c["nome"] == escolha]
           print("matriz=" + json.dumps({"include": sel}))
@@ -103,7 +101,7 @@ jobs:
           MEMORY: ${{ matrix.memory }}
           INSTANCES: ${{ matrix.instances }}
           DB_LATENCY_MS: ${{ matrix.latency || inputs.latencia_banco_ms || needs.producao.outputs.db_rtt || '0' }}
-          DB_POOL: ${{ inputs.conexoes_banco || '20' }}
+          DB_POOL: ${{ matrix.pool || inputs.conexoes_banco || '20' }}
           LABEL: ${{ matrix.nome }}
         run: |
           ulimit -n 65535

@@ -130,3 +130,31 @@ jobs:
             e2e/test-results/
             api.log
             web.log
+
+  carga:
+    name: Teste de carga (100 pessoas, plano Starter)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: grafana/setup-k6-action@v1
+      # 100 pessoas usando ao mesmo tempo por 90 s, API com 0,5 CPU e 512 MB (Starter do Render)
+      # e 120 ms até o banco (distância real Render ↔ Neon São Paulo, medida em 03/11/2026).
+      # Reprova se 5% das respostas passarem de 1 s ou se mais de 1% der erro.
+      - name: Rodar teste de carga
+        env:
+          USERS: '100'
+          CPUS: '0.5'
+          MEMORY: 512m
+          DB_LATENCY_MS: '120'
+          RAMP: 30s
+          HOLD: 90s
+          LABEL: Teste de carga desta mudança
+        run: |
+          ulimit -n 65535
+          bash loadtest/run.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: teste-de-carga
+          path: loadtest/resultado/
