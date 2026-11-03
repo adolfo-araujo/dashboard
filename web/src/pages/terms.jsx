@@ -93,6 +93,8 @@ export function TermsPage() {
           items={[
             'As informações financeiras cadastradas são de sua responsabilidade, assim como as decisões que você tomar com base nelas.',
             'Não nos responsabilizamos por prejuízos decorrentes de dados inseridos incorretamente, de decisões financeiras do usuário ou de indisponibilidades fora do nosso controle.',
+            'O serviço pode conter links para sites e serviços de terceiros. Não controlamos nem nos responsabilizamos pelo conteúdo, pelas ofertas, pelas políticas de privacidade ou pelas práticas desses sites, e o acesso a eles é feito por sua conta e risco.',
+            'Se você conectar a carteira Valtrea Pay, os pagamentos feitos nela são lançados automaticamente como transações, com os valores informados pelo Valtrea Pay. Você pode desconectar a qualquer momento no painel.',
             'Nada nestes Termos limita os direitos que você tem como consumidor pela legislação brasileira.',
           ]}
         />
