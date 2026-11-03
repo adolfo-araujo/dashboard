@@ -24,13 +24,15 @@ export class UpdateTransactionController {
                 return invalidIdResponse()
             }
 
-            const params = httpRequest.body
-
-            await updateTransactionSchema.parseAsync(params)
+            // Usa só os campos validados: qualquer outro campo enviado
+            // (ex.: recurring_id, created_at) é descartado.
+            const params = await updateTransactionSchema.parseAsync(
+                httpRequest.body,
+            )
 
             const transaction = await this.updateTransactionUseCase.execute(
                 httpRequest.params.transactionId,
-                params,
+                { ...params, user_id: httpRequest.body.user_id },
             )
 
             return ok(transaction)

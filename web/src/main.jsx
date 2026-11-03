@@ -15,7 +15,10 @@ api.get('/health').catch(() => {})
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { retry: 1, refetchOnWindowFocus: false },
+    // Dados ficam 30 s em cache no navegador: abrir e fechar telas e diálogos não
+    // repete a mesma consulta na API. Toda alteração (criar, editar, excluir)
+    // invalida o cache na hora, então nada fica desatualizado.
+    queries: { retry: 1, refetchOnWindowFocus: false, staleTime: 30_000 },
   },
 })
 

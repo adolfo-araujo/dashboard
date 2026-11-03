@@ -14,6 +14,7 @@ import {
     securityHeaders,
     sensitiveLimiter,
 } from './middlewares/security.js'
+import { responseTime } from './middlewares/response-time.js'
 import swaggerUi from 'swagger-ui-express'
 import fs from 'fs'
 import cors from 'cors'
@@ -22,6 +23,9 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 const app = express()
+
+// Mede o tempo de cada resposta e avisa no Sentry quando passa de 1 segundo
+app.use(responseTime)
 
 // Não anunciar que a API usa Express
 app.disable('x-powered-by')
