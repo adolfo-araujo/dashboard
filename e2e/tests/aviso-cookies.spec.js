@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures.js'
 import AxeBuilder from '@axe-core/playwright'
 
 const SITE = process.env.SITE_URL || 'http://localhost:5174'

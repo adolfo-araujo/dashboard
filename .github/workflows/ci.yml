@@ -109,18 +109,21 @@ jobs:
           node prisma/seed.js
           nohup node index.js > ../api.log 2>&1 &
           for i in $(seq 1 30); do curl -sf http://localhost:8080/api/health && break; sleep 1; done
-      - name: Subir o app
+      # Build de produção servido com os mesmos cabeçalhos da Vercel (inclusive a CSP)
+      - name: Subir o app (build de produção)
         working-directory: web
         run: |
           npm install
-          nohup npm run dev -- --port 5173 --strictPort > ../web.log 2>&1 &
-          for i in $(seq 1 60); do curl -sf http://localhost:5173/ >/dev/null && break; sleep 1; done
-      - name: Subir o site da empresa
+          npm run build
+          nohup node ../e2e/servidor-producao.mjs dist vercel.json 5173 http://localhost:8080 > ../web.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:5173/ >/dev/null && break; sleep 1; done
+      - name: Subir o site da empresa (build de produção)
         working-directory: site
         run: |
           npm install
-          nohup npx vite --port 5174 --strictPort > ../site.log 2>&1 &
-          for i in $(seq 1 60); do curl -sf http://localhost:5174/ >/dev/null && break; sleep 1; done
+          npm run build
+          nohup node ../e2e/servidor-producao.mjs dist vercel.json 5174 > ../site.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:5174/ >/dev/null && break; sleep 1; done
       - name: Rodar os testes no navegador
         working-directory: e2e
         run: |
@@ -164,3 +167,26 @@ jobs:
         with:
           name: teste-de-carga
           path: loadtest/resultado/
+
+  dependencias:
+    name: Dependências sem falhas de segurança conhecidas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # Reprova se alguma biblioteca usada em produção tiver falha grave ou crítica conhecida
+      - name: API
+        working-directory: api
+        run: npm audit --omit=dev --audit-level=high
+      - name: App
+        working-directory: web
+        run: |
+          npm install --package-lock-only --no-audit --no-fund
+          npm audit --omit=dev --audit-level=high
+      - name: Site
+        working-directory: site
+        run: |
+          npm install --package-lock-only --no-audit --no-fund
+          npm audit --omit=dev --audit-level=high

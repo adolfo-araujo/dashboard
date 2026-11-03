@@ -3,7 +3,8 @@
 // Para testar o painel de administração, rode a API com ADMIN_EMAILS=smoke-admin@test.dev
 const API = process.env.API_URL || 'http://localhost:8080/api'
 const ADMIN_EMAIL = 'smoke-admin@test.dev'
-const PASSWORD = '123456'
+const PASSWORD = 'senha1234'
+const NEW_PASSWORD = 'novaSenha5678'
 
 let failures = 0
 const check = (label, condition, extra = '') => {
@@ -33,9 +34,9 @@ const request = async (method, path, { body, token } = {}) => {
 const show = (res) => `(${res.status}) ${JSON.stringify(res.body)}`
 
 const unique = (prefix) => `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1e6)}@test.dev`
-const signup = (email, first_name = 'Smoke') =>
+const signup = (email, first_name = 'Smoke', password = PASSWORD) =>
     request('POST', '/users', {
-        body: { first_name, last_name: 'Test', email, password: PASSWORD },
+        body: { first_name, last_name: 'Test', email, password },
     })
 const login = (email, password = PASSWORD) =>
     request('POST', '/users/login', { body: { email, password } })
@@ -67,6 +68,22 @@ check('limite de requisições informado', Number(me401.headers.get('ratelimit-l
 
 const wrong = await login('demo@finance.app', 'senha-errada')
 check('login com senha errada é recusado', wrong.status === 401, show(wrong))
+const unknown = await login(unique('ninguem'), 'qualquer1')
+check('e-mail não cadastrado responde igual a senha errada (401)', unknown.status === 401, show(unknown))
+
+const notFound = await request('GET', '/rota-que-nao-existe')
+check('rota inexistente = 404 em JSON', notFound.status === 404 && notFound.body?.message === 'Not found', show(notFound))
+
+const evil = await fetch(`${API}/health`, { headers: { Origin: 'https://site-malicioso.example' } })
+check('CORS não libera outros sites', evil.headers.get('access-control-allow-origin') !== '*' && evil.headers.get('access-control-allow-origin') !== 'https://site-malicioso.example')
+
+const huge = await request('POST', '/users/login', { body: { email: 'a@a.com', password: 'x'.repeat(200_000) } })
+check('corpo gigante é recusado (413)', huge.status === 413, show(huge))
+
+for (const weak of ['1234567', 'somenteletras', '12345678']) {
+    const res = await signup(unique('fraca'), 'Fraca', weak)
+    check(`senha fraca "${weak}" é recusada`, res.status === 400, show(res))
+}
 
 // ------------------------------------------------------------
 section('Conta')
@@ -96,6 +113,22 @@ check('refresh token', refreshed.status === 200 && refreshed.body?.accessToken, 
 
 const patchMe = await request('PATCH', '/users/me', { token, body: { first_name: 'Novo' } })
 check('editar usuário', patchMe.status === 200 && patchMe.body?.first_name === 'Novo', show(patchMe))
+check('editar sem trocar senha não gera tokens novos', !patchMe.body?.tokens)
+
+// Trocar a senha encerra as outras sessões (o token de renovação antigo para de valer)
+await new Promise((resolve) => setTimeout(resolve, 1100))
+const weakChange = await request('PATCH', '/users/me', { token, body: { password: 'abc' } })
+check('trocar para senha fraca é recusado', weakChange.status === 400, show(weakChange))
+const changed = await request('PATCH', '/users/me', { token, body: { password: NEW_PASSWORD } })
+check('trocar senha devolve tokens novos', changed.status === 200 && changed.body?.tokens?.refreshToken && !('password' in changed.body), show(changed))
+const oldRefresh = await request('POST', '/users/refresh-token', { body: { refreshToken: logged.body?.tokens?.refreshToken } })
+check('sessão antiga não renova depois da troca de senha', oldRefresh.status === 401, show(oldRefresh))
+const newRefresh = await request('POST', '/users/refresh-token', { body: { refreshToken: changed.body?.tokens?.refreshToken } })
+check('sessão nova renova normalmente', newRefresh.status === 200, show(newRefresh))
+const oldPassword = await login(email, PASSWORD)
+check('senha antiga não entra mais', oldPassword.status === 401, show(oldPassword))
+const newPassword = await login(email, NEW_PASSWORD)
+check('senha nova entra', newPassword.status === 200, show(newPassword))
 
 const resend = await request('POST', '/users/me/resend-verification', { token })
 check('reenvio do e-mail de confirmação respeita 1 por minuto', resend.status === 429, show(resend))
@@ -363,9 +396,11 @@ const delWithout = await request('DELETE', '/users/me', { token })
 check('excluir conta sem senha = 400', delWithout.status === 400, show(delWithout))
 const delWrong = await request('DELETE', '/users/me', { token, body: { password: 'errada' } })
 check('excluir conta com senha errada = 403', delWrong.status === 403, show(delWrong))
-const delMe = await request('DELETE', '/users/me', { token, body: { password: PASSWORD } })
+const delMe = await request('DELETE', '/users/me', { token, body: { password: NEW_PASSWORD } })
 check('excluir conta', delMe.status === 200, show(delMe))
-const afterDelete = await login(email)
+const deletedRefresh = await request('POST', '/users/refresh-token', { body: { refreshToken: newRefresh.body?.refreshToken } })
+check('conta excluída não renova sessão', deletedRefresh.status === 401, show(deletedRefresh))
+const afterDelete = await login(email, NEW_PASSWORD)
 check('conta excluída não entra mais', afterDelete.status !== 200, show(afterDelete))
 
 await request('DELETE', '/users/me', { token: otherToken, body: { password: PASSWORD } })

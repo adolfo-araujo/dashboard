@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import { z } from 'zod'
 import { prisma } from '../../prisma/prisma.js'
 import { PasswordHasherAdapter } from '../adapters/password-hasher.js'
+import { passwordSchema } from '../schemas/user.js'
 import { sendEmail } from '../adapters/email-sender.js'
 
 export const passwordResetRouter = Router()
@@ -27,9 +28,7 @@ const resetSchema = z.object({
     token: z.string().regex(/^[a-f0-9]{64}$/, {
         message: 'Link inválido ou expirado. Peça um novo.',
     }),
-    password: z
-        .string()
-        .min(6, { message: 'A senha precisa ter pelo menos 6 caracteres.' }),
+    password: passwordSchema,
 })
 
 const buildEmail = (firstName, link) => ({
@@ -128,7 +127,8 @@ passwordResetRouter.post('/reset-password', async (request, response) => {
         await prisma.$transaction([
             prisma.user.update({
                 where: { id: record.user_id },
-                data: { password: hashedPassword },
+                // a senha nova encerra as sessões abertas em outros aparelhos
+                data: { password: hashedPassword, sessions_valid_after: new Date() },
             }),
             prisma.passwordResetToken.updateMany({
                 where: { user_id: record.user_id, used_at: null },

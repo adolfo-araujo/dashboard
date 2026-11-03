@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { passwordSchema } from '../lib/password'
 import { toast } from 'sonner'
 import { AlertTriangle, Download } from 'lucide-react'
 import { Dialog } from './ui/dialog'
@@ -15,10 +16,8 @@ const schema = z.object({
   first_name: z.string().trim().min(1, 'Informe seu nome.').max(50),
   last_name: z.string().trim().min(1, 'Informe seu sobrenome.').max(50),
   email: z.string().trim().email('E-mail inválido.'),
-  password: z
-    .string()
-    .trim()
-    .refine((v) => v === '' || v.length >= 6, 'A senha precisa ter pelo menos 6 caracteres.'),
+  // em branco = manter a senha atual
+  password: z.union([z.literal(''), passwordSchema]),
 })
 
 function DeleteAccountDialog({ open, onClose }) {

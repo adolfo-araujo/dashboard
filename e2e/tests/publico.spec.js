@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures.js'
 import { expectNoHorizontalScroll, login } from './helpers.js'
 
 test('página inicial abre e cabe na tela', async ({ page }) => {

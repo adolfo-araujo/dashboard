@@ -8,13 +8,14 @@ import { Button } from '../components/ui/button'
 import { Field, Input } from '../components/ui/input'
 import { useAuth } from '../contexts/auth'
 import { getErrorMessage } from '../lib/api'
+import { passwordSchema } from '../lib/password'
 
 const schema = z
   .object({
     first_name: z.string().trim().min(1, 'Informe seu nome.').max(50),
     last_name: z.string().trim().min(1, 'Informe seu sobrenome.').max(50),
     email: z.string().trim().email('Informe um e-mail válido.').max(100),
-    password: z.string().trim().min(6, 'A senha precisa ter pelo menos 6 caracteres.'),
+    password: passwordSchema,
     passwordConfirmation: z.string().trim(),
     terms: z.literal(true, { errorMap: () => ({ message: 'Aceite os termos para continuar.' }) }),
   })
@@ -72,7 +73,7 @@ export function SignupPage() {
           <Input id="email" type="email" autoComplete="email" hasError={!!errors.email} {...register('email')} />
         </Field>
         <Field label="Senha" htmlFor="password" error={errors.password?.message}>
-          <Input id="password" type="password" autoComplete="new-password" hasError={!!errors.password} {...register('password')} />
+          <Input id="password" type="password" autoComplete="new-password" placeholder="8+ caracteres, letras e números" hasError={!!errors.password} {...register('password')} />
         </Field>
         <Field label="Confirmar senha" htmlFor="passwordConfirmation" error={errors.passwordConfirmation?.message}>
           <Input

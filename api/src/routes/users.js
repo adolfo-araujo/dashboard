@@ -19,6 +19,8 @@ import {
     registerLoginFailure,
 } from '../security/login-protection.js'
 import { prisma } from '../../prisma/prisma.js'
+import jwt from 'jsonwebtoken'
+import { TokensGeneratorAdapter } from '../adapters/tokens-generator.js'
 import { sendVerificationEmail } from './email-verification.js'
 
 export const usersRouter = Router()
@@ -121,6 +123,16 @@ usersRouter.patch('/me', auth, async (request, response) => {
         body?.email &&
         body.email.toLowerCase() !== previous.email.toLowerCase()
 
+    // Trocou a senha: as sessões em outros aparelhos deixam de ser renovadas
+    // e este aparelho recebe tokens novos para continuar conectado.
+    if (statusCode === 200 && typeof request.body?.password === 'string') {
+        await prisma.user.update({
+            where: { id: request.userId },
+            data: { sessions_valid_after: new Date() },
+        })
+        body.tokens = new TokensGeneratorAdapter().execute(request.userId)
+    }
+
     if (emailChanged) {
         await prisma.user.update({
             where: { id: request.userId },
@@ -153,9 +165,20 @@ usersRouter.delete('/me', auth, async (request, response) => {
             return response.status(404).send({ message: 'User not found.' })
         }
 
+        // Mesmo bloqueio do login: impede adivinhar a senha por aqui
+        const email = normalizeEmail(user.email)
+        const ip = clientIp(request)
+        const blockedFor = await checkLoginBlock(email, ip)
+        if (blockedFor) {
+            return response.status(429).send({
+                message: `Muitas tentativas com senha errada. Tente novamente em ${blockedFor} ${blockedFor === 1 ? 'minuto' : 'minutos'}.`,
+            })
+        }
+
         // 403 (e não 401) para o site não confundir com sessão expirada
         const isPasswordValid = await bcrypt.compare(password, user.password)
         if (!isPasswordValid) {
+            await registerLoginFailure(email, ip)
             return response.status(403).send({ message: 'Senha incorreta.' })
         }
 
@@ -224,10 +247,36 @@ usersRouter.post('/login', async (request, response) => {
         console.error(error)
     }
 
+    // E-mail não cadastrado responde igual a senha errada (401), para não revelar
+    // quais e-mails têm conta no Valtrea.
+    if (statusCode === 404) {
+        return response.status(401).send({ message: 'Unauthorized' })
+    }
+
     response.status(statusCode).send(sanitize(body))
 })
 
 usersRouter.post('/refresh-token', async (request, response) => {
+    // A sessão só é renovada se a conta ainda existe e a senha não foi trocada
+    // depois que este token foi emitido.
+    try {
+        const decoded = jwt.verify(
+            String(request.body?.refreshToken ?? ''),
+            process.env.JWT_REFRESH_TOKEN_SECRET,
+            { algorithms: ['HS256'] },
+        )
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.userId },
+            select: { sessions_valid_after: true },
+        })
+        const validAfter = user?.sessions_valid_after
+        if (!user || (validAfter && decoded.iat < Math.floor(validAfter.getTime() / 1000))) {
+            return response.status(401).send({ message: 'Unauthorized' })
+        }
+    } catch {
+        // token inválido ou vencido: o controller abaixo responde 401
+    }
+
     const refreshTokenController = makeRefreshTokenController()
 
     const { statusCode, body } = await refreshTokenController.execute(request)
