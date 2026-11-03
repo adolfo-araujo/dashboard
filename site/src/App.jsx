@@ -31,7 +31,7 @@ function Logo({ className = '' }) {
 
 const btn = {
   primary:
-    'inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 font-semibold text-white transition-colors hover:bg-primary-hover',
+    'inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 font-semibold text-background transition-colors hover:bg-primary-hover',
   secondary:
     'inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-surface-2 px-5 font-semibold text-foreground transition-colors hover:bg-border',
 }
@@ -98,7 +98,7 @@ export default function App() {
             <a href="#como-trabalhamos" className="hidden rounded-lg px-3 py-2 text-muted hover:text-foreground md:inline">
               Como trabalhamos
             </a>
-            <a href="#contato" className="ml-2 inline-flex h-9 items-center rounded-lg bg-primary px-4 text-white hover:bg-primary-hover">
+            <a href="#contato" className="ml-2 inline-flex h-9 items-center rounded-lg bg-primary px-4 text-background hover:bg-primary-hover">
               Fale conosco
             </a>
           </nav>
