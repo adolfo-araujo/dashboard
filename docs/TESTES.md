@@ -73,4 +73,4 @@ Conclusões:
 
 - O plano Free não aguenta 100 pessoas: a CPU (0,1) fica no limite só conferindo senhas no login.
 - O Starter aguenta 100 pessoas mesmo com o banco em São Paulo, desde que a API use 20 conexões com o banco (padrão a partir deste teste, em `api/prisma/prisma.js`). Com o padrão anterior do Prisma, nem 1 CPU aguentava.
-- Para 1.000 pessoas, o banco precisa estar na mesma região da API (hoje: API no Render em Oregon, EUA; banco no Neon em São Paulo, a cerca de 120 ms por consulta), com o plano Pro ou duas cópias Standard.
+- Para 1.000 pessoas, o banco precisa estar na mesma região da API (hoje: API no Render nos EUA, provavelmente em Oregon, já que a borda da Cloudflare é Seattle; banco no Neon em São Paulo, a cerca de 120 ms por consulta), com o plano Pro ou duas cópias Standard.
