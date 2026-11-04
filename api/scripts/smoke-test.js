@@ -207,6 +207,30 @@ check('saldo atual respeita a data de hoje do aparelho', money(beforeToday.body?
 const badToday = await request('GET', `/users/me/balance?from=${from}&to=${to}&today=ontem`, { token })
 check('data de hoje inválida = 400', badToday.status === 400, show(badToday))
 
+// LGPD: baixar meus dados (acesso e portabilidade) e aceite de nova versão dos termos
+const myData = await request('GET', '/users/me/export', { token })
+const myDataText = JSON.stringify(myData.body ?? {})
+check(
+    'baixar meus dados traz conta e transações',
+    myData.status === 200 &&
+        typeof myData.body?.account?.email === 'string' &&
+        myData.body?.transactions?.length === 2 &&
+        Array.isArray(myData.body?.budgets) &&
+        myData.headers.get('content-disposition')?.includes('valtrea-meus-dados'),
+    show(myData),
+)
+check('baixar meus dados nunca traz senha nem códigos', !/password|token_hash|\$2[aby]\$/.test(myDataText))
+check('baixar meus dados exige login', (await request('GET', '/users/me/export')).status === 401)
+const meTerms = await request('GET', '/users/me', { token })
+const termsWrong = await request('POST', '/users/me/terms', { token, body: { version: '2000-01-01' } })
+check('aceitar versão antiga dos termos = 400', termsWrong.status === 400, show(termsWrong))
+const termsOk = await request('POST', '/users/me/terms', { token, body: { version: meTerms.body?.terms_version } })
+check(
+    'aceite da versão vigente dos termos fica registrado',
+    termsOk.status === 200 && termsOk.body?.terms_version === meTerms.body?.terms_version && !!termsOk.body?.terms_accepted_at,
+    show(termsOk),
+)
+
 const updated = await request('PATCH', `/transactions/me/${salary.body?.id}`, {
     token,
     body: { amount: 6000, name: 'Salário + bônus' },

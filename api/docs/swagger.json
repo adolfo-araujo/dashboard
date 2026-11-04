@@ -1534,6 +1534,105 @@
                     }
                 }
             }
+        },
+        "/api/users/me/export": {
+            "get": {
+                "tags": [
+                    "Conta"
+                ],
+                "summary": "Baixar meus dados (LGPD)",
+                "description": "Cópia completa dos dados da conta em JSON (acesso e portabilidade, LGPD art. 18, II e V): cadastro, transações, recorrentes, orçamentos e a conexão com o Valtrea Pay. Nunca traz o hash da senha nem códigos de links ou da conexão.",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Arquivo JSON (Content-Disposition: attachment)"
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/me/terms": {
+            "post": {
+                "tags": [
+                    "Conta"
+                ],
+                "summary": "Aceitar a versão vigente dos Termos e da Política",
+                "description": "Registra a data e a versão aceitas (prova do consentimento). A versão enviada precisa ser a vigente.",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "version"
+                            ],
+                            "properties": {
+                                "version": {
+                                    "type": "string",
+                                    "example": "2026-11-04"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Aceite registrado",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "terms_accepted_at": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "terms_version": {
+                                    "type": "string",
+                                    "example": "2026-11-04"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Versão desatualizada",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "401": {
+                        "description": "Sem token ou token vencido",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {

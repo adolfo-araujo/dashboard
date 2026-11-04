@@ -23,6 +23,7 @@ for (const [nome, path] of [
   ['esqueci a senha', '/forgot-password'],
   ['termos de uso', '/termos'],
   ['política de privacidade', '/privacidade'],
+  ['declaração de acessibilidade', '/acessibilidade'],
 ]) {
   test(`acessibilidade: ${nome}`, async ({ page }) => {
     await page.goto(path)

@@ -34,6 +34,17 @@ test('ciclo completo da conta: cadastro, confirmação, edição e exclusão', a
   await page.keyboard.press('Escape')
   await expect(page.getByRole('heading', { name: 'Olá, Testador' })).toBeVisible()
 
+  // Conta nova já aceitou a versão vigente: não vê o aviso de termos atualizados
+  await expect(page.getByRole('region', { name: 'Atualizamos os Termos de uso e a Política de privacidade' })).toHaveCount(0)
+
+  // Baixar meus dados (LGPD: acesso e portabilidade)
+  await openMenu(page)
+  await page.getByRole('menuitem', { name: 'Minha conta' }).click()
+  const download = page.waitForEvent('download')
+  await page.getByRole('dialog').getByRole('button', { name: 'Baixar meus dados' }).click()
+  expect((await download).suggestedFilename()).toMatch(/^valtrea-meus-dados-\d{4}-\d{2}-\d{2}\.json$/)
+  await page.keyboard.press('Escape')
+
   // Sair e entrar de novo
   await openMenu(page)
   await page.getByRole('menuitem', { name: 'Sair' }).click()

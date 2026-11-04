@@ -10,7 +10,26 @@ export function Dialog({ open, onClose, title, description, children }) {
   useEffect(() => {
     if (!open) return
     const previous = document.activeElement
-    const onKey = (e) => e.key === 'Escape' && onCloseRef.current()
+    const onKey = (e) => {
+      if (e.key === 'Escape') return onCloseRef.current()
+      // mantém o foco dentro da janela enquanto ela está aberta (WCAG 2.4.3)
+      if (e.key !== 'Tab' || !panelRef.current) return
+      const focusable = [
+        ...panelRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ]
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (e.shiftKey && (document.activeElement === first || !panelRef.current.contains(document.activeElement))) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && (document.activeElement === last || !panelRef.current.contains(document.activeElement))) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
     document.addEventListener('keydown', onKey)
     document.body.style.overflow = 'hidden'
     // foca o primeiro campo do formulário
@@ -28,6 +47,7 @@ export function Dialog({ open, onClose, title, description, children }) {
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
+      {/* fundo escuro: clicar fora fecha (no teclado, Esc ou o botão Fechar fazem o mesmo) */}
       <div className="absolute inset-0 bg-black/70" onClick={onClose} aria-hidden="true" />
       <div
         ref={panelRef}

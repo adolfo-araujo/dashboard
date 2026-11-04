@@ -4,13 +4,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { passwordSchema } from '../lib/password'
 import { toast } from 'sonner'
-import { AlertTriangle, Download } from 'lucide-react'
+import { AlertTriangle, Download, FileJson } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { Dialog } from './ui/dialog'
 import { Button } from './ui/button'
 import { Field, Input } from './ui/input'
 import { useAuth } from '../contexts/auth'
 import { api, getErrorMessage } from '../lib/api'
-import { downloadCsv, transactionsToCsv } from '../lib/csv'
+import { downloadCsv, downloadJson, transactionsToCsv } from '../lib/csv'
 
 const schema = z.object({
   first_name: z.string().trim().min(1, 'Informe seu nome.').max(50),
@@ -98,6 +99,22 @@ export function AccountDialog({ open, onClose }) {
   const { user, updateUser } = useAuth()
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
+  const [isExportingData, setIsExportingData] = useState(false)
+
+  // LGPD (acesso e portabilidade): cópia completa dos dados da conta
+  const exportMyData = async () => {
+    setIsExportingData(true)
+    try {
+      const { data } = await api.get('/users/me/export')
+      const date = new Date().toISOString().slice(0, 10)
+      downloadJson(`valtrea-meus-dados-${date}.json`, data)
+      toast.success('Arquivo com os seus dados baixado.')
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Não foi possível baixar seus dados.'))
+    } finally {
+      setIsExportingData(false)
+    }
+  }
 
   const exportAll = async () => {
     setIsExporting(true)
@@ -177,11 +194,24 @@ export function AccountDialog({ open, onClose }) {
         <div className="mt-6 border-t border-border pt-5">
           <p className="text-sm font-bold">Seus dados</p>
           <p className="mt-1 text-sm text-muted">
-            Baixe todas as suas transações, de todas as datas, em uma planilha que abre no Excel ou no Google Planilhas.
+            Baixe todas as suas transações em uma planilha (Excel ou Google Planilhas) ou uma cópia completa dos
+            seus dados: cadastro, transações, recorrentes e orçamentos.
           </p>
-          <Button variant="secondary" size="sm" className="mt-3 w-full sm:w-auto" onClick={exportAll} isLoading={isExporting}>
-            <Download className="h-4 w-4" /> Baixar todas as transações
-          </Button>
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+            <Button variant="secondary" size="sm" onClick={exportAll} isLoading={isExporting}>
+              <Download className="h-4 w-4" /> Baixar todas as transações
+            </Button>
+            <Button variant="secondary" size="sm" onClick={exportMyData} isLoading={isExportingData}>
+              <FileJson className="h-4 w-4" /> Baixar meus dados
+            </Button>
+          </div>
+          <p className="mt-3 text-xs text-muted">
+            Para outros pedidos sobre seus dados, veja{' '}
+            <Link to="/privacidade#direitos" target="_blank" className="font-semibold text-primary hover:underline">
+              seus direitos na Política de privacidade
+            </Link>
+            .
+          </p>
         </div>
 
         <div className="mt-6 rounded-xl border border-expense/40 bg-expense/5 p-4">

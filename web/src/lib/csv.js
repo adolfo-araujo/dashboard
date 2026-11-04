@@ -31,7 +31,14 @@ export function transactionsToCsv(transactions) {
 }
 
 export function downloadCsv(filename, csv) {
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' })
+  downloadBlob(filename, new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' }))
+}
+
+export function downloadJson(filename, data) {
+  downloadBlob(filename, new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' }))
+}
+
+function downloadBlob(filename, blob) {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url

@@ -38,7 +38,7 @@ export function CookieNotice() {
             href={`${COMPANY.financeUrl}/privacidade#cookies`}
             className="font-semibold text-primary underline-offset-2 hover:underline"
           >
-            Saiba mais
+            Saiba mais sobre cookies
           </a>
         </p>
         <button

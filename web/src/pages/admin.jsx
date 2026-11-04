@@ -72,7 +72,7 @@ export function AdminPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl space-y-10 px-4 py-8 sm:px-6">
+      <main id="conteudo" tabIndex={-1} className="mx-auto max-w-6xl space-y-10 px-4 py-8 sm:px-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="text-2xl font-extrabold tracking-tight">Uso do Valtrea Finance</h1>

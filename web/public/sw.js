@@ -1,6 +1,6 @@
 // Service worker do Valtrea.
 // - Telas (navegação): busca na rede primeiro; sem internet, usa a última versão salva.
-// - Arquivos de /assets (têm hash no nome): cache primeiro, porque nunca mudam.
+// - Arquivos de /assets (têm hash no nome) e as fontes de /fonts: cache primeiro, porque nunca mudam.
 // - Chamadas da API: nunca passam pelo cache (dados financeiros sempre atuais).
 const CACHE = 'valtrea-v1'
 
@@ -38,7 +38,7 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  if (url.pathname.startsWith('/assets/')) {
+  if (url.pathname.startsWith('/assets/') || url.pathname.startsWith('/fonts/')) {
     event.respondWith(
       caches.match(request).then(
         (cached) =>

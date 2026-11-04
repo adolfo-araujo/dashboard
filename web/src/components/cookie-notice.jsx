@@ -39,7 +39,7 @@ export function CookieNotice() {
           Usamos só o armazenamento essencial para manter você conectado. Nada de cookies de rastreamento
           ou publicidade.{' '}
           <Link to="/privacidade#cookies" className="font-semibold text-primary underline-offset-2 hover:underline">
-            Saiba mais
+            Saiba mais sobre cookies
           </Link>
         </p>
         <button

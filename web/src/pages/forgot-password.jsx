@@ -34,7 +34,7 @@ export function ForgotPasswordPage() {
   return (
     <AuthLayout
       title="Esqueci a senha"
-      description="Enviaremos um link para você criar uma senha nova."
+      description="Enviaremos um link para você criar uma senha nova. Seu e-mail é usado só para isso."
       footer={
         <>
           Lembrou a senha?{' '}

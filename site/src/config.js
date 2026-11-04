@@ -1,6 +1,9 @@
 // Dados de contato exibidos no site. Ajuste aqui.
 export const COMPANY = {
   name: 'Valtrea',
+  // Responsável pelo site e pelos serviços (pessoa física). Se abrir empresa, troque pela razão social
+  // e inclua o CNPJ e o endereço do CNPJ (Decreto 7.962/2013, art. 2º).
+  owner: 'João Adolfo Martins Araújo',
   email: 'contato@valtrea.com.br',
   // WhatsApp com DDI e DDD, só números (ex.: '5521999999999'). Deixe null para esconder.
   whatsapp: null,

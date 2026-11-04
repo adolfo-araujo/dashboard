@@ -27,7 +27,7 @@ export const usersRouter = Router()
 
 // Versão vigente dos Termos de uso e da Política de privacidade.
 // Ao publicar uma nova versão dos textos, atualize aqui e em web/src/lib/legal.js.
-const TERMS_VERSION = '2026-11-03'
+const TERMS_VERSION = '2026-11-04'
 
 // nunca devolver o hash da senha para o cliente
 const sanitize = (body) => {
@@ -68,6 +68,73 @@ usersRouter.get('/me/balance', auth, async (request, response) => {
     })
 
     response.status(statusCode).send(sanitize(body))
+})
+
+// Portabilidade e acesso (LGPD art. 18, II e V): todos os dados da conta em um arquivo JSON.
+// Nunca inclui o hash da senha nem os códigos de links e da conexão com o Valtrea Pay.
+usersRouter.get('/me/export', auth, async (request, response) => {
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: request.userId },
+            select: {
+                id: true,
+                first_name: true,
+                last_name: true,
+                email: true,
+                email_verified_at: true,
+                created_at: true,
+                last_seen_at: true,
+                terms_accepted_at: true,
+                terms_version: true,
+                transactions: {
+                    orderBy: { date: 'asc' },
+                    select: { id: true, name: true, date: true, amount: true, type: true, category: true, created_at: true, recurring_id: true },
+                },
+                recurringTransactions: true,
+                budgets: true,
+                payIntegration: { select: { created_at: true, last_used_at: true, balance: true, balance_at: true } },
+            },
+        })
+        if (!user) {
+            return response.status(404).send({ message: 'User not found.' })
+        }
+
+        const { transactions, recurringTransactions, budgets, payIntegration, ...account } = user
+        const today = new Date().toISOString().slice(0, 10)
+        response.setHeader('Content-Disposition', `attachment; filename="valtrea-meus-dados-${today}.json"`)
+        response.status(200).send({
+            exported_at: new Date().toISOString(),
+            service: 'Valtrea Finance (https://finance.valtrea.com.br)',
+            account,
+            transactions,
+            recurring_transactions: recurringTransactions,
+            budgets,
+            pay_integration: payIntegration
+                ? { connected: true, connected_at: payIntegration.created_at, ...payIntegration, created_at: undefined }
+                : { connected: false },
+        })
+    } catch (error) {
+        console.error(error)
+        response.status(500).send({ message: 'Internal server error' })
+    }
+})
+
+// Aceite de uma nova versão dos Termos de uso e da Política de privacidade (prova de consentimento)
+usersRouter.post('/me/terms', auth, async (request, response) => {
+    if (request.body?.version !== TERMS_VERSION) {
+        return response.status(400).send({ message: 'Versão dos termos desatualizada. Recarregue a página.' })
+    }
+    try {
+        const acceptance = await prisma.user.update({
+            where: { id: request.userId },
+            data: { terms_accepted_at: new Date(), terms_version: TERMS_VERSION },
+            select: { terms_accepted_at: true, terms_version: true },
+        })
+        response.status(200).send(acceptance)
+    } catch (error) {
+        console.error(error)
+        response.status(500).send({ message: 'Internal server error' })
+    }
 })
 
 usersRouter.post('/', async (request, response) => {

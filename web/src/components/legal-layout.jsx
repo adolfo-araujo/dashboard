@@ -25,10 +25,10 @@ export function LegalLayout({ title, children }) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+      <main id="conteudo" tabIndex={-1} className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
         <h1 className="text-3xl font-extrabold tracking-tight">{title}</h1>
         <p className="mt-2 text-sm text-muted">Última atualização: {LEGAL.updatedAt}</p>
-        <div className="mt-8 space-y-8 text-[15px] leading-relaxed text-foreground/90">{children}</div>
+        <div className="mt-8 space-y-8 text-base leading-relaxed text-foreground/90">{children}</div>
       </main>
 
       <footer className="border-t border-border py-8">
@@ -38,9 +38,9 @@ export function LegalLayout({ title, children }) {
   )
 }
 
-export function Section({ title, children }) {
+export function Section({ id, title, children }) {
   return (
-    <section className="space-y-3">
+    <section id={id} className="scroll-mt-6 space-y-3">
       <h2 className="text-lg font-bold text-foreground">{title}</h2>
       {children}
     </section>

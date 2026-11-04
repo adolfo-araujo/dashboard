@@ -8,6 +8,7 @@ import { Toaster } from 'sonner'
 import App from './App'
 import { CookieNotice } from './components/cookie-notice'
 import { AuthProvider } from './contexts/auth'
+import './fonts.css'
 import './index.css'
 import { api } from './lib/api'
 

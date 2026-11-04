@@ -9,13 +9,25 @@ const Email = () => (
 )
 
 const providers = [
-  ['Vercel', 'hospedagem do site', 'Estados Unidos e rede global'],
+  ['Vercel', 'hospedagem do Valtrea Finance e do site da Valtrea', 'Estados Unidos e rede global'],
   ['Render', 'servidor da aplicação (API)', 'Estados Unidos'],
   ['Neon', 'banco de dados', 'São Paulo, Brasil'],
+  ['GitHub', 'guarda da cópia de segurança diária do banco de dados, criptografada', 'Estados Unidos'],
   ['Resend', 'envio de e-mails do sistema', 'São Paulo, Brasil'],
-  ['ImprovMX', 'recebimento das mensagens enviadas ao nosso e-mail de contato', 'Estados Unidos'],
-  ['Google Fonts', 'fontes tipográficas carregadas pelo site', 'Estados Unidos'],
-  ['Sentry', 'registro de erros técnicos para correção de falhas', 'Estados Unidos'],
+  ['ImprovMX', 'recebimento e encaminhamento das mensagens enviadas ao nosso e-mail de contato', 'Estados Unidos'],
+  ['Google (Gmail)', 'caixa de e-mail onde lemos e respondemos as mensagens enviadas ao nosso contato', 'Estados Unidos'],
+  ['Sentry', 'registro de erros técnicos para correção de falhas, sem guardar o endereço IP', 'Estados Unidos'],
+]
+
+const retention = [
+  ['Cadastro e tudo o que você lança (transações, recorrentes, orçamentos)', 'Enquanto a conta existir. Ao excluir a conta, são apagados na hora.'],
+  ['Cadastros que nunca confirmaram o e-mail e não têm lançamentos', 'Apagados automaticamente 30 dias depois da criação.'],
+  ['Cópias de segurança (backup) do banco, criptografadas', '30 dias. Dados que você excluiu podem continuar nessas cópias até elas serem apagadas, sem nenhum uso.'],
+  ['Data e versão em que você aceitou os Termos e esta Política', 'Enquanto a conta existir.'],
+  ['Tentativas de login com senha errada (e-mail e endereço IP)', '24 horas.'],
+  ['Links de confirmação de e-mail e de nova senha', 'Valem por 24 horas e 30 minutos, respectivamente, e são apagados um dia depois de vencer.'],
+  ['Registros de erros técnicos e registros de acesso dos provedores de hospedagem', 'Pelo prazo de retenção de cada provedor; são apagados automaticamente.'],
+  ['Mensagens e pedidos de orçamento que não viram contrato', 'Até 24 meses depois do último contato.'],
 ]
 
 export function PrivacyPage() {
@@ -23,7 +35,8 @@ export function PrivacyPage() {
     <LegalLayout title="Política de privacidade">
       <p>
         Esta Política explica como o {LEGAL.appName} coleta, usa, armazena e protege seus dados pessoais,
-        em conformidade com a Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018, "LGPD").
+        em conformidade com a Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018, "LGPD"). Ela vale
+        para o {LEGAL.appName} ({LEGAL.site} e o app instalável) e para o site da Valtrea (www.valtrea.com.br).
       </p>
 
       <Section title="1. Quem é o responsável pelos seus dados">
@@ -31,6 +44,11 @@ export function PrivacyPage() {
           O controlador dos dados pessoais tratados no {LEGAL.appName} é {LEGAL.controller}
           {LEGAL.controllerDocument ? ` (${LEGAL.controllerDocument})` : ''}, {LEGAL.controllerType}, com
           foro em {LEGAL.forum}. Para qualquer assunto relacionado aos seus dados, use o canal: <Email />.
+        </p>
+        <p>
+          <strong>Encarregado pelo tratamento de dados:</strong> como agente de tratamento de pequeno porte, não
+          indicamos um encarregado, conforme a Resolução CD/ANPD nº 2/2022. O canal de comunicação sobre seus
+          dados é o e-mail <Email />, respondido diretamente pelo responsável.
         </p>
       </Section>
 
@@ -52,6 +70,11 @@ export function PrivacyPage() {
           criptografada (hash).
         </p>
         <p>
+          <strong>Mensagens e pedidos de orçamento:</strong> se você nos escrever pelo e-mail de contato ou pelo
+          site da Valtrea, recebemos seu nome, seu e-mail, o conteúdo da mensagem e o que mais você decidir
+          enviar.
+        </p>
+        <p>
           <strong>Dados de controle da conta:</strong> data de confirmação do e-mail, data e versão em que
           você aceitou estes documentos, e registros temporários usados para recuperação de senha e
           confirmação de e-mail.
@@ -64,21 +87,23 @@ export function PrivacyPage() {
         <p id="cookies" className="scroll-mt-6">
           <strong>Cookies e armazenamento no seu dispositivo:</strong> guardamos no navegador apenas o que é necessário
           para manter você conectado (identificadores de sessão) e permitir que o app funcione instalado. Não
-          usamos cookies de publicidade nem ferramentas de rastreamento de terceiros. Também guardamos se você
+          usamos cookies de publicidade nem ferramentas de rastreamento de terceiros, e as fontes do site são
+          servidas pelo próprio Valtrea, sem acessar servidores de terceiros. Também guardamos se você
           já viu o aviso de cookies, para não mostrá-lo de novo. Como tudo isso é essencial para o serviço
           funcionar, não pedimos consentimento; se você limpar os dados do navegador, será desconectado.
         </p>
       </Section>
 
-      <Section title="3. Para que usamos seus dados">
+      <Section title="3. Para que usamos seus dados e com qual base legal">
         <List
           items={[
             'Criar e manter sua conta, autenticar seu acesso e exibir suas informações financeiras (execução de contrato, art. 7º, V, da LGPD).',
-            'Enviar e-mails essenciais, como confirmação de cadastro, recuperação de senha e confirmação de exclusão de conta (execução de contrato).',
-            'Proteger o serviço contra fraudes, abusos e acessos indevidos (legítimo interesse, art. 7º, IX).',
-            'Cumprir obrigações legais e atender a ordens de autoridades competentes (art. 7º, II).',
-            'Lançar automaticamente os pagamentos da carteira Valtrea Pay e mostrar o saldo dela, quando você conecta as duas contas (execução de contrato, a seu pedido).',
-            'Responder às mensagens que você nos enviar.',
+            'Enviar e-mails essenciais, como confirmação de cadastro, recuperação de senha e confirmação de exclusão de conta (execução de contrato, art. 7º, V).',
+            'Lançar automaticamente os pagamentos da carteira Valtrea Pay e mostrar o saldo dela, quando você conecta as duas contas (execução de contrato, a seu pedido, art. 7º, V).',
+            'Proteger o serviço contra fraudes, abusos e acessos indevidos, registrar erros técnicos para corrigir falhas e manter cópias de segurança (legítimo interesse, art. 7º, IX).',
+            'Guardar a data e a versão em que você aceitou os Termos e esta Política, para comprovar o aceite (exercício regular de direitos, art. 7º, VI).',
+            'Responder às mensagens e aos pedidos de orçamento que você nos enviar (procedimentos preliminares a contrato, art. 7º, V).',
+            'Cumprir obrigações legais e atender a ordens de autoridades competentes (obrigação legal, art. 7º, II).',
           ]}
         />
         <p>
@@ -140,6 +165,7 @@ export function PrivacyPage() {
             'Links de recuperação de senha e de confirmação de e-mail expiram e só podem ser usados uma vez.',
             'Cada usuário só tem acesso às próprias transações.',
             'Tentativas seguidas de senha errada bloqueiam o login temporariamente, e o número de acessos por endereço IP é limitado para impedir abusos.',
+            'Uma cópia de segurança do banco de dados é feita todo dia, criptografada.',
           ]}
         />
         <p>
@@ -150,23 +176,35 @@ export function PrivacyPage() {
       </Section>
 
       <Section title="7. Por quanto tempo guardamos">
-        <p>
-          Seus dados ficam armazenados enquanto sua conta existir. Quando você exclui a conta, o cadastro e
-          todas as transações são <strong>apagados de forma permanente do nosso banco de dados</strong>{' '}
-          imediatamente. Cópias de segurança mantidas pelos provedores de infraestrutura são eliminadas
-          automaticamente após um período limitado.
-        </p>
+        <div className="overflow-x-auto rounded-lg border border-border">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-surface text-muted">
+              <tr>
+                <th className="px-4 py-2 font-medium">Dado</th>
+                <th className="px-4 py-2 font-medium">Por quanto tempo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {retention.map(([data, period]) => (
+                <tr key={data} className="border-t border-border align-top">
+                  <td className="px-4 py-2 font-semibold">{data}</td>
+                  <td className="px-4 py-2">{period}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         <p>
           Ao desconectar o Valtrea Pay, o código de conexão é apagado e o saldo da carteira deixa de ser
           exibido; as transações que já tinham sido lançadas continuam na sua conta até você excluí-las.
         </p>
         <p>
-          Links de recuperação de senha e de confirmação de e-mail expiram em 30 minutos e 24 horas,
-          respectivamente. Registros técnicos de acesso podem ser mantidos pelo tempo exigido por lei.
+          Podemos guardar por mais tempo apenas o que a lei exigir ou o que for necessário para defender
+          direitos em processo judicial ou administrativo.
         </p>
       </Section>
 
-      <Section title="8. Seus direitos">
+      <Section id="direitos" title="8. Seus direitos">
         <p>Pela LGPD (art. 18), você pode, a qualquer momento:</p>
         <List
           items={[
@@ -180,23 +218,30 @@ export function PrivacyPage() {
           ]}
         />
         <p>
-          Você pode corrigir seus dados e excluir sua conta diretamente em <strong>Minha conta</strong>. Para
-          os demais pedidos, escreva para <Email />. Responderemos em até 15 dias. Você também pode
-          apresentar reclamação à ANPD.
+          Em <strong>Minha conta</strong> você corrige seus dados, baixa uma cópia completa deles (botão{' '}
+          <strong>Baixar meus dados</strong>, em formato JSON, que outros serviços conseguem ler) e exclui sua
+          conta. Para os demais pedidos, escreva para <Email />. Responderemos em até 15 dias. Você também pode
+          apresentar reclamação à Autoridade Nacional de Proteção de Dados (ANPD).
         </p>
       </Section>
 
       <Section title="9. Crianças e adolescentes">
         <p>
-          O {LEGAL.appName} não é direcionado a menores de 18 anos. Se identificarmos dados de menores
-          cadastrados sem autorização dos responsáveis, eles serão excluídos.
+          O {LEGAL.appName} não é destinado a crianças (menores de 12 anos), que não podem criar conta.
+          Adolescentes de 12 a 17 anos só podem usar o serviço com autorização dos pais ou responsáveis legais.
+        </p>
+        <p>
+          Tratamos os dados de adolescentes no seu melhor interesse (art. 14 da LGPD): não exibimos publicidade,
+          não traçamos perfil de consumo e coletamos apenas o necessário para o serviço funcionar. Pais e
+          responsáveis podem pedir acesso, correção ou exclusão desses dados pelo canal <Email />. Se
+          identificarmos conta de criança, ou de adolescente sem autorização, ela será excluída.
         </p>
       </Section>
 
       <Section title="10. Alterações desta Política">
         <p>
           Podemos atualizar esta Política. A data da última atualização aparece no topo da página. Mudanças
-          relevantes serão comunicadas por e-mail ou por aviso no site.
+          relevantes serão comunicadas por aviso no painel ou por e-mail, e pediremos sua confirmação.
         </p>
       </Section>
 

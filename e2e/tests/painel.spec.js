@@ -12,7 +12,23 @@ test('painel carrega o resumo e cabe na tela', async ({ page }) => {
   await expect(page.getByText('Saldo no início')).toBeVisible()
   await expect(page.getByText('Saldo no fim')).toBeVisible()
   await expect(page.getByText('Transações').first()).toBeVisible()
+  // espera os gráficos e tabelas carregarem antes de medir a largura
+  await page.waitForLoadState('networkidle')
   await expectNoHorizontalScroll(page)
+})
+
+test('aviso de termos atualizados registra o aceite e some', async ({ page }) => {
+  // O usuário demo do teste não tem aceite da versão atual. O primeiro aparelho testado aceita;
+  // nos seguintes o aviso já não aparece.
+  const notice = page.getByRole('region', { name: 'Atualizamos os Termos de uso e a Política de privacidade' })
+  if (await notice.count()) {
+    await expect(notice.getByRole('link', { name: 'Termos de uso' })).toBeVisible()
+    await notice.getByRole('button', { name: 'Li e concordo' }).click()
+    await expect(notice).toBeHidden()
+    await page.reload()
+    await expect(page.getByRole('heading', { name: /Olá, Usuário/ })).toBeVisible()
+  }
+  await expect(notice).toHaveCount(0)
 })
 
 test('criar, buscar, editar e excluir uma transação', async ({ page }, testInfo) => {
