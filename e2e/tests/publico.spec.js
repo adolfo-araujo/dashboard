@@ -17,6 +17,17 @@ test('termos de uso e política de privacidade abrem', async ({ page }) => {
   await expectNoHorizontalScroll(page)
 })
 
+test('declaração de acessibilidade abre e o primeiro Tab leva ao "Pular para o conteúdo"', async ({ page }) => {
+  await page.goto('/acessibilidade')
+  await expect(page.getByRole('heading', { name: 'Declaração de acessibilidade' })).toBeVisible()
+  await expectNoHorizontalScroll(page)
+  await page.keyboard.press('Tab')
+  const skip = page.getByRole('link', { name: 'Pular para o conteúdo' })
+  await expect(skip).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(page.locator('main#conteudo')).toBeFocused()
+})
+
 test('endereço inexistente volta para o início', async ({ page }) => {
   await page.goto('/pagina-que-nao-existe')
   await expect(page).toHaveURL(/\/$/)
@@ -37,5 +48,5 @@ test('esqueci a senha confirma o envio sem revelar se a conta existe', async ({ 
 test('cadastro exige aceitar os termos', async ({ page }) => {
   await page.goto('/signup')
   await page.getByRole('button', { name: 'Criar conta', exact: true }).click()
-  await expect(page.getByText('Aceite os termos para continuar.')).toBeVisible()
+  await expect(page.getByText('Confirme a idade e aceite os termos para continuar.')).toBeVisible()
 })

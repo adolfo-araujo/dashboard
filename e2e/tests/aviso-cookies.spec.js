@@ -14,7 +14,7 @@ test('aviso de cookies no app: aparece, é acessível, leva à política e some 
   const { violations } = await new AxeBuilder({ page }).include('section[aria-label="Aviso de cookies"]').analyze()
   expect(violations.map((v) => v.id)).toEqual([])
 
-  await aviso.getByRole('link', { name: 'Saiba mais' }).click()
+  await aviso.getByRole('link', { name: 'Saiba mais sobre cookies' }).click()
   await expect(page).toHaveURL(/\/privacidade#cookies$/)
   await expect(page.locator('#cookies')).toBeInViewport()
 

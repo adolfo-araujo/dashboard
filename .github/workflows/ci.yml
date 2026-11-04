@@ -47,6 +47,8 @@ jobs:
           node index.js &
           for i in $(seq 1 30); do curl -sf http://localhost:8080/api/health && break; sleep 1; done
           npm run test:smoke
+      - name: Rotina de retenção (LGPD)
+        run: node scripts/retention-test.js
 
   web:
     name: Build do dashboard

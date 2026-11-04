@@ -83,6 +83,13 @@ const financeFeatures = [
 export default function App() {
   return (
     <div className="min-h-screen">
+      {/* Primeiro item focável: pula o menu e vai direto ao conteúdo (WCAG 2.4.1) */}
+      <a
+        href="#inicio"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:font-semibold focus:text-background"
+      >
+        Pular para o conteúdo
+      </a>
       <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <a href="#inicio" aria-label="Valtrea, início">
@@ -105,7 +112,7 @@ export default function App() {
         </div>
       </header>
 
-      <main id="inicio">
+      <main id="inicio" tabIndex={-1}>
         {/* Abertura */}
         <section className="mx-auto max-w-6xl px-4 pb-20 pt-16 sm:px-6 lg:pt-28">
           <h1 className="max-w-3xl text-4xl font-black leading-[1.05] tracking-tight sm:text-6xl">
@@ -200,6 +207,7 @@ export default function App() {
                       </div>
                     ))}
                   </div>
+                  <p className="mt-5 text-xs text-muted">Exemplo com valores fictícios.</p>
                 </div>
               </div>
             </div>
@@ -271,11 +279,16 @@ export default function App() {
             <a href={`${COMPANY.financeUrl}/privacidade`} className="hover:text-foreground hover:underline">
               Privacidade
             </a>
+            <a href={`${COMPANY.financeUrl}/acessibilidade`} className="hover:text-foreground hover:underline">
+              Acessibilidade
+            </a>
             <a href={`mailto:${COMPANY.email}`} className="hover:text-foreground hover:underline">
               {COMPANY.email}
             </a>
           </nav>
-          <p className="text-xs">© 2026 Valtrea</p>
+          <p className="text-center text-xs md:text-right">
+            © 2026 Valtrea · {COMPANY.owner} · {COMPANY.city}
+          </p>
         </div>
       </footer>
     </div>

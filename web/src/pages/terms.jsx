@@ -18,6 +18,10 @@ export function TermsPage() {
         chamado de "nós".
       </p>
       <p>
+        Os serviços de desenvolvimento de sites e sistemas oferecidos no site da Valtrea (www.valtrea.com.br)
+        são contratados por proposta escrita e seguem as condições dessa proposta, não estes Termos.
+      </p>
+      <p>
         Ao criar uma conta, você declara que leu e concorda com estes Termos e com a{' '}
         <Link to="/privacidade" className="font-semibold text-primary hover:underline">
           Política de privacidade
@@ -44,7 +48,7 @@ export function TermsPage() {
       <Section title="2. Cadastro e conta">
         <List
           items={[
-            'Para usar o serviço é preciso ter 18 anos ou mais, ou estar autorizado pelos pais ou responsáveis legais.',
+            'Para usar o serviço é preciso ter 18 anos ou mais. Adolescentes de 12 a 17 anos podem usar com autorização dos pais ou responsáveis legais, que respondem pelo uso. Crianças (menores de 12 anos) não podem criar conta.',
             'Você deve informar dados verdadeiros e manter seu e-mail atualizado. O e-mail precisa ser confirmado para liberar o acesso ao painel.',
             'Você é responsável por manter sua senha em sigilo e por todas as atividades realizadas na sua conta.',
             'Se perceber qualquer uso não autorizado da sua conta, troque sua senha imediatamente e nos avise.',
@@ -63,8 +67,9 @@ export function TermsPage() {
           ]}
         />
         <p>
-          Podemos suspender ou encerrar contas que violem estes Termos, comunicando o motivo sempre que
-          possível.
+          Podemos suspender ou encerrar contas que violem estes Termos. Antes, avisaremos o motivo pelo e-mail
+          da conta e daremos a oportunidade de explicação, exceto quando houver risco à segurança do serviço ou
+          de outras pessoas.
         </p>
       </Section>
 
@@ -92,7 +97,10 @@ export function TermsPage() {
         <List
           items={[
             'As informações financeiras cadastradas são de sua responsabilidade, assim como as decisões que você tomar com base nelas.',
-            'Não nos responsabilizamos por prejuízos decorrentes de dados inseridos incorretamente, de decisões financeiras do usuário ou de indisponibilidades fora do nosso controle.',
+            <strong key="limite">
+              Não nos responsabilizamos por prejuízos decorrentes de dados inseridos incorretamente, de decisões
+              financeiras do usuário ou de indisponibilidades fora do nosso controle.
+            </strong>,
             'O serviço pode conter links para sites e serviços de terceiros. Não controlamos nem nos responsabilizamos pelo conteúdo, pelas ofertas, pelas políticas de privacidade ou pelas práticas desses sites, e o acesso a eles é feito por sua conta e risco.',
             'Se você conectar a carteira Valtrea Pay, os pagamentos feitos nela são lançados automaticamente como transações, com os valores informados pelo Valtrea Pay. Você pode desconectar a qualquer momento no painel.',
             'Nada nestes Termos limita os direitos que você tem como consumidor pela legislação brasileira.',
@@ -119,16 +127,16 @@ export function TermsPage() {
       <Section title="9. Alterações destes Termos">
         <p>
           Podemos atualizar estes Termos. A data da última atualização aparece no topo desta página. Mudanças
-          relevantes serão comunicadas por e-mail ou por aviso no site antes de entrarem em vigor. Se você
-          continuar usando o serviço depois disso, estará concordando com a nova versão.
+          relevantes serão comunicadas por aviso no painel ou por e-mail, e pediremos sua confirmação. Se não
+          concordar com a nova versão, você pode excluir sua conta a qualquer momento, sem nenhum custo.
         </p>
       </Section>
 
       <Section title="10. Lei aplicável e foro">
         <p>
-          Estes Termos são regidos pelas leis da República Federativa do Brasil. Fica eleito o foro da comarca
-          de {LEGAL.forum} para resolver eventuais controvérsias, ressalvado o direito do consumidor de
-          propor ação no foro do seu domicílio, conforme o Código de Defesa do Consumidor.
+          Estes Termos são regidos pelas leis da República Federativa do Brasil.{' '}
+          {/* a ressalva fica na mesma frase do foro (CDC art. 101, I) */}
+          Fica eleito o foro da comarca de {LEGAL.forum}, ressalvado o direito do consumidor de propor ação no foro do seu domicílio, conforme o Código de Defesa do Consumidor.
         </p>
       </Section>
 

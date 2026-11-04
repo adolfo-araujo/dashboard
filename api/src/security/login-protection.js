@@ -105,7 +105,7 @@ async function sendLockEmail(user) {
   <p>Detectamos <strong>${MAX_FAILURES_PER_EMAIL} tentativas de login com senha errada</strong> na sua conta. Por segurança, novas tentativas ficam bloqueadas por ${WINDOW_MINUTES} minutos.</p>
   <p>Se foi você, é só esperar e tentar de novo. Se não foi, recomendamos trocar sua senha:</p>
   <p style="margin:28px 0">
-    <a href="${resetLink}" style="background:#55B02E;color:#ffffff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Criar nova senha</a>
+    <a href="${resetLink}" style="background:#55B02E;color:#0D0F12;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Criar nova senha</a>
   </p>
 </div>`,
     })

@@ -17,7 +17,7 @@ const schema = z
     email: z.string().trim().email('Informe um e-mail válido.').max(100),
     password: passwordSchema,
     passwordConfirmation: z.string().trim(),
-    terms: z.literal(true, { error: 'Aceite os termos para continuar.' }),
+    terms: z.literal(true, { error: 'Confirme a idade e aceite os termos para continuar.' }),
   })
   .refine((v) => v.password === v.passwordConfirmation, {
     message: 'As senhas não coincidem.',
@@ -88,11 +88,11 @@ export function SignupPage() {
           <label className="flex items-start gap-2 text-sm text-muted">
             <input type="checkbox" className="mt-0.5 h-4 w-4 accent-primary" {...register('terms')} />
             <span>
-              Li e aceito os{' '}
+              Tenho 18 anos ou mais (ou autorização dos meus pais ou responsáveis), li e aceito os{' '}
               <Link to="/termos" target="_blank" className="font-semibold text-primary hover:underline">
                 Termos de uso
               </Link>{' '}
-              e a{' '}
+              e estou ciente da{' '}
               <Link to="/privacidade" target="_blank" className="font-semibold text-primary hover:underline">
                 Política de privacidade
               </Link>

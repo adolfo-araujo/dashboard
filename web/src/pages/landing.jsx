@@ -197,6 +197,7 @@ function ProductPreview() {
           </div>
         ))}
       </div>
+      <p className="mt-4 text-xs text-muted">Exemplo com valores fictícios.</p>
     </div>
   )
 }
@@ -218,7 +219,7 @@ export function LandingPage() {
         </div>
       </header>
 
-      <main>
+      <main id="conteudo" tabIndex={-1}>
         {/* Abertura */}
         <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-20 pt-14 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:pt-24">
           <div>

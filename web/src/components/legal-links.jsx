@@ -14,6 +14,9 @@ export function LegalLinks({ className }) {
       <Link to="/privacidade" className="hover:text-foreground hover:underline">
         Política de privacidade
       </Link>
+      <Link to="/acessibilidade" className="hover:text-foreground hover:underline">
+        Acessibilidade
+      </Link>
       <a href={`mailto:${LEGAL.email}`} className="hover:text-foreground hover:underline">
         {LEGAL.email}
       </a>

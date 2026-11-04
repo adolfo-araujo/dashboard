@@ -14,6 +14,7 @@ import { TransactionsTable } from '../components/transactions-table'
 import { TransactionFormDialog } from '../components/transaction-form-dialog'
 import { AccountDialog } from '../components/account-dialog'
 import { LegalLinks } from '../components/legal-links'
+import { TermsUpdateNotice } from '../components/terms-update-notice'
 import { Button } from '../components/ui/button'
 import { useAuth } from '../contexts/auth'
 import { useDateRange } from '../hooks/use-date-range'
@@ -46,7 +47,7 @@ export function DashboardPage() {
     <div className="min-h-screen">
       <Header onOpenAccount={() => setAccountOpen(true)} />
 
-      <main className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6">
+      <main id="conteudo" tabIndex={-1} className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h1 className="text-2xl font-extrabold tracking-tight">Olá, {user?.first_name}</h1>
@@ -64,6 +65,8 @@ export function DashboardPage() {
             </div>
           </div>
         </div>
+
+        <TermsUpdateNotice />
 
         {error && (
           <div className="rounded-lg border border-expense/40 bg-expense/10 px-4 py-3 text-sm text-expense">

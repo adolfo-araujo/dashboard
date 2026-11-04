@@ -45,7 +45,7 @@ export async function sendVerificationEmail(user) {
   <p>Olá, ${user.first_name}!</p>
   <p>Falta pouco para começar a usar o Valtrea. Confirme seu e-mail clicando no botão abaixo.</p>
   <p style="margin:28px 0">
-    <a href="${link}" style="background:#55B02E;color:#ffffff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Confirmar e-mail</a>
+    <a href="${link}" style="background:#55B02E;color:#0D0F12;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Confirmar e-mail</a>
   </p>
   <p style="font-size:13px;color:#5f6670">O link vale por ${TOKEN_TTL_HOURS} horas. Se você não criou uma conta no Valtrea, ignore este e-mail.</p>
 </div>`,

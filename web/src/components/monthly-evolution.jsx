@@ -84,7 +84,8 @@ export function MonthlyEvolution() {
             Nenhum lançamento nos últimos {months} meses.
           </div>
         ) : (
-          <div role="img" aria-label={`Gráfico de ganhos, gastos, investimentos e saldo dos últimos ${months} meses`} className="h-full w-full">
+          <>
+          <div role="img" aria-label={`Gráfico de ganhos, gastos, investimentos e saldo dos últimos ${months} meses; os valores estão na tabela a seguir`} className="h-full w-full">
           <div aria-hidden="true" className="h-full w-full">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={data} margin={{ top: 8, right: 4, left: -8, bottom: 0 }}>
@@ -118,6 +119,29 @@ export function MonthlyEvolution() {
           </ResponsiveContainer>
           </div>
           </div>
+          {/* Os mesmos valores do gráfico, em texto, para leitores de tela (WCAG 1.1.1) */}
+          <table className="sr-only">
+            <caption>Ganhos, gastos e saldo por mês</caption>
+            <thead>
+              <tr>
+                <th scope="col">Mês</th>
+                <th scope="col">Ganhos</th>
+                <th scope="col">Gastos</th>
+                <th scope="col">Saldo do mês</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((m) => (
+                <tr key={m.month}>
+                  <th scope="row">{monthYearFormat.format(toDate(m.month))}</th>
+                  <td>{formatCurrency(m.earnings)}</td>
+                  <td>{formatCurrency(m.expenses)}</td>
+                  <td>{formatCurrency(m.balance)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          </>
         )}
       </div>
 
