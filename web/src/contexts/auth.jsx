@@ -67,8 +67,11 @@ export function AuthProvider({ children }) {
 
   const updateUser = async (values) => {
     const { data } = await api.patch('/users/me', values)
-    setUser(data)
-    return data
+    // Ao trocar a senha, a API encerra as outras sessões e manda tokens novos para esta
+    const { tokens, ...userData } = data
+    if (tokens) tokenStorage.set(tokens)
+    setUser(userData)
+    return userData
   }
 
   const deleteAccount = async (password) => {

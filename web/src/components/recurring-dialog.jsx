@@ -24,13 +24,13 @@ const schema = z
   .object({
     name: z.string().trim().min(1, 'Informe um nome.').max(50, 'Máximo de 50 caracteres.'),
     amount: z.coerce
-      .number({ invalid_type_error: 'Informe um valor.' })
+      .number({ error: 'Informe um valor.' })
       .min(1, 'O valor mínimo é R$ 1,00.')
       .max(99999999.99, 'Valor muito alto.'),
     type: z.enum(['EARNING', 'EXPENSE', 'INVESTMENT']),
     category: z.string().min(1, 'Escolha uma categoria.'),
     day_of_month: z.coerce
-      .number({ invalid_type_error: 'Informe o dia.' })
+      .number({ error: 'Informe o dia.' })
       .int('Use um número inteiro.')
       .min(1, 'Entre 1 e 31.')
       .max(31, 'Entre 1 e 31.'),

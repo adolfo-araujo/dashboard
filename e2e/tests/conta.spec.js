@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures.js'
 import { confirmEmailInDatabase, expectNoHorizontalScroll, login, openMenu } from './helpers.js'
 
 test.describe.configure({ mode: 'serial' })

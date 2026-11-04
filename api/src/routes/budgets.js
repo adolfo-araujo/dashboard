@@ -59,7 +59,7 @@ const saveSchema = z.object({
         .array(
             z.object({
                 category: z.enum(CATEGORIES.EXPENSE, {
-                    errorMap: () => ({ message: 'Categoria inválida.' }),
+                    error: 'Categoria inválida.',
                 }),
                 amount: z
                     .number()
@@ -77,7 +77,7 @@ budgetsRouter.put('/', auth, async (request, response) => {
     if (!parsed.success) {
         return response
             .status(400)
-            .send({ message: parsed.error.errors[0].message })
+            .send({ message: parsed.error.issues[0].message })
     }
 
     try {

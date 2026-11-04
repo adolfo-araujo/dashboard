@@ -7,11 +7,12 @@ import { AuthLayout } from './auth-layout'
 import { Button } from '../components/ui/button'
 import { Field, Input } from '../components/ui/input'
 import { api, getErrorMessage } from '../lib/api'
+import { passwordSchema } from '../lib/password'
 
 const schema = z
   .object({
-    password: z.string().min(6, 'A senha precisa ter pelo menos 6 caracteres.'),
-    passwordConfirmation: z.string(),
+    password: passwordSchema,
+    passwordConfirmation: z.string().trim(),
   })
   .refine((v) => v.password === v.passwordConfirmation, {
     message: 'As senhas não coincidem.',
@@ -70,6 +71,7 @@ export function ResetPasswordPage() {
           <Input
             id="password"
             type="password"
+            placeholder="8+ caracteres, letras e números"
             autoComplete="new-password"
             hasError={!!errors.password}
             {...register('password')}

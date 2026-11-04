@@ -29,6 +29,8 @@ jobs:
       JWT_ACCESS_TOKEN_SECRET: ci-access-secret
       JWT_REFRESH_TOKEN_SECRET: ci-refresh-secret
       ADMIN_EMAILS: smoke-admin@test.dev
+      # inicia o Sentry de verdade (endereço fictício) para pegar incompatibilidades
+      SENTRY_DSN: https://public@o0.ingest.sentry.io/0
       PORT: 8080
     steps:
       - uses: actions/checkout@v4
@@ -109,18 +111,21 @@ jobs:
           node prisma/seed.js
           nohup node index.js > ../api.log 2>&1 &
           for i in $(seq 1 30); do curl -sf http://localhost:8080/api/health && break; sleep 1; done
-      - name: Subir o app
+      # Build de produção servido com os mesmos cabeçalhos da Vercel (inclusive a CSP)
+      - name: Subir o app (build de produção)
         working-directory: web
         run: |
           npm install
-          nohup npm run dev -- --port 5173 --strictPort > ../web.log 2>&1 &
-          for i in $(seq 1 60); do curl -sf http://localhost:5173/ >/dev/null && break; sleep 1; done
-      - name: Subir o site da empresa
+          npm run build
+          nohup node ../e2e/servidor-producao.mjs dist vercel.json 5173 http://localhost:8080 > ../web.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:5173/ >/dev/null && break; sleep 1; done
+      - name: Subir o site da empresa (build de produção)
         working-directory: site
         run: |
           npm install
-          nohup npx vite --port 5174 --strictPort > ../site.log 2>&1 &
-          for i in $(seq 1 60); do curl -sf http://localhost:5174/ >/dev/null && break; sleep 1; done
+          npm run build
+          nohup node ../e2e/servidor-producao.mjs dist vercel.json 5174 > ../site.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:5174/ >/dev/null && break; sleep 1; done
       - name: Rodar os testes no navegador
         working-directory: e2e
         run: |
@@ -164,3 +169,30 @@ jobs:
         with:
           name: teste-de-carga
           path: loadtest/resultado/
+
+  dependencias:
+    name: Dependências sem falhas de segurança críticas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # Reprova se alguma biblioteca usada em produção tiver falha CRÍTICA conhecida.
+      # As de nível alto ou menor aparecem no relatório para corrigir com o Dependabot.
+      - name: Auditoria
+        run: |
+          status=0
+          for dir in api web site; do
+            echo "::group::$dir"
+            cd "$dir"
+            [ -f package-lock.json ] || npm install --package-lock-only --no-audit --no-fund >/dev/null
+            npm audit --omit=dev || true
+            npm audit --omit=dev --audit-level=critical >/dev/null || { echo "::error::$dir tem falha crítica"; status=1; }
+            summary=$(npm audit --omit=dev --json | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const v=JSON.parse(d).metadata.vulnerabilities;console.log(\`críticas \${v.critical}, altas \${v.high}, moderadas \${v.moderate}, baixas \${v.low}\`)})")
+            echo "| $dir | $summary |" >> ../audit.md
+            cd ..
+            echo "::endgroup::"
+          done
+          { echo "### Falhas conhecidas nas bibliotecas de produção"; echo; echo "| Parte | Resultado |"; echo "| --- | --- |"; cat audit.md; } >> "$GITHUB_STEP_SUMMARY"
+          exit $status

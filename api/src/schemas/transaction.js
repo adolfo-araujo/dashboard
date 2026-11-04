@@ -4,37 +4,26 @@ import { ALL_CATEGORIES, CATEGORIES } from '../constants/categories.js'
 
 const baseTransactionSchema = z.object({
     user_id: z
-        .string({
-            required_error: 'User ID is required.',
-        })
+        .string({ error: (issue) => (issue.input === undefined ? 'User ID is required.' : undefined) })
         .uuid({
             message: 'User ID must be a valid UUID.',
         }),
     name: z
-        .string({
-            required_error: 'Name is required.',
-        })
+        .string({ error: (issue) => (issue.input === undefined ? 'Name is required.' : undefined) })
         .trim()
         .min(1, {
             message: 'Name is required.',
         }),
     date: z
-        .string({
-            required_error: 'Date is required.',
-        })
+        .string({ error: (issue) => (issue.input === undefined ? 'Date is required.' : undefined) })
         .datetime({
             message: 'Date must be a valid date.',
         }),
     type: z.enum(['EXPENSE', 'EARNING', 'INVESTMENT'], {
-        errorMap: () => ({
-            message: 'Type must be EXPENSE, EARNING or INVESTMENT.',
-        }),
+        error: 'Type must be EXPENSE, EARNING or INVESTMENT.',
     }),
     amount: z
-        .number({
-            required_error: 'Amount is required.',
-            invalid_type_error: 'Amount must be a number.',
-        })
+        .number({ error: (issue) => (issue.input === undefined ? 'Amount is required.' : 'Amount must be a number.') })
         .min(1, {
             message: 'Amount must be greater than 0.',
         })
@@ -47,7 +36,7 @@ const baseTransactionSchema = z.object({
         ),
     category: z
         .enum(ALL_CATEGORIES, {
-            errorMap: () => ({ message: 'Categoria inválida.' }),
+            error: 'Categoria inválida.',
         })
         .nullable()
         .optional(),

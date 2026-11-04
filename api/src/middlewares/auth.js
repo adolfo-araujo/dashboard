@@ -28,6 +28,7 @@ export const auth = (request, response, next) => {
         const decodedToken = jwt.verify(
             accessToken,
             process.env.JWT_ACCESS_TOKEN_SECRET,
+            { algorithms: ['HS256'] },
         )
         if (!decodedToken) {
             return response.status(401).send({ message: 'Unauthorized' })

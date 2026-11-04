@@ -76,3 +76,11 @@ export const sensitiveLimiter = rateLimit({
     max: 20,
     message: 'Muitas tentativas em pouco tempo. Aguarde 15 minutos e tente de novo.',
 })
+
+// Rotas usadas pelo servidor do Valtrea Pay (todas as chamadas vêm do mesmo IP):
+// limite alto, só para impedir abuso com códigos inventados.
+export const payLimiter = rateLimit({
+    name: 'valtrea-pay',
+    windowMs: 5 * 60 * 1000,
+    max: 3000,
+})
