@@ -10,6 +10,7 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 import { COMPANY } from './config'
+import { AvisoListaDeEspera, ProjetosEmDesenvolvimento } from './projetos'
 
 const mailto = (subject) => `mailto:${COMPANY.email}?subject=${encodeURIComponent(subject)}`
 const whatsappUrl = COMPANY.whatsapp
@@ -113,6 +114,7 @@ export default function App() {
       </header>
 
       <main id="inicio" tabIndex={-1}>
+        <AvisoListaDeEspera />
         {/* Abertura */}
         <section className="mx-auto max-w-6xl px-4 pb-20 pt-16 sm:px-6 lg:pt-28">
           <h1 className="max-w-3xl text-4xl font-black leading-[1.05] tracking-tight sm:text-6xl">
@@ -212,7 +214,7 @@ export default function App() {
               </div>
             </div>
 
-            <p className="mt-6 text-sm text-muted">Novos produtos em desenvolvimento.</p>
+            <ProjetosEmDesenvolvimento />
           </div>
         </section>
 

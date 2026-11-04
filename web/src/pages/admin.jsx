@@ -172,6 +172,24 @@ export function AdminPage() {
               </div>
             </Section>
 
+            {data.waitlist && (
+              <Section
+                title="Lista de espera do site"
+                description="Inscrições confirmadas no “Quero ser avisado” de www.valtrea.com.br."
+              >
+                <div className="grid gap-4 sm:grid-cols-4">
+                  {[
+                    ['pay', 'Valtrea Pay'],
+                    ['volta', 'Valtrea Volta'],
+                    ['pulso', 'Valtrea Pulso'],
+                    ['agora', 'Valtrea Agora'],
+                  ].map(([key, name]) => (
+                    <Stat key={key} label={name} value={number.format(data.waitlist[key] ?? 0)} detail="pessoas" />
+                  ))}
+                </div>
+              </Section>
+            )}
+
             <Section title="Cadastros por semana" description="Últimas 8 semanas, começando na segunda-feira.">
               <Card className="p-5">
                 <ul className="space-y-2.5">

@@ -83,6 +83,7 @@ adminRouter.get('/metrics', auth, requireAdmin, async (request, response) => {
             usersWithRecurring,
             usersWithBudget,
             weeklyRows,
+            waitlistRows,
         ] = await Promise.all([
             prisma.user.count(),
             prisma.user.count({ where: { email_verified_at: { not: null } } }),
@@ -109,6 +110,12 @@ adminRouter.get('/metrics', auth, requireAdmin, async (request, response) => {
                 WHERE "created_at" >= ${firstWeek}
                 GROUP BY 1
             `,
+            // Lista de espera do site: só inscrições confirmadas, contadas por produto
+            prisma.waitlistEntry.groupBy({
+                by: ['product'],
+                where: { confirmed_at: { not: null } },
+                _count: { _all: true },
+            }),
         ])
 
         const byWeek = new Map(weeklyRows.map((row) => [row.week, Number(row.count)]))
@@ -144,6 +151,7 @@ adminRouter.get('/metrics', auth, requireAdmin, async (request, response) => {
                 budgets: usersWithBudget.length,
             },
             signupsByWeek,
+            waitlist: Object.fromEntries(waitlistRows.map((row) => [row.product, row._count._all])),
         })
     } catch (error) {
         console.error(error)
