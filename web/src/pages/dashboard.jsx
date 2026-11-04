@@ -72,7 +72,7 @@ export function DashboardPage() {
         )}
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-          <BalanceCards balance={balanceQuery.data} isLoading={balanceQuery.isLoading} />
+          <BalanceCards balance={balanceQuery.data} isLoading={balanceQuery.isLoading} from={from} to={to} />
           <BalanceChart balance={balanceQuery.data} isLoading={balanceQuery.isLoading} />
         </div>
 

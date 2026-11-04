@@ -1,12 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/api'
+import { today as localToday } from '../lib/format'
 
-export const useBalance = (from, to) =>
-  useQuery({
-    queryKey: ['balance', from, to],
-    queryFn: async () => (await api.get('/users/me/balance', { params: { from, to } })).data,
+// Totais do período + saldo no início e no fim do período + saldo atual (até hoje)
+export const useBalance = (from, to) => {
+  const today = localToday()
+  return useQuery({
+    queryKey: ['balance', from, to, today],
+    queryFn: async () => (await api.get('/users/me/balance', { params: { from, to, today } })).data,
     enabled: from <= to,
   })
+}
 
 export const useTransactions = (from, to) =>
   useQuery({

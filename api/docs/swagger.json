@@ -595,8 +595,8 @@
                 "tags": [
                     "Transações"
                 ],
-                "summary": "Saldo do período",
-                "description": "Totais de ganhos, gastos e investimentos, percentuais e saldo.",
+                "summary": "Saldo atual e extrato do período",
+                "description": "Totais de ganhos, gastos e investimentos do período, percentuais e resultado (balance). Também traz o extrato: saldo antes do período (openingBalance), saldo no fim do período (closingBalance) e o saldo atual, com tudo lançado até hoje (currentBalance), que não depende do período.",
                 "parameters": [
                     {
                         "name": "from",
@@ -612,6 +612,14 @@
                         "type": "string",
                         "required": true,
                         "description": "Fim (AAAA-MM-DD)",
+                        "format": "date"
+                    },
+                    {
+                        "name": "today",
+                        "in": "query",
+                        "type": "string",
+                        "required": false,
+                        "description": "Data de hoje do aparelho (AAAA-MM-DD), para o saldo atual. Padrão: hoje em UTC",
                         "format": "date"
                     }
                 ],
@@ -1716,7 +1724,29 @@
                 },
                 "balance": {
                     "type": "string",
-                    "example": "3500"
+                    "example": "3500",
+                    "description": "Resultado do período: ganhos − gastos − investimentos"
+                },
+                "openingBalance": {
+                    "type": "string",
+                    "example": "11.12",
+                    "description": "Saldo acumulado antes do início do período"
+                },
+                "closingBalance": {
+                    "type": "string",
+                    "example": "3511.12",
+                    "description": "Saldo no fim do período (openingBalance + balance)"
+                },
+                "currentBalance": {
+                    "type": "string",
+                    "example": "3511.12",
+                    "description": "Saldo acumulado até hoje, qualquer que seja o período"
+                },
+                "today": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2026-11-04",
+                    "description": "Data usada como hoje no saldo atual"
                 }
             }
         },

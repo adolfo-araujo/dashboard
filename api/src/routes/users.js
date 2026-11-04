@@ -63,6 +63,7 @@ usersRouter.get('/me/balance', auth, async (request, response) => {
         query: {
             from: request.query.from,
             to: request.query.to,
+            today: request.query.today,
         },
     })
 

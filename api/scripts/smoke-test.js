@@ -171,6 +171,42 @@ check('listar transações', list.status === 200 && list.body?.length === 2, sho
 const balance = await request('GET', `/users/me/balance?from=${from}&to=${to}`, { token })
 check('saldo calculado', balance.status === 200 && Number(balance.body?.balance) === 4000, show(balance))
 
+// Saldo atual (até hoje) e extrato: saldo no início, resultado e saldo no fim do período
+const money = (v) => Number(v ?? NaN)
+const statement = await request('GET', `/users/me/balance?from=${from}&to=${to}&today=${today}`, { token })
+check(
+    'extrato do ano: início 0, fim 4000, atual 4000',
+    statement.status === 200 &&
+        money(statement.body?.openingBalance) === 0 &&
+        money(statement.body?.closingBalance) === 4000 &&
+        money(statement.body?.currentBalance) === 4000 &&
+        statement.body?.today === today,
+    show(statement),
+)
+const nextYear = await request('GET', `/users/me/balance?from=${year + 1}-01-01&to=${year + 1}-12-31&today=${today}`, { token })
+check(
+    'período seguinte começa com o saldo anterior',
+    nextYear.status === 200 &&
+        money(nextYear.body?.openingBalance) === 4000 &&
+        money(nextYear.body?.balance) === 0 &&
+        money(nextYear.body?.closingBalance) === 4000 &&
+        money(nextYear.body?.currentBalance) === 4000,
+    show(nextYear),
+)
+const lastYear = await request('GET', `/users/me/balance?from=${year - 1}-01-01&to=${year - 1}-12-31&today=${today}`, { token })
+check(
+    'período passado não muda o saldo atual',
+    lastYear.status === 200 &&
+        money(lastYear.body?.openingBalance) === 0 &&
+        money(lastYear.body?.closingBalance) === 0 &&
+        money(lastYear.body?.currentBalance) === 4000,
+    show(lastYear),
+)
+const beforeToday = await request('GET', `/users/me/balance?from=${from}&to=${to}&today=${year - 1}-12-31`, { token })
+check('saldo atual respeita a data de hoje do aparelho', money(beforeToday.body?.currentBalance) === 0, show(beforeToday))
+const badToday = await request('GET', `/users/me/balance?from=${from}&to=${to}&today=ontem`, { token })
+check('data de hoje inválida = 400', badToday.status === 400, show(badToday))
+
 const updated = await request('PATCH', `/transactions/me/${salary.body?.id}`, {
     token,
     body: { amount: 6000, name: 'Salário + bônus' },

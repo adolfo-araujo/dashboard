@@ -8,6 +8,9 @@ test.beforeEach(async ({ page }) => {
 
 test('painel carrega o resumo e cabe na tela', async ({ page }) => {
   await expect(page.getByText('Este é o resumo das suas finanças no período.')).toBeVisible()
+  await expect(page.getByText('Saldo atual')).toBeVisible()
+  await expect(page.getByText('Saldo no início')).toBeVisible()
+  await expect(page.getByText('Saldo no fim')).toBeVisible()
   await expect(page.getByText('Transações').first()).toBeVisible()
   await expectNoHorizontalScroll(page)
 })

@@ -1,35 +1,33 @@
-import { Prisma, TransactionType } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { prisma } from '../../../../prisma/prisma.js'
 
+const toDecimal = (value) => new Prisma.Decimal(value == null ? 0 : String(value))
+
 export class PostgresGetUserBalanceRepository {
-    async execute(userId, from, to) {
-        const dateFilter = {
-            date: {
-                gte: new Date(from),
-                lte: new Date(to),
-            },
-        }
-        // Uma consulta só, agrupada por tipo (antes eram três consultas seguidas)
-        const sums = await prisma.transaction.groupBy({
-            by: ['type'],
-            where: {
-                user_id: userId,
-                ...dateFilter,
-            },
-            _sum: {
-                amount: true,
-            },
-        })
-        const sumOf = (type) =>
-            sums.find((row) => row.type === type)?._sum.amount ?? null
+    // Tudo numa consulta só (cada ida ao banco custa ~120 ms em produção):
+    // - ganhos, gastos e investimentos do período (from–to);
+    // - saldo acumulado antes do período (saldo inicial);
+    // - saldo acumulado até hoje (saldo atual), que não depende do período escolhido.
+    // Saldo = ganhos − gastos − investimentos (o investido sai do saldo disponível).
+    async execute(userId, from, to, today = new Date().toISOString().slice(0, 10)) {
+        const [row] = await prisma.$queryRaw`
+            SELECT
+                SUM(CASE WHEN "date" BETWEEN ${from}::date AND ${to}::date AND "type" = 'EARNING' THEN "amount" END) AS earnings,
+                SUM(CASE WHEN "date" BETWEEN ${from}::date AND ${to}::date AND "type" = 'EXPENSE' THEN "amount" END) AS expenses,
+                SUM(CASE WHEN "date" BETWEEN ${from}::date AND ${to}::date AND "type" = 'INVESTMENT' THEN "amount" END) AS investments,
+                SUM(CASE WHEN "date" < ${from}::date
+                         THEN CASE WHEN "type" = 'EARNING' THEN "amount" ELSE -"amount" END END) AS opening,
+                SUM(CASE WHEN "date" <= ${today}::date
+                         THEN CASE WHEN "type" = 'EARNING' THEN "amount" ELSE -"amount" END END) AS current
+            FROM "Transaction"
+            WHERE "user_id" = ${userId}
+        `
 
-        const totalExpenses = sumOf(TransactionType.EXPENSE)
-        const totalEarnings = sumOf(TransactionType.EARNING)
-        const totalInvestments = sumOf(TransactionType.INVESTMENT)
-
-        const _totalEarnings = totalEarnings || new Prisma.Decimal(0)
-        const _totalExpenses = totalExpenses || new Prisma.Decimal(0)
-        const _totalInvestments = totalInvestments || new Prisma.Decimal(0)
+        const _totalEarnings = toDecimal(row?.earnings)
+        const _totalExpenses = toDecimal(row?.expenses)
+        const _totalInvestments = toDecimal(row?.investments)
+        const openingBalance = toDecimal(row?.opening)
+        const currentBalance = toDecimal(row?.current)
 
         const total = _totalEarnings
             .plus(_totalExpenses)
@@ -56,7 +54,13 @@ export class PostgresGetUserBalanceRepository {
             earningsPercentage,
             expensesPercentage,
             investmentsPercentage,
+            // resultado do período (ganhos − gastos − investimentos entre from e to)
             balance,
+            // extrato: saldo antes do período, saldo ao fim do período e saldo de hoje
+            openingBalance,
+            closingBalance: openingBalance.plus(balance),
+            currentBalance,
+            today,
         }
     }
 }
