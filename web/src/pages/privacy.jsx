@@ -15,7 +15,8 @@ const providers = [
   ['GitHub', 'guarda da cópia de segurança diária do banco de dados, criptografada', 'Estados Unidos'],
   ['Resend', 'envio de e-mails do sistema', 'São Paulo, Brasil'],
   ['ImprovMX', 'recebimento e encaminhamento das mensagens enviadas ao nosso e-mail de contato', 'Estados Unidos'],
-  ['Sentry', 'registro de erros técnicos para correção de falhas', 'Estados Unidos'],
+  ['Google (Gmail)', 'caixa de e-mail onde lemos e respondemos as mensagens enviadas ao nosso contato', 'Estados Unidos'],
+  ['Sentry', 'registro de erros técnicos para correção de falhas, sem guardar o endereço IP', 'Estados Unidos'],
 ]
 
 const retention = [

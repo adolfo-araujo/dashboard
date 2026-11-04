@@ -17,9 +17,9 @@ Documento interno (LGPD art. 37), no formato simplificado para agente de tratame
 | 4 | E-mails do sistema | Usuários | Nome, e-mail, links de uso único | Não | Confirmar e-mail, recuperar senha, avisos de segurança e exclusão | Art. 7º, V | `api/src/routes/email-verification.js`, `password-reset.js`, `security/login-protection.js` | Resend | Não (São Paulo) | Links: 24 h / 30 min, apagados 1 dia após vencer | Links guardados só como hash |
 | 5 | Prova do aceite | Usuários | Data e versão do aceite dos Termos e da Política | Não | Comprovar o aceite | Art. 7º, VI | Cadastro e aviso de nova versão → `POST /api/users/me/terms` | Render, Neon | Sim (Render, EUA) | Enquanto a conta existir | — |
 | 6 | Proteção contra abuso | Usuários e visitantes | E-mail tentado, endereço IP, data/hora | Não | Bloquear força bruta | Art. 7º, IX | `api/src/security/login-protection.js` | Render, Neon | Sim (Render, EUA) | 24 horas | Apagado automaticamente |
-| 7 | Registro de erros | Usuários e visitantes | Dados técnicos do erro (sem senhas, tokens nem corpo das requisições) | Não | Corrigir falhas | Art. 7º, IX | `api/instrument.js`, `web/src/components/error-boundary.jsx` | Sentry | Sim (EUA) | Prazo do plano do Sentry | `sendDefaultPii: false`, sem gravação de sessão |
+| 7 | Registro de erros | Usuários e visitantes | Dados técnicos do erro (sem senhas, tokens nem corpo das requisições) | Não | Corrigir falhas | Art. 7º, IX | `api/instrument.js`, `web/src/components/error-boundary.jsx` | Sentry | Sim (EUA) | Prazo do plano do Sentry | `sendDefaultPii: false`, sem gravação de sessão, IP não guardado (ativado no Sentry em 04/11/2026, na API e no app) |
 | 8 | Backup do banco | Todos os usuários | Cópia completa do banco | Não | Recuperar dados em caso de falha | Art. 7º, IX | `.github/workflows/backup.yml` | GitHub | Sim (EUA) | 30 dias | AES-256 com senha guardada fora do GitHub |
-| 9 | Contato e orçamento | Visitantes e clientes em potencial | Nome, e-mail, mensagem e o que a pessoa enviar | Não | Responder e preparar proposta | Art. 7º, V | Links `mailto:` do site e do app | ImprovMX (e a caixa de e-mail de destino) | Sim (EUA) | Até 24 meses após o último contato, se não virar contrato | — |
+| 9 | Contato e orçamento | Visitantes e clientes em potencial | Nome, e-mail, mensagem e o que a pessoa enviar | Não | Responder e preparar proposta | Art. 7º, V | Links `mailto:` do site e do app | ImprovMX, Google (Gmail, caixa que recebe o encaminhamento) | Sim (EUA) | Até 24 meses após o último contato, se não virar contrato | — |
 | 10 | Registros de acesso da hospedagem | Visitantes e usuários | IP, data/hora, navegador | Não | Segurança e funcionamento | Art. 7º, IX | Vercel e Render (automático) | Vercel, Render | Sim (EUA) | Prazo de cada provedor | — |
 | 11 | Retenção automática | Cadastros nunca confirmados | Cadastro sem lançamentos | Não | Princípio da necessidade | Arts. 15 e 16 | `api/src/jobs/retention.js` | Render, Neon | — | Apagados 30 dias após a criação | Testado no CI (`api/scripts/retention-test.js`) |
 
@@ -39,11 +39,10 @@ Documento interno (LGPD art. 37), no formato simplificado para agente de tratame
 | GitHub | Backup criptografado | Cópia do banco (criptografada) | EUA | Pendente |
 | Resend | E-mails do sistema | Nome, e-mail, conteúdo dos e-mails | Brasil (São Paulo) | Pendente |
 | ImprovMX | Encaminhamento do e-mail de contato | Mensagens recebidas | EUA | Pendente |
+| Google (Gmail) | Caixa que recebe o encaminhamento do contato@ | Mensagens recebidas e respostas | EUA | Pendente |
 | Sentry | Registro de erros | Dados técnicos dos erros | EUA | Pendente |
 
 ## Pendências
 
 - Confirmar se os termos de tratamento de dados (DPA) de cada fornecedor incluem cláusulas para transferência internacional (Resolução CD/ANPD nº 19/2024).
-- Confirmar para qual caixa o ImprovMX encaminha as mensagens. Se for um e-mail do Google (Gmail), incluir o Google como operador na Política de privacidade.
-- No Sentry, ativar a opção de não guardar endereços IP (Settings > Security & Privacy > Prevent Storing of IP Addresses).
 - Se o número de usuários adolescentes crescer, reavaliar se o tratamento passa a ser de alto risco (nesse caso, a dispensa de encarregado deixa de valer).

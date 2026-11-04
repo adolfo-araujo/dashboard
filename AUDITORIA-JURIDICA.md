@@ -38,7 +38,7 @@ Legenda: ✅ Conforme · ⚠️ Parcial · ❌ Não conforme · ➖ Não se apli
 
 ### 1 e 16. Política de privacidade e governança LGPD
 - **Problema:** sem menção ao encarregado nem ao canal de pequeno porte (LGPD art. 41; Res. CD/ANPD 2/2022); bases legais incompletas; retenção vaga ("período limitado"); GitHub, que guarda o backup diário, não aparecia como operador; o site da Valtrea linkava a política sem estar coberto por ela.
-- **Correção:** seção do encarregado com o canal; base legal em cada finalidade (arts. 7º, II, V, VI e IX); tabela "Por quanto tempo guardamos"; GitHub na lista de operadores e Google Fonts removido; política passa a valer também para www.valtrea.com.br; seção de crianças e adolescentes conforme a decisão tomada (art. 14). Arquivos: `web/src/pages/privacy.jsx`, `web/src/lib/legal.js` (versão 2026-11-04).
+- **Correção:** seção do encarregado com o canal; base legal em cada finalidade (arts. 7º, II, V, VI e IX); tabela "Por quanto tempo guardamos"; GitHub (backup) e Google (Gmail, que recebe o contato@) na lista de operadores, Google Fonts removido, Sentry sem guardar IP; política passa a valer também para www.valtrea.com.br; seção de crianças e adolescentes conforme a decisão tomada (art. 14). Arquivos: `web/src/pages/privacy.jsx`, `web/src/lib/legal.js` (versão 2026-11-04).
 
 ### 16. Direitos do titular, prova do aceite e retenção
 - **Baixar meus dados:** `GET /api/users/me/export` devolve cadastro, transações, recorrentes, orçamentos e conexão com o Valtrea Pay em JSON, sem senha nem códigos (LGPD art. 18, II e V). Botão em Minha conta. Arquivos: `api/src/routes/users.js`, `web/src/components/account-dialog.jsx`, `web/src/lib/csv.js`.
@@ -80,12 +80,12 @@ Legenda: ✅ Conforme · ⚠️ Parcial · ❌ Não conforme · ➖ Não se apli
 
 ## O que depende de você
 
-- [ ] 🟠 Revisão por advogado(a) dos Termos, da Política e da regra para adolescentes (ECA Digital).
-- [ ] 🟠 No Sentry, ativar **Prevent Storing of IP Addresses** (Settings > Security & Privacy).
-- [ ] 🟠 Confirmar para qual caixa o ImprovMX encaminha o contato@. Se for Gmail, incluir o Google como operador na Política.
-- [ ] 🟡 Verificar os termos de tratamento de dados (DPA) de Vercel, Render, Neon, GitHub, Resend, ImprovMX e Sentry (transferência internacional, Res. CD/ANPD 19/2024).
+- [ ] 🟠 Revisão por advogado(a) dos Termos, da Política e da regra para adolescentes (ECA Digital). Deixado para depois, por decisão sua em 04/11/2026.
+- [x] 🟠 No Sentry, ativar **Prevent Storing of IP Addresses** (feito em 04/11/2026 nos projetos da API e do app).
+- [x] 🟠 Confirmar para qual caixa o ImprovMX encaminha o contato@: uma caixa do Gmail. O Google (Gmail) entrou na lista de fornecedores da Política.
+- [ ] 🟡 Verificar os termos de tratamento de dados (DPA) de Vercel, Render, Neon, GitHub, Resend, ImprovMX, Sentry e Google (transferência internacional, Res. CD/ANPD 19/2024).
 - [ ] 🟡 Nas propostas de serviço do site para pessoas físicas, incluir o direito de arrependimento de 7 dias quando a contratação for a distância (CDC art. 49).
-- [ ] 🟡 Antes de cobrar pelo Finance ou vender online: abrir CNPJ (ou decidir publicar CPF) e endereço, e criar política de reembolso.
+- [ ] 🟡 Antes de cobrar pelo Finance ou vender online: abrir CNPJ (ou decidir publicar CPF) e endereço, e criar política de reembolso. Deixado para depois, por decisão sua em 04/11/2026.
 - [ ] 🔵 Quando possível, testar o app com leitor de tela (NVDA no Windows ou TalkBack no Android).
 
 ### Marcadores pendentes `[[PREENCHER]]`
