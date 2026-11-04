@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { withoutOwner } from '../security/serializers.js'
 import { z } from 'zod'
 import { prisma } from '../../prisma/prisma.js'
 import { auth } from '../middlewares/auth.js'
@@ -42,7 +43,7 @@ const nextDate = (rule) => {
 }
 
 const serialize = (rule) => ({
-    ...rule,
+    ...withoutOwner(rule),
     start_date: toStr(rule.start_date),
     end_date: rule.end_date ? toStr(rule.end_date) : null,
     generated_until: rule.generated_until ? toStr(rule.generated_until) : null,

@@ -5,6 +5,7 @@ import { prisma } from '../../prisma/prisma.js'
 import { PasswordHasherAdapter } from '../adapters/password-hasher.js'
 import { passwordSchema } from '../schemas/user.js'
 import { sendEmail } from '../adapters/email-sender.js'
+import { isBot } from '../security/bot-protection.js'
 
 export const passwordResetRouter = Router()
 
@@ -46,6 +47,8 @@ const buildEmail = (firstName, link) => ({
 })
 
 passwordResetRouter.post('/forgot-password', async (request, response) => {
+    // robô: responde igual a um pedido normal, mas não envia nada
+    if (isBot(request)) return response.status(200).send(GENERIC_RESPONSE)
     const parsed = forgotSchema.safeParse(request.body)
     if (!parsed.success) {
         return response

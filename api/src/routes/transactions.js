@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { publicTransactions } from '../security/serializers.js'
 import {
     makeCreateTransactionController,
     makeDeleteTransactionController,
@@ -24,7 +25,7 @@ transactionsRouter.get('/me', auth, async (request, response) => {
             },
         })
 
-    response.status(statusCode).send(body)
+    response.status(statusCode).send(publicTransactions(body))
 })
 
 transactionsRouter.post('/me', auth, async (request, response) => {
@@ -38,7 +39,7 @@ transactionsRouter.post('/me', auth, async (request, response) => {
         },
     })
 
-    response.status(statusCode).send(body)
+    response.status(statusCode).send(publicTransactions(body))
 })
 
 transactionsRouter.patch(
@@ -55,7 +56,7 @@ transactionsRouter.patch(
             },
         })
 
-        response.status(statusCode).send(body)
+        response.status(statusCode).send(publicTransactions(body))
     },
 )
 
@@ -72,6 +73,6 @@ transactionsRouter.delete(
             },
         })
 
-        response.status(statusCode).send(body)
+        response.status(statusCode).send(publicTransactions(body))
     },
 )

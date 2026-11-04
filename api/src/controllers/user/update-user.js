@@ -25,9 +25,8 @@ export class UpdateUserController {
                 return invalidIdResponse()
             }
 
-            const params = httpRequest.body
-
-            await updateUserSchema.parseAsync(params)
+            // só os campos validados (e já sem espaços nas pontas) seguem adiante
+            const params = await updateUserSchema.parseAsync(httpRequest.body)
 
             const updatedUser = await this.updateUserUseCase.execute(
                 userId,

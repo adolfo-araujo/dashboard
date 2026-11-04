@@ -105,6 +105,17 @@ const token = logged.body?.tokens?.accessToken
 const me = await request('GET', '/users/me', { token })
 check('GET /users/me', me.status === 200 && me.body?.email === email, show(me))
 check('conta nova começa sem e-mail confirmado', me.body?.email_verified_at == null)
+const internalUserFields = ['password', 'sessions_valid_after', 'last_seen_at']
+check(
+    'dados da conta saem enxutos (sem senha nem controles internos)',
+    internalUserFields.every((field) => !(field in (me.body ?? {}))) &&
+        internalUserFields.every((field) => !(field in (logged.body ?? {}))),
+    show(me),
+)
+const massAssign = await request('PATCH', '/users/me', { token, body: { email_verified_at: '2020-01-01T00:00:00.000Z' } })
+check('não dá para alterar campos internos da conta (mass assignment)', massAssign.status === 400, show(massAssign))
+const massAssignId = await request('PATCH', '/users/me', { token, body: { first_name: 'Smoke', id: '00000000-0000-0000-0000-000000000000' } })
+check('não dá para trocar o id da conta', massAssignId.status === 400, show(massAssignId))
 
 const refreshed = await request('POST', '/users/refresh-token', {
     body: { refreshToken: logged.body?.tokens?.refreshToken },
@@ -138,6 +149,16 @@ check('link de confirmação inválido = 400', badVerify.status === 400, show(ba
 
 const forgot = await request('POST', '/users/forgot-password', { body: { email: unique('ninguem') } })
 check('esqueci a senha não revela se o e-mail existe', forgot.status === 200, show(forgot))
+
+// Proteção contra robôs: campo invisível "website" preenchido
+const botEmail = unique('robo')
+const botSignup = await request('POST', '/users', {
+    body: { first_name: 'Robo', last_name: 'Spam', email: botEmail, password: PASSWORD, website: 'http://spam.example' },
+})
+check('cadastro feito por robô é recusado', botSignup.status === 400, show(botSignup))
+check('robô não ganha conta', (await login(botEmail)).status === 401)
+const botForgot = await request('POST', '/users/forgot-password', { body: { email: email, website: 'x' } })
+check('"esqueci a senha" de robô responde igual, sem enviar nada', botForgot.status === 200 && botForgot.body?.message === forgot.body?.message, show(botForgot))
 
 const badReset = await request('POST', '/users/reset-password', {
     body: { token: 'b'.repeat(64), password: 'senha-nova-123' },
@@ -250,6 +271,20 @@ const forbiddenDelete = await request('DELETE', `/transactions/me/${salary.body?
 check('excluir transação de outro usuário é proibido', forbiddenDelete.status === 403, show(forbiddenDelete))
 const otherList = await request('GET', `/transactions/me?from=${from}&to=${to}`, { token: otherToken })
 check('outro usuário não vê as transações', otherList.status === 200 && otherList.body?.length === 0, show(otherList))
+check('transações saem sem o id do dono', !('user_id' in (salary.body ?? {})) && (otherList.body ?? []).every((t) => !('user_id' in t)), show(salary))
+// tentar criar transação em nome de outra pessoa: a API ignora o user_id enviado
+const meId = me.body?.id
+const spoofed = await request('POST', '/transactions/me', {
+    token: otherToken,
+    body: { user_id: meId, name: 'Tentativa', date: dateTime(today), type: 'EXPENSE', amount: 5, category: 'outros' },
+})
+const myListAfterSpoof = await request('GET', `/transactions/me?from=${from}&to=${to}`, { token })
+check(
+    'não dá para criar transação na conta de outra pessoa',
+    spoofed.status === 201 && !(myListAfterSpoof.body ?? []).some((t) => t.id === spoofed.body?.id),
+    show(spoofed),
+)
+await request('DELETE', `/transactions/me/${spoofed.body?.id}`, { token: otherToken })
 
 // ------------------------------------------------------------
 section('Relatórios e exportação')
@@ -422,6 +457,7 @@ const code = payToken.body?.token
 const payTx = { external_id: `pay:${Date.now()}:SAIDA`, name: 'Valtrea Pay · Bruno', amount: 12.34, type: 'EXPENSE', date: today }
 const sent = await request('POST', '/integrations/pay/transactions', { token: code, body: payTx })
 check('Pay lança um pagamento', sent.status === 201 && sent.body?.amount === '12.34', show(sent))
+check('resposta ao Pay não traz o id do usuário do Finance', !('user_id' in (sent.body ?? {})), show(sent))
 const resent = await request('POST', '/integrations/pay/transactions', { token: code, body: payTx })
 check('reenviar o mesmo pagamento não duplica', resent.status === 200 && resent.body?.id === sent.body?.id, show(resent))
 
