@@ -41,7 +41,7 @@ jobs:
     outputs:
       db_rtt: ${{ steps.sonda.outputs.db_rtt }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: sonda
         run: |
           bash loadtest/sonda-producao.sh
@@ -82,7 +82,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.planejar.outputs.matriz) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: grafana/setup-k6-action@v1
       - name: Rodar teste de carga
         env:
