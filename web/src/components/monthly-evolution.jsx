@@ -119,8 +119,10 @@ export function MonthlyEvolution() {
           </ResponsiveContainer>
           </div>
           </div>
-          {/* Os mesmos valores do gráfico, em texto, para leitores de tela (WCAG 1.1.1) */}
-          <table className="sr-only">
+          {/* Os mesmos valores do gráfico, em texto, para leitores de tela (WCAG 1.1.1).
+              O sr-only fica num div: em <table> ele não esconde a largura e a página "vaza" no celular. */}
+          <div className="sr-only">
+          <table>
             <caption>Ganhos, gastos e saldo por mês</caption>
             <thead>
               <tr>
@@ -141,6 +143,7 @@ export function MonthlyEvolution() {
               ))}
             </tbody>
           </table>
+          </div>
           </>
         )}
       </div>

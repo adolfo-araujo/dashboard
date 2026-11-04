@@ -12,6 +12,8 @@ test('painel carrega o resumo e cabe na tela', async ({ page }) => {
   await expect(page.getByText('Saldo no início')).toBeVisible()
   await expect(page.getByText('Saldo no fim')).toBeVisible()
   await expect(page.getByText('Transações').first()).toBeVisible()
+  // espera os gráficos e tabelas carregarem antes de medir a largura
+  await page.waitForLoadState('networkidle')
   await expectNoHorizontalScroll(page)
 })
 
