@@ -18,13 +18,15 @@ export class GetUserBalanceController {
             const userId = httpRequest.params.userId
             const from = httpRequest.query.from
             const to = httpRequest.query.to
+            const today = httpRequest.query.today
 
-            await getUserBalanceSchema.parseAsync({ user_id: userId, from, to })
+            await getUserBalanceSchema.parseAsync({ user_id: userId, from, to, today })
 
             const balance = await this.getUserBalanceUseCase.execute(
                 userId,
                 from,
                 to,
+                today,
             )
 
             return ok(balance)

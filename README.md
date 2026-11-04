@@ -67,7 +67,7 @@ O Vite encaminha `/api` para `http://localhost:8080`, então não é preciso con
 | GET | `/api/users/me` | Usuário autenticado |
 | PATCH | `/api/users/me` | Atualiza usuário |
 | DELETE | `/api/users/me` | Exclui usuário |
-| GET | `/api/users/me/balance?from=YYYY-MM-DD&to=YYYY-MM-DD` | Saldo do período |
+| GET | `/api/users/me/balance?from=YYYY-MM-DD&to=YYYY-MM-DD&today=YYYY-MM-DD` | Saldo atual (tudo até hoje) e extrato do período: saldo no início, resultado e saldo no fim |
 | GET | `/api/transactions/me?from=…&to=…` | Lista transações |
 | POST | `/api/transactions/me` | Cria transação |
 | PATCH | `/api/transactions/me/:id` | Edita transação |
