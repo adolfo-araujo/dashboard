@@ -5,7 +5,7 @@ import AxeBuilder from '@axe-core/playwright'
 // O site chama /api/lista-de-espera no próprio endereço (no CI, o servidor de teste encaminha para a API local).
 const SITE = process.env.SITE_URL || 'http://localhost:5174'
 
-test('site mostra os projetos em desenvolvimento com a fase de cada um', async ({ page }) => {
+test('site mostra os projetos em desenvolvimento com a fase de cada um', async ({ page }, testInfo) => {
   await page.goto(SITE)
   const secao = page.locator('#em-desenvolvimento')
   await expect(secao.getByRole('heading', { name: 'Projetos em desenvolvimento' })).toBeVisible()
@@ -15,6 +15,8 @@ test('site mostra os projetos em desenvolvimento com a fase de cada um', async (
   await expect(secao.getByText('Em desenvolvimento', { exact: true })).toHaveCount(1)
   await expect(secao.getByText('Em planejamento', { exact: true })).toHaveCount(3)
   await expect(secao.getByText(/saldo é fictício/)).toBeVisible()
+  // Imagem da seção para conferir o visual (fica nos Artifacts da execução: "previas-do-site")
+  await secao.screenshot({ path: `previas/projetos-${testInfo.project.name}.png` })
 })
 
 test('quero ser avisado: pede aceite, envia e mostra o próximo passo', async ({ page }, testInfo) => {
