@@ -31,7 +31,7 @@ Também: HTTPS obrigatório (HSTS), CSP no app e no site, proteção contra exib
 | # | Item | Como está |
 | --- | --- | --- |
 | 1 | Esconder chaves de API | O app só recebe o endereço da API e o DSN do Sentry, que são públicos por natureza. Conferido no arquivo publicado em produção: nenhuma chave, senha ou string de conexão |
-| 2 | Segredos fora do Git | Histórico inteiro (74 commits) varrido: só valores de exemplo. O CI agora roda o **gitleaks** em todo o histórico a cada mudança e reprova se aparecer uma senha ou chave |
+| 2 | Segredos fora do Git | Histórico inteiro varrido: só valores de exemplo e três tokens de exemplo do projeto-base, vencidos em 2024 e de um usuário que não existe aqui (liberados em `.gitleaksignore`). O CI agora roda o **gitleaks** em todo o histórico a cada mudança e reprova se aparecer uma senha ou chave |
 | 3 | Chave pública do banco | Não se aplica: o navegador nunca fala com o banco. Só a API conecta, com a string de conexão guardada no Render e nos segredos do GitHub |
 | 4 | RLS (Row Level Security) | Não se aplica do jeito do Supabase/Firebase, em que o navegador acessa o banco. Aqui toda consulta passa pela API, que filtra pelo usuário do token. Isso é testado a cada mudança (outro usuário não vê, não edita e não cria dados em nome de ninguém) |
 | 5 | Criptografia de dados | HTTPS em tudo (TLS 1.2/1.3); banco Neon criptografado em repouso (AES-256) e com conexão obrigatoriamente criptografada; backup diário com AES-256; senhas com bcrypt; links de e-mail e código do Valtrea Pay guardados só como hash |

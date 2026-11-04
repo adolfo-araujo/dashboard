@@ -1,0 +1,6 @@
+# Achados do gitleaks conferidos e liberados (um por linha, no formato commit:arquivo:regra:linha).
+# Tokens de exemplo do Swagger do projeto-base do curso (commit inicial): emitidos em nov/2024 para um
+# usuário que não existe no Valtrea, assinados com outro segredo e vencidos. Já foram removidos do arquivo.
+2ed9a7bd971f364e4a1565cb38ad113b6ea0b128:api/docs/swagger.json:jwt:537
+2ed9a7bd971f364e4a1565cb38ad113b6ea0b128:api/docs/swagger.json:jwt:541
+2ed9a7bd971f364e4a1565cb38ad113b6ea0b128:api/docs/swagger.json:jwt:624
