@@ -9,7 +9,7 @@ const Email = () => (
 )
 
 const providers = [
-  ['Vercel', 'hospedagem do Valtrea Finance e do site da Valtrea', 'Estados Unidos e rede global'],
+  ['Vercel', 'hospedagem do Valtrea Finance e do site da Valtrea (inclusive o encaminhamento dos pedidos da lista de espera)', 'Estados Unidos e rede global'],
   ['Render', 'servidor da aplicação (API)', 'Estados Unidos'],
   ['Neon', 'banco de dados', 'São Paulo, Brasil'],
   ['GitHub', 'guarda da cópia de segurança diária do banco de dados, criptografada', 'Estados Unidos'],
@@ -28,6 +28,7 @@ const retention = [
   ['Links de confirmação de e-mail e de nova senha', 'Valem por 24 horas e 30 minutos, respectivamente, e são apagados um dia depois de vencer.'],
   ['Registros de erros técnicos e registros de acesso dos provedores de hospedagem', 'Pelo prazo de retenção de cada provedor; são apagados automaticamente.'],
   ['Mensagens e pedidos de orçamento que não viram contrato', 'Até 24 meses depois do último contato.'],
+  ['Lista de espera do site (e-mail e produto)', 'Até você sair da lista, até o aviso de lançamento ser enviado ou por no máximo 24 meses. Pedidos não confirmados são apagados em 7 dias.'],
 ]
 
 export function PrivacyPage() {
@@ -74,6 +75,14 @@ export function PrivacyPage() {
           site da Valtrea, recebemos seu nome, seu e-mail, o conteúdo da mensagem e o que mais você decidir
           enviar.
         </p>
+        <p id="lista-de-espera" className="scroll-mt-6">
+          <strong>Lista de espera dos produtos em desenvolvimento:</strong> se você pedir um aviso de lançamento
+          (“Quero ser avisado”) no site da Valtrea, guardamos apenas o seu e-mail, o produto escolhido e as datas
+          do pedido e da confirmação. A inscrição só vale depois que você confirma pelo link enviado ao seu
+          e-mail. Usamos o endereço só para avisar quando aquele produto estiver disponível, sem publicidade de
+          outros produtos. O mesmo link do e-mail permite sair da lista a qualquer momento, e o e-mail é apagado
+          na hora.
+        </p>
         <p>
           <strong>Dados de controle da conta:</strong> data de confirmação do e-mail, data e versão em que
           você aceitou estes documentos, e registros temporários usados para recuperação de senha e
@@ -103,6 +112,7 @@ export function PrivacyPage() {
             'Proteger o serviço contra fraudes, abusos e acessos indevidos, registrar erros técnicos para corrigir falhas e manter cópias de segurança (legítimo interesse, art. 7º, IX).',
             'Guardar a data e a versão em que você aceitou os Termos e esta Política, para comprovar o aceite (exercício regular de direitos, art. 7º, VI).',
             'Responder às mensagens e aos pedidos de orçamento que você nos enviar (procedimentos preliminares a contrato, art. 7º, V).',
+            'Avisar sobre o lançamento de um produto em desenvolvimento, só se você se inscrever e confirmar pelo e-mail (consentimento, art. 7º, I). Você pode retirar o consentimento a qualquer momento pelo link do e-mail.',
             'Cumprir obrigações legais e atender a ordens de autoridades competentes (obrigação legal, art. 7º, II).',
           ]}
         />

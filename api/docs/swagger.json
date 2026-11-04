@@ -41,6 +41,10 @@
         },
         {
             "name": "Administração"
+        },
+        {
+            "name": "Lista de espera",
+            "description": "\"Quero ser avisado\" do site www.valtrea.com.br (confirmação dupla por e-mail)"
         }
     ],
     "securityDefinitions": {
@@ -1632,6 +1636,187 @@
                         }
                     }
                 }
+            }
+        },
+        "/api/lista-de-espera": {
+            "post": {
+                "tags": [
+                    "Lista de espera"
+                ],
+                "summary": "Pedir aviso de lançamento",
+                "description": "Envia um e-mail com o link de confirmação (válido por 7 dias). A resposta é sempre igual, exista ou não a inscrição; no máximo 1 e-mail a cada 2 minutos por endereço e produto.",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "email",
+                                "produto",
+                                "aceite"
+                            ],
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "format": "email"
+                                },
+                                "produto": {
+                                    "type": "string",
+                                    "enum": [
+                                        "pay",
+                                        "volta",
+                                        "pulso",
+                                        "agora"
+                                    ]
+                                },
+                                "aceite": {
+                                    "type": "boolean",
+                                    "enum": [
+                                        true
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Pedido recebido",
+                        "schema": {
+                            "$ref": "#/definitions/Mensagem"
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "429": {
+                        "description": "Muitas requisições",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/api/lista-de-espera/confirmar": {
+            "post": {
+                "tags": [
+                    "Lista de espera"
+                ],
+                "summary": "Confirmar inscrição",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "token"
+                            ],
+                            "properties": {
+                                "token": {
+                                    "type": "string",
+                                    "description": "Código de 64 caracteres do link enviado por e-mail"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Inscrição confirmada",
+                        "schema": {
+                            "$ref": "#/definitions/Mensagem"
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "429": {
+                        "description": "Muitas requisições",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/api/lista-de-espera/sair": {
+            "post": {
+                "tags": [
+                    "Lista de espera"
+                ],
+                "summary": "Sair da lista",
+                "description": "Apaga a inscrição na hora.",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "token"
+                            ],
+                            "properties": {
+                                "token": {
+                                    "type": "string",
+                                    "description": "Código de 64 caracteres do link enviado por e-mail"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Inscrição apagada",
+                        "schema": {
+                            "$ref": "#/definitions/Mensagem"
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "429": {
+                        "description": "Muitas requisições",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno",
+                        "schema": {
+                            "$ref": "#/definitions/Erro"
+                        }
+                    }
+                },
+                "security": []
             }
         }
     },

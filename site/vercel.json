@@ -41,6 +41,16 @@
       "permanent": false
     }
   ],
+  "rewrites": [
+    {
+      "source": "/api/lista-de-espera",
+      "destination": "https://api.valtrea.com.br/api/lista-de-espera"
+    },
+    {
+      "source": "/api/lista-de-espera/:acao",
+      "destination": "https://api.valtrea.com.br/api/lista-de-espera/:acao"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

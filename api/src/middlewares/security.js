@@ -77,6 +77,15 @@ export const sensitiveLimiter = rateLimit({
     message: 'Muitas tentativas em pouco tempo. Aguarde 15 minutos e tente de novo.',
 })
 
+// Lista de espera do site (passa pela Vercel, então muitos visitantes chegam com o mesmo IP).
+// Cada endereço ainda só recebe um e-mail de confirmação a cada 2 minutos (routes/waitlist.js).
+export const waitlistLimiter = rateLimit({
+    name: 'lista de espera',
+    windowMs: 15 * 60 * 1000,
+    max: Number(process.env.API_RATE_LIMIT) || 120,
+    message: 'Muitos pedidos em pouco tempo. Tente de novo em alguns minutos.',
+})
+
 // Rotas usadas pelo servidor do Valtrea Pay (todas as chamadas vêm do mesmo IP):
 // limite alto, só para impedir abuso com códigos inventados.
 export const payLimiter = rateLimit({

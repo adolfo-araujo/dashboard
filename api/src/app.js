@@ -9,11 +9,13 @@ import { recurringRouter } from './routes/recurring.js'
 import { budgetsRouter } from './routes/budgets.js'
 import { adminRouter } from './routes/admin.js'
 import { payEventsRouter, payIntegrationRouter } from './routes/pay-integration.js'
+import { waitlistRouter } from './routes/waitlist.js'
 import {
     apiLimiter,
     payLimiter,
     securityHeaders,
     sensitiveLimiter,
+    waitlistLimiter,
 } from './middlewares/security.js'
 import { responseTime } from './middlewares/response-time.js'
 import swaggerUi from 'swagger-ui-express'
@@ -65,6 +67,10 @@ app.get('/api/health', (request, response) => {
 // Também antes do limite por IP: todos os envios do Valtrea Pay saem do mesmo servidor.
 // Cada chamada exige um código de conexão de 192 bits, que não dá para adivinhar.
 app.use('/api/integrations/pay', payLimiter, payEventsRouter)
+
+// Lista de espera do site: os pedidos chegam pela Vercel (vários visitantes com o mesmo IP),
+// por isso tem um limite próprio, mais alto, em vez do geral.
+app.use('/api/lista-de-espera', waitlistLimiter, waitlistRouter)
 
 app.use('/api', apiLimiter)
 app.post(
