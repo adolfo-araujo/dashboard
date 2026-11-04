@@ -1,4 +1,4 @@
-name: Diagnóstico temporário (termos)
+name: Diagnóstico temporário (segurança em produção)
 on:
   push:
     branches: [diag-termos]
@@ -8,17 +8,26 @@ jobs:
   sonda:
     runs-on: ubuntu-latest
     steps:
-      - name: Rotas novas na API de produção
+      - name: Sondagem
         run: |
-          API=https://api.valtrea.com.br/api
-          for i in 1 2 3; do curl -s -o /dev/null -m 60 "$API/health" && break; done
-          echo "health: $(curl -s -m 30 $API/health)"
-          echo "POST /users/me/terms sem token: $(curl -s -m 30 -X POST -H 'Content-Type: application/json' -d '{"version":"2026-11-04"}' -w ' [%{http_code}]' $API/users/me/terms)"
-          echo "GET /users/me/export sem token: $(curl -s -m 30 -w ' [%{http_code}]' $API/users/me/export)"
-          echo "GET /users/me sem token: $(curl -s -m 30 -w ' [%{http_code}]' $API/users/me)"
-          echo "OPTIONS /users/me/terms (preflight):"
-          curl -s -m 30 -i -X OPTIONS -H 'Origin: https://finance.valtrea.com.br' -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: authorization,content-type' $API/users/me/terms | head -20
-          echo "POST com token inválido: $(curl -s -m 30 -X POST -H 'Authorization: Bearer x.y.z' -H 'Content-Type: application/json' -d '{"version":"2026-11-04"}' -w ' [%{http_code}]' $API/users/me/terms)"
-          curl -s -m 60 https://api.valtrea.com.br/docs/swagger-ui-init.js -o init.js; echo "swagger bytes: $(wc -c < init.js)"
-          echo "swagger tem /me/terms: $(grep -c 'users/me/terms' init.js) | tem extrato (PR 31): $(grep -c 'Saldo atual e extrato' init.js) | tem export: $(grep -c 'users/me/export' init.js)"
-          echo "POST /users/me/terms com barra no fim: $(curl -s -m 30 -X POST -w ' [%{http_code}]' $API/users/me/terms/)"
+          for host in finance.valtrea.com.br www.valtrea.com.br valtrea.com.br api.valtrea.com.br; do
+            echo "HTTP→HTTPS $host: $(curl -s -m 30 -o /dev/null -w '%{http_code} -> %{redirect_url}' http://$host/)"
+          done
+          for url in https://finance.valtrea.com.br/ https://www.valtrea.com.br/ https://api.valtrea.com.br/api/health; do
+            echo "== cabeçalhos $url"
+            curl -s -m 30 -D - -o /dev/null $url | grep -iE "^(strict-transport|content-security|x-frame|x-content-type|referrer-policy|permissions-policy|x-powered-by|server):" | cut -c1-160
+          done
+          curl -s -m 30 https://finance.valtrea.com.br/ -o index.html
+          for js in $(grep -oE '/assets/[^"]+\.js' index.html | sort -u); do
+            echo "source map de $js: $(curl -s -m 30 -o /dev/null -w '%{http_code} %{content_type}' https://finance.valtrea.com.br$js.map)"
+            curl -s -m 30 https://finance.valtrea.com.br$js -o bundle.js
+            echo "  sourceMappingURL no bundle: $(grep -c 'sourceMappingURL' bundle.js)"
+            echo "  possíveis segredos no bundle: $(grep -oE 'postgres(ql)?://|re_[A-Za-z0-9]{20,}|sk_(live|test)_|JWT_(ACCESS|REFRESH)|DATABASE_URL|BACKUP_PASSPHRASE|RESEND_API_KEY' bundle.js | sort | uniq -c | tr '\n' ' ')"
+          done
+          echo "== erro 500/404 da API não revela detalhes"
+          echo "rota inexistente: $(curl -s -m 30 -w ' [%{http_code}]' https://api.valtrea.com.br/api/nao-existe)"
+          echo "JSON quebrado: $(curl -s -m 30 -X POST -H 'Content-Type: application/json' -d '{quebrado' -w ' [%{http_code}]' https://api.valtrea.com.br/api/users/login)"
+          echo "id inválido: $(curl -s -m 30 -H 'Authorization: Bearer abc' -w ' [%{http_code}]' https://api.valtrea.com.br/api/transactions/me)"
+          echo "arquivos sensíveis no app: .env=$(curl -s -m 30 -o /dev/null -w '%{http_code}' https://finance.valtrea.com.br/.env) .git/config=$(curl -s -m 30 -o /dev/null -w '%{http_code}' https://finance.valtrea.com.br/.git/config)"
+          echo "  conteúdo de /.env começa com: $(curl -s -m 30 https://finance.valtrea.com.br/.env | head -c 40)"
+          echo "CORS de origem estranha: $(curl -s -m 30 -D - -o /dev/null -H 'Origin: https://site-malicioso.com' https://api.valtrea.com.br/api/health | grep -i 'access-control-allow-origin' || echo 'sem allow-origin (bloqueado)')"
