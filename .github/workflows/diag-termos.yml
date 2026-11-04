@@ -19,4 +19,6 @@ jobs:
           echo "OPTIONS /users/me/terms (preflight):"
           curl -s -m 30 -i -X OPTIONS -H 'Origin: https://finance.valtrea.com.br' -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: authorization,content-type' $API/users/me/terms | head -20
           echo "POST com token inválido: $(curl -s -m 30 -X POST -H 'Authorization: Bearer x.y.z' -H 'Content-Type: application/json' -d '{"version":"2026-11-04"}' -w ' [%{http_code}]' $API/users/me/terms)"
+          curl -s -m 60 https://api.valtrea.com.br/docs/swagger-ui-init.js -o init.js; echo "swagger bytes: $(wc -c < init.js)"
+          echo "swagger tem /me/terms: $(grep -c 'users/me/terms' init.js) | tem extrato (PR 31): $(grep -c 'Saldo atual e extrato' init.js) | tem export: $(grep -c 'users/me/export' init.js)"
           echo "POST /users/me/terms com barra no fim: $(curl -s -m 30 -X POST -w ' [%{http_code}]' $API/users/me/terms/)"
