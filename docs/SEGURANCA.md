@@ -26,6 +26,33 @@ Revisão de 03/11/2026 com os 19 pontos mais comuns de falha em sites e sistemas
 
 Também: HTTPS obrigatório (HSTS), CSP no app e no site, proteção contra exibição em iframe, `nosniff` e política de referência em todas as respostas.
 
+## 20 itens antes de lançar (revisão de 04/11/2026)
+
+| # | Item | Como está |
+| --- | --- | --- |
+| 1 | Esconder chaves de API | O app só recebe o endereço da API e o DSN do Sentry, que são públicos por natureza. Conferido no arquivo publicado em produção: nenhuma chave, senha ou string de conexão |
+| 2 | Segredos fora do Git | Histórico inteiro (74 commits) varrido: só valores de exemplo. O CI agora roda o **gitleaks** em todo o histórico a cada mudança e reprova se aparecer uma senha ou chave |
+| 3 | Chave pública do banco | Não se aplica: o navegador nunca fala com o banco. Só a API conecta, com a string de conexão guardada no Render e nos segredos do GitHub |
+| 4 | RLS (Row Level Security) | Não se aplica do jeito do Supabase/Firebase, em que o navegador acessa o banco. Aqui toda consulta passa pela API, que filtra pelo usuário do token. Isso é testado a cada mudança (outro usuário não vê, não edita e não cria dados em nome de ninguém) |
+| 5 | Criptografia de dados | HTTPS em tudo (TLS 1.2/1.3); banco Neon criptografado em repouso (AES-256) e com conexão obrigatoriamente criptografada; backup diário com AES-256; senhas com bcrypt; links de e-mail e código do Valtrea Pay guardados só como hash |
+| 6 | Autenticação no servidor | Todo acesso é validado na API (JWT HS256 conferido a cada requisição). Quem é administrador é decidido pela API, nunca pelo app |
+| 7 | Restringir acessos | Cada usuário só acessa os próprios dados (403/404 para os dos outros, testado); painel de administração só com números agregados |
+| 8 | Bloquear mass assignment | A API só grava campos validados. Campos internos (confirmação de e-mail, id, dono da transação) são recusados ou trocados pelo valor do servidor (testado) |
+| 9 | Proteger cookies | Não se aplica: o sistema não usa cookies. A sessão fica no navegador, protegida pela CSP, que só aceita scripts do próprio site |
+| 10 | Hash nas senhas | bcrypt; a senha nunca sai da API |
+| 11 | Rate limit | 300 requisições a cada 5 min por IP; 20 a cada 15 min no cadastro e nos e-mails; bloqueio de 15 min após 5 senhas erradas |
+| 12 | Proteção contra robôs | Campo invisível no cadastro e no "esqueci a senha" (robô que preenche é recusado), mais limites por IP, bloqueio de login e confirmação de e-mail. Sem captcha e sem mandar dados a terceiros |
+| 13 | Queries parametrizadas | Prisma em todas as consultas; as três consultas SQL manuais (saldo, relatório mensal e administração) usam parâmetros (`$queryRaw` com template), nunca texto montado |
+| 14 | Validação dos dados | Zod em todas as rotas, no app e na API; corpo limitado a 100 KB; JSON quebrado responde 400 |
+| 15 | Vazamento de conteúdo | Erros genéricos (testado em produção); sem mapas do código-fonte publicados; sem `X-Powered-By`; Sentry sem senhas, tokens nem IP; `.env` e `.git` não existem no site publicado |
+| 16 | Restringir uploads | Não se aplica: o sistema não recebe arquivos |
+| 17 | Respostas enxutas | A API devolve só os campos que o app usa: nada de hash de senha, controle de sessões, último acesso, id do dono das transações ou identificadores internos (testado) |
+| 18 | Cabeçalhos de segurança | HSTS, CSP, `X-Frame-Options: DENY`, `nosniff`, política de referência e de permissões no app, no site e na API |
+| 19 | Forçar HTTPS | `http://` redireciona para `https://` no app, no site e na API (testado em produção); HSTS faz o navegador lembrar |
+| 20 | Varredura de dependências | `npm audit` a cada mudança (reprova falha crítica) e Dependabot semanal; nenhuma falha conhecida hoje |
+
+Ponto de atenção que fica: o cadastro avisa quando um e-mail já tem conta, o que permite descobrir se alguém usa o Valtrea. É o comportamento comum em apps, e o limite de 20 tentativas a cada 15 minutos por IP impede a varredura em massa.
+
 ## Dependências
 
 Em 03/11/2026, `npm audit` sem nenhuma falha conhecida na API, no app e no site:

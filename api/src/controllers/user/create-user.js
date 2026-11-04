@@ -10,9 +10,8 @@ export class CreateUserController {
 
     async execute(httpRequest) {
         try {
-            const params = httpRequest.body
-
-            await createUserSchema.parseAsync(params)
+            // só os campos validados (e já sem espaços nas pontas) seguem adiante
+            const params = await createUserSchema.parseAsync(httpRequest.body)
 
             const createdUser = await this.createUserUseCase.execute(params)
 

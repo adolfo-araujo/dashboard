@@ -1,4 +1,5 @@
 import { createHash, randomBytes, timingSafeEqual } from 'crypto'
+import { publicPayTransaction } from '../security/serializers.js'
 import { Router } from 'express'
 import { z } from 'zod'
 import { Prisma } from '@prisma/client'
@@ -140,13 +141,13 @@ payEventsRouter.post('/transactions', payAuth, async (request, response) => {
             },
         })
         await touch(request.integration.id)
-        return response.status(201).send(transaction)
+        return response.status(201).send(publicPayTransaction(transaction))
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
             const existing = await prisma.transaction.findUnique({
                 where: { user_id_external_id: { user_id: request.userId, external_id: data.external_id } },
             })
-            return response.status(200).send(existing)
+            return response.status(200).send(publicPayTransaction(existing))
         }
         console.error(error)
         return response.status(500).send({ message: 'Internal server error' })

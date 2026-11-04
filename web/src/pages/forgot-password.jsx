@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,6 +8,7 @@ import { MailCheck } from 'lucide-react'
 import { AuthLayout } from './auth-layout'
 import { Button } from '../components/ui/button'
 import { Field, Input } from '../components/ui/input'
+import { Honeypot } from '../components/honeypot'
 import { api, getErrorMessage } from '../lib/api'
 
 const schema = z.object({
@@ -22,9 +23,12 @@ export function ForgotPasswordPage() {
     formState: { errors, isSubmitting },
   } = useForm({ resolver: zodResolver(schema), defaultValues: { email: '' } })
 
+  const honeypotRef = useRef(null)
+
   const onSubmit = async ({ email }) => {
     try {
-      await api.post('/users/forgot-password', { email })
+      const website = honeypotRef.current?.value
+      await api.post('/users/forgot-password', website ? { email, website } : { email })
       setSentTo(email)
     } catch (error) {
       toast.error(getErrorMessage(error, 'Não foi possível enviar o e-mail. Tente novamente.'))
@@ -58,6 +62,7 @@ export function ForgotPasswordPage() {
         </div>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+          <Honeypot ref={honeypotRef} name="website" />
           <Field label="E-mail da conta" htmlFor="email" error={errors.email?.message}>
             <Input
               id="email"

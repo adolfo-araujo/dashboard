@@ -22,6 +22,8 @@ import { prisma } from '../../prisma/prisma.js'
 import jwt from 'jsonwebtoken'
 import { TokensGeneratorAdapter } from '../adapters/tokens-generator.js'
 import { sendVerificationEmail } from './email-verification.js'
+import { publicUser } from '../security/serializers.js'
+import { isBot } from '../security/bot-protection.js'
 
 export const usersRouter = Router()
 
@@ -29,15 +31,10 @@ export const usersRouter = Router()
 // Ao publicar uma nova versão dos textos, atualize aqui e em web/src/lib/legal.js.
 const TERMS_VERSION = '2026-11-04'
 
-// nunca devolver o hash da senha para o cliente
-const sanitize = (body) => {
-    if (body && typeof body === 'object' && 'password' in body) {
-        // eslint-disable-next-line no-unused-vars
-        const { password, ...rest } = body
-        return rest
-    }
-    return body
-}
+// Dados de usuário saem só com os campos que o app usa (nunca o hash da senha
+// nem o controle de sessões). Outras respostas, como o saldo, passam como estão.
+const sanitize = (body) =>
+    body && typeof body === 'object' && 'password' in body ? publicUser(body) : body
 
 usersRouter.get('/me', auth, async (request, response) => {
     const getUserByIdController = makeGetUserByIdController()
@@ -138,6 +135,9 @@ usersRouter.post('/me/terms', auth, async (request, response) => {
 })
 
 usersRouter.post('/', async (request, response) => {
+    if (isBot(request)) {
+        return response.status(400).send({ message: 'Não foi possível concluir o cadastro.' })
+    }
     const createUserController = makeCreateUserController()
 
     const { statusCode, body } = await createUserController.execute(request)

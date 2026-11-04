@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -9,6 +10,7 @@ import { Field, Input } from '../components/ui/input'
 import { useAuth } from '../contexts/auth'
 import { getErrorMessage } from '../lib/api'
 import { passwordSchema } from '../lib/password'
+import { Honeypot } from '../components/honeypot'
 
 const schema = z
   .object({
@@ -36,10 +38,13 @@ export function SignupPage() {
     defaultValues: { first_name: '', last_name: '', email: '', password: '', passwordConfirmation: '', terms: false },
   })
 
+  const honeypotRef = useRef(null)
+
   // eslint-disable-next-line no-unused-vars
   const onSubmit = async ({ passwordConfirmation, terms, ...values }) => {
     try {
-      await signup(values)
+      const website = honeypotRef.current?.value
+      await signup(website ? { ...values, website } : values)
       toast.success('Conta criada. Enviamos um link de confirmação para o seu e-mail.')
       navigate('/', { replace: true })
     } catch (error) {
@@ -61,6 +66,7 @@ export function SignupPage() {
       }
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+        <Honeypot ref={honeypotRef} name="website" />
         <div className="grid grid-cols-2 gap-3">
           <Field label="Nome" htmlFor="first_name" error={errors.first_name?.message}>
             <Input id="first_name" autoComplete="given-name" hasError={!!errors.first_name} {...register('first_name')} />

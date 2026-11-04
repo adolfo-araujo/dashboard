@@ -198,3 +198,16 @@ jobs:
           done
           { echo "### Falhas conhecidas nas bibliotecas de produção"; echo; echo "| Parte | Resultado |"; echo "| --- | --- |"; cat audit.md; } >> "$GITHUB_STEP_SUMMARY"
           exit $status
+
+  segredos:
+    name: Nenhuma senha ou chave no código
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # todo o histórico: um segredo apagado depois continua no histórico
+      # gitleaks procura senhas, chaves de API, tokens e strings de conexão em todos os commits
+      - name: Varredura com gitleaks
+        run: |
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.18.4/gitleaks_8.18.4_linux_x64.tar.gz | tar xz gitleaks
+          ./gitleaks detect --source . --redact --verbose --no-banner --exit-code 1
