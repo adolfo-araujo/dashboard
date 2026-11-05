@@ -13,12 +13,14 @@ test('site mostra os projetos em desenvolvimento com a fase de cada um', async (
     await expect(secao.getByRole('heading', { name: nome })).toBeVisible()
   }
   await expect(secao.getByText('Em desenvolvimento', { exact: true })).toHaveCount(1)
-  await expect(secao.getByText('Em planejamento', { exact: true })).toHaveCount(2)
-  await expect(secao.getByText('Aberto para testes', { exact: true })).toHaveCount(1)
+  await expect(secao.getByText('Em planejamento', { exact: true })).toHaveCount(1)
+  await expect(secao.getByText('Aberto para testes', { exact: true })).toHaveCount(2)
   // O Volta já está no ar: no lugar da lista de espera, o link para o site dele
   const volta = secao.locator('li').filter({ hasText: 'Valtrea Volta' })
   await expect(volta.getByRole('link', { name: /Usar o Volta/ })).toHaveAttribute('href', 'https://volta.valtrea.com.br')
   await expect(volta.getByRole('button', { name: 'Quero ser avisado' })).toHaveCount(0)
+  const pulso = secao.locator('li').filter({ hasText: 'Valtrea Pulso' })
+  await expect(pulso.getByRole('link', { name: /Usar o Pulso/ })).toHaveAttribute('href', 'https://pulso.valtrea.com.br')
   await expect(secao.getByText(/saldo é fictício/)).toBeVisible()
   // Imagem da seção para conferir o visual (fica nos Artifacts da execução: "previas-do-site")
   await secao.screenshot({ path: `previas/projetos-${testInfo.project.name}.png` })
@@ -26,10 +28,10 @@ test('site mostra os projetos em desenvolvimento com a fase de cada um', async (
 
 test('quero ser avisado: pede aceite, envia e mostra o próximo passo', async ({ page }, testInfo) => {
   await page.goto(SITE)
-  const card = page.locator('#em-desenvolvimento li').filter({ hasText: 'Valtrea Pulso' })
+  const card = page.locator('#em-desenvolvimento li').filter({ hasText: 'Valtrea Agora' })
   await card.getByRole('button', { name: 'Quero ser avisado' }).click()
 
-  const form = card.getByRole('form', { name: 'Aviso de lançamento do Valtrea Pulso' })
+  const form = card.getByRole('form', { name: 'Aviso de lançamento do Valtrea Agora' })
   await form.getByLabel('Seu e-mail').fill(`site-${testInfo.project.name}-${Date.now()}@test.dev`)
 
   const { violations } = await new AxeBuilder({ page })
