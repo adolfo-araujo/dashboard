@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from 'react'
-import { Bell, CheckCircle2, Heart, MapPin, ArrowUpRight, QrCode, Users, Clock, Wallet, X } from 'lucide-react'
+import { Bell, CheckCircle2, Heart, MapPin, ArrowUpRight, QrCode, Tag, Users, Clock, Wallet, X } from 'lucide-react'
 import { COMPANY } from './config'
 
 // Produtos em desenvolvimento e a lista de espera ("Quero ser avisado").
@@ -137,7 +137,7 @@ const PROJECTS = [
   {
     id: 'volta',
     name: 'Valtrea Volta',
-    icon: QrCode,
+    icon: Tag,
     stage: 'testes',
     tagline: 'Se perdeu, pode voltar.',
     text: 'Uma etiqueta com QR Code para os seus objetos: quem encontrar avisa você sem ver o seu telefone nem o seu endereço. Já dá para usar no site, de graça; o app Android vem depois.',

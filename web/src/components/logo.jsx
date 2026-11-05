@@ -4,23 +4,18 @@ export function Logo({ className = '' }) {
       <svg viewBox="0 0 32 32" className="h-8 w-8" aria-hidden="true">
         <rect width="32" height="32" rx="8" fill="#55B02E" />
         <path
-          d="M9 10.5L15.5 23L23.5 9"
+          d="M7.5 22.5L13 17l4 3.5 7.5-8"
           stroke="#fff"
-          strokeWidth="3"
+          strokeWidth="2.6"
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <path
-          d="M18.5 9H23.5V14"
-          stroke="#fff"
-          strokeWidth="3"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+        <path d="M19.5 12.5h5v5" stroke="#fff" strokeWidth="2.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-      <span className="text-lg font-extrabold tracking-tight">Valtrea</span>
+      <span className="text-lg font-extrabold tracking-tight">
+        Valtrea <span className="text-primary">Finance</span>
+      </span>
     </div>
   )
 }
