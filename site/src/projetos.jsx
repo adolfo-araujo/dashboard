@@ -158,9 +158,10 @@ const PROJECTS = [
     id: 'agora',
     name: 'Valtrea Agora',
     icon: Clock,
-    stage: 'planejamento',
+    stage: 'testes',
     tagline: 'Oportunidades que acontecem perto de você.',
-    text: 'Horários vagos de salões, barbearias e outros serviços da sua região, para reservar ainda hoje.',
+    text: 'Horários vagos de salões, barbearias e outros serviços da sua região, para reservar ainda hoje. Já dá para usar no site, de graça; o app Android vem depois.',
+    url: 'https://agora.valtrea.com.br',
     Preview: AgoraPreview,
   },
 ]
