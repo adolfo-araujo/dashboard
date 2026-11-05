@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from 'react'
-import { Bell, CheckCircle2, Heart, MapPin, QrCode, Users, Clock, Wallet, X } from 'lucide-react'
+import { Bell, CheckCircle2, Heart, MapPin, ArrowUpRight, QrCode, Users, Clock, Wallet, X } from 'lucide-react'
 import { COMPANY } from './config'
 
 // Produtos em desenvolvimento e a lista de espera ("Quero ser avisado").
@@ -11,6 +11,7 @@ const PRIVACY_URL = `${COMPANY.financeUrl}/privacidade#lista-de-espera`
 const STAGE = {
   desenvolvimento: { label: 'Em desenvolvimento', className: 'border-primary/50 text-primary' },
   planejamento: { label: 'Em planejamento', className: 'border-border text-muted' },
+  testes: { label: 'Aberto para testes', className: 'border-primary bg-primary/10 text-primary' },
 }
 
 async function post(path, body) {
@@ -137,9 +138,10 @@ const PROJECTS = [
     id: 'volta',
     name: 'Valtrea Volta',
     icon: QrCode,
-    stage: 'planejamento',
+    stage: 'testes',
     tagline: 'Se perdeu, pode voltar.',
-    text: 'Uma etiqueta com QR Code para os seus objetos: quem encontrar avisa você sem ver o seu telefone nem o seu endereço.',
+    text: 'Uma etiqueta com QR Code para os seus objetos: quem encontrar avisa você sem ver o seu telefone nem o seu endereço. Já dá para usar no site, de graça; o app Android vem depois.',
+    url: 'https://volta.valtrea.com.br',
     Preview: VoltaPreview,
   },
   {
@@ -273,11 +275,11 @@ export function ProjetosEmDesenvolvimento() {
     <div id="em-desenvolvimento" className="mt-16 scroll-mt-20">
       <h3 className="text-2xl font-extrabold tracking-tight">Projetos em desenvolvimento</h3>
       <p className="mt-2 max-w-2xl text-muted">
-        O que estamos construindo agora. Nenhum deles está disponível ao público ainda; deixe seu e-mail para saber
-        quando abrir.
+        O que estamos construindo agora. Os que já estão abertos para testes têm o link; nos outros, deixe seu
+        e-mail para saber quando abrir.
       </p>
       <ul className="mt-8 grid gap-6 lg:grid-cols-2">
-        {PROJECTS.map(({ id, name, icon: Icon, stage, tagline, text, Preview }) => (
+        {PROJECTS.map(({ id, name, icon: Icon, stage, tagline, text, url, Preview }) => (
           <li key={id} className="grid gap-5 rounded-2xl border border-border bg-surface p-6 sm:grid-cols-[1.2fr_1fr]">
             <div className="flex flex-col">
               <div className="flex flex-wrap items-center gap-2">
@@ -290,7 +292,18 @@ export function ProjetosEmDesenvolvimento() {
               <p className="mt-3 text-lg font-extrabold leading-snug">{tagline}</p>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{text}</p>
               <div className="mt-5">
-                <WaitlistForm product={id} name={name} />
+                {url ? (
+                  <a
+                    href={url}
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-background hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  >
+                    Usar o {name.replace('Valtrea ', '')}
+                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                    <span className="sr-only">(abre {url.replace('https://', '')})</span>
+                  </a>
+                ) : (
+                  <WaitlistForm product={id} name={name} />
+                )}
               </div>
             </div>
             <Preview />
