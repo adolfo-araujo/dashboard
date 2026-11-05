@@ -148,9 +148,10 @@ const PROJECTS = [
     id: 'pulso',
     name: 'Valtrea Pulso',
     icon: Users,
-    stage: 'planejamento',
+    stage: 'testes',
     tagline: 'A voz organizada do seu bairro.',
-    text: 'Moradores registram o que o bairro precisa, reúnem apoio e acompanham o que acontece com cada iniciativa.',
+    text: 'Moradores registram o que o bairro precisa, reúnem apoio e acompanham o que acontece com cada iniciativa. Já dá para usar no site, de graça; o app Android vem depois.',
+    url: 'https://pulso.valtrea.com.br',
     Preview: PulsoPreview,
   },
   {
