@@ -125,7 +125,7 @@ function ProductPreview() {
   const parts = [
     { label: 'Ganhos', value: 8350, pct: 66.9, color: '#22C55E', icon: TrendingUp, cls: 'bg-earning/10 text-earning' },
     { label: 'Gastos', value: 3481.6, pct: 27.9, color: '#E93030', icon: TrendingDown, cls: 'bg-expense/10 text-expense' },
-    { label: 'Investimentos', value: 650, pct: 5.2, color: '#3B82F6', icon: PiggyBank, cls: 'bg-investment/10 text-investment' },
+    { label: 'Investimentos', value: 650, pct: 5.2, color: '#60A5FA', icon: PiggyBank, cls: 'bg-investment/10 text-investment' },
   ]
   let offset = 0
 

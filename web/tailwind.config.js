@@ -18,7 +18,8 @@ export default {
         // texto vermelho mais claro para ter contraste suficiente no fundo escuro (WCAG AA)
         expense: '#F25C5C',
         danger: { DEFAULT: '#C62828', hover: '#B71C1C' },
-        investment: '#3B82F6',
+        // azul mais claro: o #3B82F6 ficava abaixo de 4,5:1 sobre o fundo verde-escuro novo (WCAG AA)
+        investment: '#60A5FA',
       },
     },
   },

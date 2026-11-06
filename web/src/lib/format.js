@@ -23,7 +23,7 @@ export const today = () => dayjs().format('YYYY-MM-DD')
 export const TRANSACTION_TYPES = {
   EARNING: { label: 'Ganho', plural: 'Ganhos', color: '#22C55E', text: 'text-earning', bg: 'bg-earning/10' },
   EXPENSE: { label: 'Gasto', plural: 'Gastos', color: '#E93030', text: 'text-expense', bg: 'bg-expense/10' },
-  INVESTMENT: { label: 'Investimento', plural: 'Investimentos', color: '#3B82F6', text: 'text-investment', bg: 'bg-investment/10' },
+  INVESTMENT: { label: 'Investimento', plural: 'Investimentos', color: '#60A5FA', text: 'text-investment', bg: 'bg-investment/10' },
 }
 
 const presets = [
