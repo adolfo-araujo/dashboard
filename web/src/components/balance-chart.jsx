@@ -81,8 +81,8 @@ export function BalanceChart({ balance, isLoading }) {
               <Tooltip
                 formatter={(value, key) => [formatCurrency(value), TRANSACTION_TYPES[key].plural]}
                 contentStyle={{
-                  background: '#1A2C23',
-                  border: '1px solid #26382F',
+                  background: '#1C2026',
+                  border: '1px solid #272C34',
                   borderRadius: 8,
                   color: '#F9FAFB',
                 }}

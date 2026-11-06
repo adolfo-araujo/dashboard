@@ -5,10 +5,10 @@ export default {
     extend: {
       fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], display: ['Manrope', 'Inter', 'system-ui', 'sans-serif'] },
       colors: {
-        background: '#0B1712',
-        surface: '#13221B',
-        'surface-2': '#1A2C23',
-        border: '#26382F',
+        background: '#0D0F12',
+        surface: '#15181D',
+        'surface-2': '#1C2026',
+        border: '#272C34',
         foreground: '#F9FAFB',
         muted: '#9CA3AF',
         primary: { DEFAULT: '#22C55E', hover: '#16A34A' },

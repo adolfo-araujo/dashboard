@@ -160,7 +160,7 @@ function ProductPreview() {
         </ul>
 
         <svg viewBox="0 0 120 120" className="mx-auto h-32 w-32 -rotate-90" aria-hidden="true">
-          <circle cx="60" cy="60" r="44" fill="none" stroke="#1A2C23" strokeWidth="16" />
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#1C2026" strokeWidth="16" />
           {parts.map(({ label, pct, color }) => {
             const el = (
               <circle
