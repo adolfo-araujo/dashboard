@@ -11,7 +11,7 @@ export default {
         border: '#272C34',
         foreground: '#F9FAFB',
         muted: '#9CA3AF',
-        primary: { DEFAULT: '#22C55E', hover: '#16A34A' },
+        primary: { DEFAULT: '#55B02E', hover: '#4A9A28' },
       },
     },
   },

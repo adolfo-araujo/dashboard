@@ -63,7 +63,7 @@ async function sendConfirmation(email, product, token) {
   <p>Olá!</p>
   <p>Recebemos um pedido para avisar este e-mail quando o <strong>${name}</strong> estiver disponível.</p>
   <p style="margin:28px 0">
-    <a href="${confirm}" style="background:#22C55E;color:#111827;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Confirmar inscrição</a>
+    <a href="${confirm}" style="background:#55B02E;color:#0D0F12;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Confirmar inscrição</a>
   </p>
   <p style="font-size:13px;color:#5f6670">O link vale por ${WAITLIST_CONFIRM_DAYS} dias. Usaremos seu e-mail só para esse aviso. Se não foi você, ignore: sem a confirmação, o endereço é apagado em ${WAITLIST_CONFIRM_DAYS} dias.</p>
   <p style="font-size:13px;color:#5f6670"><a href="${leave}" style="color:#5f6670">Sair da lista</a></p>

@@ -5,13 +5,13 @@ export function Logo({ className = '' }) {
         <rect width="32" height="32" rx="8" fill="#0F3D2E" />
         <path
           d="M7.5 22.5L13 17l4 3.5 7.5-8"
-          stroke="#22C55E"
+          stroke="#55B02E"
           strokeWidth="2.6"
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <path d="M19.5 12.5h5v5" stroke="#22C55E" strokeWidth="2.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M19.5 12.5h5v5" stroke="#55B02E" strokeWidth="2.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       <span className="text-lg font-semibold tracking-tight">
         Valtrea <span className="text-primary">Finance</span>
