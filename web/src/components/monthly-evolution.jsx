@@ -13,9 +13,9 @@ const toDate = (month) => new Date(`${month}-01T00:00:00Z`)
 const shortMonth = (month) => monthFormat.format(toDate(month)).replace('.', '')
 
 const SERIES = {
-  earnings: { label: 'Ganhos', color: '#55B02E' },
+  earnings: { label: 'Ganhos', color: '#22C55E' },
   expenses: { label: 'Gastos', color: '#E93030' },
-  balance: { label: 'Saldo do mês', color: '#ECEEF1' },
+  balance: { label: 'Saldo do mês', color: '#F9FAFB' },
 }
 
 function ChartTooltip({ active, payload, label }) {
@@ -93,14 +93,14 @@ export function MonthlyEvolution() {
               <XAxis
                 dataKey="month"
                 tickFormatter={shortMonth}
-                tick={{ fill: '#8D939D', fontSize: 12 }}
+                tick={{ fill: '#9CA3AF', fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
                 interval={months > 6 ? 1 : 0}
               />
               <YAxis
                 tickFormatter={(v) => compact.format(v)}
-                tick={{ fill: '#8D939D', fontSize: 12 }}
+                tick={{ fill: '#9CA3AF', fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
                 width={48}

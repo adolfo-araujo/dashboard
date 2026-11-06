@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from 'react'
-import { Bell, CheckCircle2, Heart, MapPin, ArrowUpRight, QrCode, Users, Clock, Wallet, X } from 'lucide-react'
+import { Bell, CheckCircle2, Heart, MapPin, ArrowUpRight, QrCode, Tag, Users, Clock, Wallet, X } from 'lucide-react'
 import { COMPANY } from './config'
 
 // Produtos em desenvolvimento e a lista de espera ("Quero ser avisado").
@@ -41,7 +41,7 @@ function PayPreview() {
     <Frame note="Exemplo com saldo fictício: o Pay está em testes e não movimenta dinheiro real.">
       <div className="rounded-lg bg-gradient-to-br from-[#15803D] to-[#166534] p-4 text-white">
         <p className="text-xs opacity-90">Saldo de teste</p>
-        <p className="mt-1 text-2xl font-extrabold tabular-nums">R$ 250,00</p>
+        <p className="mt-1 text-2xl font-bold tabular-nums">R$ 250,00</p>
       </div>
       <ul className="mt-3 space-y-2 text-sm">
         {[
@@ -137,7 +137,7 @@ const PROJECTS = [
   {
     id: 'volta',
     name: 'Valtrea Volta',
-    icon: QrCode,
+    icon: Tag,
     stage: 'testes',
     tagline: 'Se perdeu, pode voltar.',
     text: 'Uma etiqueta com QR Code para os seus objetos: quem encontrar avisa você sem ver o seu telefone nem o seu endereço. Já dá para usar no site, de graça; o app Android vem depois.',
@@ -238,7 +238,7 @@ function WaitlistForm({ product, name }) {
           required
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
-          className="mt-1 h-4 w-4 shrink-0 accent-[#55B02E]"
+          className="mt-1 h-4 w-4 shrink-0 accent-[#22C55E]"
         />
         <label htmlFor={`${id}-aceite`} className="leading-relaxed text-muted">
           Quero receber um e-mail quando o {name} estiver disponível. Vocês usam meu e-mail só para isso, e posso
@@ -275,7 +275,7 @@ function WaitlistForm({ product, name }) {
 export function ProjetosEmDesenvolvimento() {
   return (
     <div id="em-desenvolvimento" className="mt-16 scroll-mt-20">
-      <h3 className="text-2xl font-extrabold tracking-tight">Projetos em desenvolvimento</h3>
+      <h3 className="text-2xl font-bold tracking-tight">Projetos em desenvolvimento</h3>
       <p className="mt-2 max-w-2xl text-muted">
         O que estamos construindo agora. Os que já estão abertos para testes têm o link; nos outros, deixe seu
         e-mail para saber quando abrir.
@@ -291,7 +291,7 @@ export function ProjetosEmDesenvolvimento() {
                   {STAGE[stage].label}
                 </span>
               </div>
-              <p className="mt-3 text-lg font-extrabold leading-snug">{tagline}</p>
+              <p className="mt-3 text-lg font-bold leading-snug">{tagline}</p>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{text}</p>
               <div className="mt-5">
                 {url ? (

@@ -69,7 +69,7 @@ export function BalanceCards({ balance, isLoading, from, to }) {
         ) : (
           <p
             className={cn(
-              'mt-4 text-4xl font-extrabold tracking-tight tabular-nums sm:text-5xl',
+              'mt-4 text-4xl font-bold tracking-tight tabular-nums sm:text-5xl',
               current < 0 && 'text-expense',
             )}
           >

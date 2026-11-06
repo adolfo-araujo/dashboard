@@ -17,7 +17,7 @@ if (dsn && import.meta.env.PROD) {
 function CrashScreen() {
   return (
     <main id="conteudo" tabIndex={-1} className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
-      <h1 className="text-2xl font-extrabold tracking-tight">Algo deu errado nesta tela</h1>
+      <h1 className="text-2xl font-bold tracking-tight">Algo deu errado nesta tela</h1>
       <p className="mt-2 max-w-sm text-sm text-muted">
         O erro já foi registrado para correção. Recarregue a página para continuar. Seus dados estão salvos.
       </p>

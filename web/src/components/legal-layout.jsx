@@ -26,7 +26,7 @@ export function LegalLayout({ title, children }) {
       </header>
 
       <main id="conteudo" tabIndex={-1} className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <h1 className="text-3xl font-extrabold tracking-tight">{title}</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
         <p className="mt-2 text-sm text-muted">Última atualização: {LEGAL.updatedAt}</p>
         <div className="mt-8 space-y-8 text-base leading-relaxed text-foreground/90">{children}</div>
       </main>

@@ -18,7 +18,7 @@ function Stat({ label, value, detail, highlight }) {
   return (
     <Card className={cn('p-5', highlight && 'border-primary/50')}>
       <p className="text-sm text-muted">{label}</p>
-      <p className={cn('mt-2 text-3xl font-extrabold tabular-nums', highlight && 'text-primary')}>{value}</p>
+      <p className={cn('mt-2 text-3xl font-bold tabular-nums', highlight && 'text-primary')}>{value}</p>
       {detail && <p className="mt-1 text-xs leading-relaxed text-muted">{detail}</p>}
     </Card>
   )
@@ -75,7 +75,7 @@ export function AdminPage() {
       <main id="conteudo" tabIndex={-1} className="mx-auto max-w-6xl space-y-10 px-4 py-8 sm:px-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight">Uso do Valtrea Finance</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Uso do Valtrea Finance</h1>
             <p className="text-sm text-muted">
               Números agregados. Nenhum dado pessoal ou financeiro individual aparece aqui.
             </p>

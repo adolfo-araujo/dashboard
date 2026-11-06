@@ -84,9 +84,9 @@ export function BalanceChart({ balance, isLoading }) {
                   background: '#1C2026',
                   border: '1px solid #272C34',
                   borderRadius: 8,
-                  color: '#ECEEF1',
+                  color: '#F9FAFB',
                 }}
-                itemStyle={{ color: '#ECEEF1' }}
+                itemStyle={{ color: '#F9FAFB' }}
               />
             </PieChart>
           </ResponsiveContainer>
