@@ -81,12 +81,12 @@ export function BalanceChart({ balance, isLoading }) {
               <Tooltip
                 formatter={(value, key) => [formatCurrency(value), TRANSACTION_TYPES[key].plural]}
                 contentStyle={{
-                  background: '#1C2026',
-                  border: '1px solid #272C34',
+                  background: '#1A2C23',
+                  border: '1px solid #26382F',
                   borderRadius: 8,
-                  color: '#ECEEF1',
+                  color: '#F9FAFB',
                 }}
-                itemStyle={{ color: '#ECEEF1' }}
+                itemStyle={{ color: '#F9FAFB' }}
               />
             </PieChart>
           </ResponsiveContainer>

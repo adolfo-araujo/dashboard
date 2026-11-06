@@ -123,7 +123,7 @@ const money = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'B
 // Prévia do painel com dados de exemplo. Mesma aparência do produto real.
 function ProductPreview() {
   const parts = [
-    { label: 'Ganhos', value: 8350, pct: 66.9, color: '#55B02E', icon: TrendingUp, cls: 'bg-earning/10 text-earning' },
+    { label: 'Ganhos', value: 8350, pct: 66.9, color: '#22C55E', icon: TrendingUp, cls: 'bg-earning/10 text-earning' },
     { label: 'Gastos', value: 3481.6, pct: 27.9, color: '#E93030', icon: TrendingDown, cls: 'bg-expense/10 text-expense' },
     { label: 'Investimentos', value: 650, pct: 5.2, color: '#3B82F6', icon: PiggyBank, cls: 'bg-investment/10 text-investment' },
   ]
@@ -141,7 +141,7 @@ function ProductPreview() {
         </span>
         Saldo de outubro
       </div>
-      <p className="mt-3 text-4xl font-extrabold tracking-tight tabular-nums">{money(4218.4)}</p>
+      <p className="mt-3 text-4xl font-bold tracking-tight tabular-nums">{money(4218.4)}</p>
 
       <div className="mt-6 grid items-center gap-6 sm:grid-cols-[1fr_auto]">
         <ul className="space-y-3">
@@ -160,7 +160,7 @@ function ProductPreview() {
         </ul>
 
         <svg viewBox="0 0 120 120" className="mx-auto h-32 w-32 -rotate-90" aria-hidden="true">
-          <circle cx="60" cy="60" r="44" fill="none" stroke="#1C2026" strokeWidth="16" />
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#1A2C23" strokeWidth="16" />
           {parts.map(({ label, pct, color }) => {
             const el = (
               <circle
@@ -223,7 +223,7 @@ export function LandingPage() {
         {/* Abertura */}
         <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-20 pt-14 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:pt-24">
           <div>
-            <h1 className="max-w-xl text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="max-w-xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
               Saiba para onde vai o seu dinheiro.
             </h1>
             <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted">
@@ -246,7 +246,7 @@ export function LandingPage() {
         {/* Funcionalidades */}
         <section className="border-t border-border">
           <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="max-w-xl text-3xl font-extrabold tracking-tight">
+            <h2 className="max-w-xl text-3xl font-bold tracking-tight">
               Tudo para organizar suas finanças, sem complicação
             </h2>
             <div className="mt-12 grid gap-x-12 sm:grid-cols-2 lg:grid-cols-3">
@@ -264,11 +264,11 @@ export function LandingPage() {
         {/* Passos */}
         <section className="border-t border-border bg-surface/40">
           <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="text-3xl font-extrabold tracking-tight">Comece em três passos</h2>
+            <h2 className="text-3xl font-bold tracking-tight">Comece em três passos</h2>
             <ol className="mt-12 grid gap-10 md:grid-cols-3">
               {steps.map(({ title, text }, i) => (
                 <li key={title} className="flex gap-4">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-primary text-lg font-extrabold text-primary">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-primary text-lg font-bold text-primary">
                     {i + 1}
                   </span>
                   <div>
@@ -285,7 +285,7 @@ export function LandingPage() {
         <section className="border-t border-border">
           <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1fr_1.2fr]">
             <div>
-              <h2 className="text-3xl font-extrabold tracking-tight">Seus dados ficam com você</h2>
+              <h2 className="text-3xl font-bold tracking-tight">Seus dados ficam com você</h2>
               <p className="mt-4 max-w-md leading-relaxed text-muted">
                 Suas finanças são assunto seu. O Valtrea guarda só o necessário para funcionar e segue a Lei Geral
                 de Proteção de Dados.
@@ -308,7 +308,7 @@ export function LandingPage() {
         {/* Perguntas frequentes */}
         <section className="border-t border-border">
           <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
-            <h2 className="text-3xl font-extrabold tracking-tight">Perguntas frequentes</h2>
+            <h2 className="text-3xl font-bold tracking-tight">Perguntas frequentes</h2>
             <div className="mt-8 divide-y divide-border border-y border-border">
               {faq.map(({ q, a }) => (
                 <details key={q} className="group py-4">
@@ -329,7 +329,7 @@ export function LandingPage() {
         <section className="border-t border-border">
           <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-4 py-20 sm:px-6 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 className="text-3xl font-extrabold tracking-tight">Organize seu mês ainda hoje.</h2>
+              <h2 className="text-3xl font-bold tracking-tight">Organize seu mês ainda hoje.</h2>
               <p className="mt-2 text-muted">Leva menos de um minuto para criar sua conta.</p>
             </div>
             <Link to="/signup" className={lb('primary', 'lg')}>

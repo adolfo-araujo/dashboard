@@ -50,7 +50,7 @@ export function DashboardPage() {
       <main id="conteudo" tabIndex={-1} className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight">Olá, {user?.first_name}</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Olá, {user?.first_name}</h1>
             <p className="text-sm text-muted">Este é o resumo das suas finanças no período.</p>
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">

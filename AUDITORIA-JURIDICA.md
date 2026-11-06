@@ -15,14 +15,14 @@
 | 4 | Política de reembolso | ➖ | ➖ | Valtrea Finance é gratuito; os serviços do site são contratados por proposta escrita (veja "O que depende de você") |
 | 5 | Formulários (LGPD) | ⚠️ | ✅ | Cadastro com "estou ciente da Política" separado do aceite dos Termos e declaração de idade; aviso na recuperação de senha; rodapé legal em todas as telas de login |
 | 6 | Só dados necessários | ⚠️ | ✅ | Só nome, sobrenome, e-mail e senha; cadastros nunca confirmados apagados após 30 dias |
-| 7 | Scripts de rastreamento | ⚠️ | ✅ | Nenhum rastreador; fonte Mulish agora servida pelo próprio site (o Google não recebe mais o IP de quem visita) |
+| 7 | Scripts de rastreamento | ⚠️ | ✅ | Nenhum rastreador; fonte Inter agora servida pelo próprio site (o Google não recebe mais o IP de quem visita) |
 | 8 | Acessibilidade geral | ⚠️ | ✅ | Declaração de acessibilidade publicada; `lang="pt-BR"`; testes axe nas principais páginas a cada mudança |
 | 9 | Alt nas imagens | ✅ | ✅ | Ícones decorativos com `aria-hidden`; gráficos com descrição |
 | 10 | Contraste | ⚠️ | ✅ | Botões verdes dos e-mails com texto escuro (6,98:1) |
 | 11 | Navegação por teclado | ⚠️ | ✅ | "Pular para o conteúdo" no app e no site; foco preso dentro das janelas |
 | 12 | Avaliações e depoimentos | ✅ | ✅ | Não há depoimentos nem notas |
 | 13 | Promessas e publicidade | ✅ | ✅ | Alegações factuais; prévias do painel marcadas como "Exemplo com valores fictícios" |
-| 14 | Direitos autorais | ✅ | ✅ | Ícones e imagens de compartilhamento feitos a partir do logotipo; fonte Mulish (licença OFL, arquivo incluído); ícones Lucide (ISC) |
+| 14 | Direitos autorais | ✅ | ✅ | Ícones e imagens de compartilhamento feitos a partir do logotipo; fontes Inter e Manrope (licença OFL, arquivos incluídos); ícones Lucide (ISC) |
 | 15 | Dados da empresa | ⚠️ | ⚠️ | Responsável pessoa física, por decisão sua; nome, cidade e e-mail no site e nos documentos, sem CPF nem endereço |
 | 16 | Conformidade LGPD | ⚠️ | ✅ | "Baixar meus dados" (acesso e portabilidade), novo aceite quando os termos mudam, retenção automática, registro de operações e plano de incidentes |
 | 17 | Outros riscos jurídicos | ⚠️ | ⚠️ | Adolescentes com autorização (ECA Digital) e Valtrea Pay (veja abaixo) |
@@ -56,7 +56,7 @@ Legenda: ✅ Conforme · ⚠️ Parcial · ❌ Não conforme · ➖ Não se apli
 
 ### 7. Rastreamento (Google Fonts)
 - **Problema:** a fonte vinha de `fonts.googleapis.com`, que recebe o IP de quem visita.
-- **Correção:** fonte Mulish (OFL) servida pelo próprio site, com cache de um ano e uso offline no app; CSP do app e do site sem domínios do Google. Arquivos: `web/src/fonts.css`, `site/src/fonts.css`, `web/public/fonts/`, `site/public/fonts/`, `web/index.html`, `site/index.html`, `web/vercel.json`, `site/vercel.json`, `web/public/sw.js`.
+- **Correção:** fontes Inter e Manrope (OFL) servidas pelo próprio site, com cache de um ano e uso offline no app; CSP do app e do site sem domínios do Google. Arquivos: `web/src/fonts.css`, `site/src/fonts.css`, `web/public/fonts/`, `site/public/fonts/`, `web/index.html`, `site/index.html`, `web/vercel.json`, `site/vercel.json`, `web/public/sw.js`.
 
 ### 8 a 11. Acessibilidade
 - **Declaração de acessibilidade** em `/acessibilidade` (LBI art. 63; NBR 17225), com o que foi feito, limitações conhecidas e canal. Linkada no rodapé do app e do site e no sitemap. Arquivos: `web/src/pages/accessibility.jsx`, `web/src/components/legal-links.jsx`, `site/src/App.jsx`, `site/vercel.json`.

@@ -20,12 +20,10 @@ const whatsappUrl = COMPANY.whatsapp
 function Logo({ className = '' }) {
   return (
     <span className={`flex items-center gap-2.5 ${className}`}>
-      <svg viewBox="0 0 32 32" className="h-8 w-8" aria-hidden="true">
-        <rect width="32" height="32" rx="8" fill="#55B02E" />
-        <path d="M9 10.5L15.5 23L23.5 9" stroke="#fff" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M18.5 9H23.5V14" stroke="#fff" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <svg viewBox="26 29 56 56" className="h-9 w-9" aria-hidden="true">
+        <path d="M31 35h13l15 32-6 12z" fill="#16A34A" stroke="#16A34A" strokeWidth="2.4" strokeLinejoin="round" /><path d="M64 35h13L57 77c-1.5 3-5 3-6.5 0L48 71z" fill="#22C55E" stroke="#22C55E" strokeWidth="2.4" strokeLinejoin="round" />
       </svg>
-      <span className="text-lg font-extrabold tracking-tight">Valtrea</span>
+      <span className="text-xl font-semibold tracking-tight">Valtrea</span>
     </span>
   )
 }
@@ -140,7 +138,7 @@ export default function App() {
         {/* Serviços */}
         <section id="servicos" className="scroll-mt-16 border-t border-border">
           <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="max-w-xl text-3xl font-extrabold tracking-tight">O que fazemos para a sua empresa</h2>
+            <h2 className="max-w-xl text-3xl font-bold tracking-tight">O que fazemos para a sua empresa</h2>
             <div className="mt-12 grid gap-x-12 sm:grid-cols-2">
               {services.map(({ icon: Icon, title, text }) => (
                 <div key={title} className="flex gap-4 border-t border-border py-7">
@@ -158,7 +156,7 @@ export default function App() {
         {/* Produtos */}
         <section id="produtos" className="scroll-mt-16 border-t border-border bg-surface/40">
           <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="text-3xl font-extrabold tracking-tight">Nossos produtos</h2>
+            <h2 className="text-3xl font-bold tracking-tight">Nossos produtos</h2>
             <p className="mt-3 max-w-xl text-muted">
               Além de desenvolver para clientes, criamos produtos próprios. Eles também mostram, na prática, o que
               entregamos.
@@ -167,7 +165,7 @@ export default function App() {
             <div className="mt-10 grid overflow-hidden rounded-2xl border border-border bg-surface lg:grid-cols-[1.1fr_1fr]">
               <div className="p-7 sm:p-10">
                 <p className="text-sm font-bold text-primary">Valtrea Finance</p>
-                <h3 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">
+                <h3 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
                   Saiba para onde vai o seu dinheiro.
                 </h3>
                 <p className="mt-3 leading-relaxed text-muted">
@@ -191,7 +189,7 @@ export default function App() {
               <div className="flex items-center border-t border-border bg-background/60 p-7 sm:p-10 lg:border-l lg:border-t-0" aria-hidden="true">
                 <div className="w-full rounded-xl border border-border bg-surface p-5 shadow-2xl shadow-black/40">
                   <p className="text-sm text-muted">Saldo de outubro</p>
-                  <p className="mt-2 text-3xl font-extrabold tabular-nums">R$ 4.218,40</p>
+                  <p className="mt-2 text-3xl font-bold tabular-nums">R$ 4.218,40</p>
                   <div className="mt-5 space-y-3 text-sm">
                     {[
                       ['Moradia', 72, 'R$ 2.200,00'],
@@ -221,11 +219,11 @@ export default function App() {
         {/* Como trabalhamos */}
         <section id="como-trabalhamos" className="scroll-mt-16 border-t border-border">
           <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="text-3xl font-extrabold tracking-tight">Como trabalhamos</h2>
+            <h2 className="text-3xl font-bold tracking-tight">Como trabalhamos</h2>
             <ol className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
               {steps.map(({ title, text }, i) => (
                 <li key={title}>
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-primary text-lg font-extrabold text-primary">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-primary text-lg font-bold text-primary">
                     {i + 1}
                   </span>
                   <h3 className="mt-4 font-bold">{title}</h3>
@@ -248,7 +246,7 @@ export default function App() {
         {/* Contato */}
         <section id="contato" className="scroll-mt-16 border-t border-border bg-surface/40">
           <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-4xl">
+            <h2 className="max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">
               Tem um projeto em mente? Vamos conversar.
             </h2>
             <p className="mt-4 max-w-xl leading-relaxed text-muted">
