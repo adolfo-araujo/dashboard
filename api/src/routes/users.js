@@ -267,7 +267,7 @@ usersRouter.delete('/me', auth, async (request, response) => {
                     subject: 'Sua conta no Valtrea foi excluída',
                     text: `Olá, ${user.first_name}.\n\nConfirmamos a exclusão da sua conta no Valtrea. Seus dados e todas as suas transações foram apagados de forma permanente.\n\nSe quiser voltar a usar o Valtrea, é só criar uma nova conta.`,
                     html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;color:#111827">
-  <h2 style="color:#15803D;margin-bottom:8px">Valtrea</h2>
+  <h2 style="color:#3D8121;margin-bottom:8px">Valtrea</h2>
   <p>Olá, ${user.first_name}.</p>
   <p>Confirmamos a exclusão da sua conta no Valtrea. Seus dados e todas as suas transações foram <strong>apagados de forma permanente</strong>.</p>
   <p style="font-size:13px;color:#5f6670">Se quiser voltar a usar o Valtrea, é só criar uma nova conta.</p>

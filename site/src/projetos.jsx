@@ -238,7 +238,7 @@ function WaitlistForm({ product, name }) {
           required
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
-          className="mt-1 h-4 w-4 shrink-0 accent-[#22C55E]"
+          className="mt-1 h-4 w-4 shrink-0 accent-[#55B02E]"
         />
         <label htmlFor={`${id}-aceite`} className="leading-relaxed text-muted">
           Quero receber um e-mail quando o {name} estiver disponível. Vocês usam meu e-mail só para isso, e posso

@@ -41,11 +41,11 @@ export async function sendVerificationEmail(user) {
         subject: 'Confirme seu e-mail no Valtrea',
         text: `Olá, ${user.first_name}!\n\nFalta pouco para começar a usar o Valtrea. Confirme seu e-mail acessando o link abaixo (válido por ${TOKEN_TTL_HOURS} horas):\n\n${link}\n\nSe você não criou uma conta no Valtrea, ignore este e-mail.`,
         html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;color:#111827">
-  <h2 style="color:#15803D;margin-bottom:8px">Valtrea</h2>
+  <h2 style="color:#3D8121;margin-bottom:8px">Valtrea</h2>
   <p>Olá, ${user.first_name}!</p>
   <p>Falta pouco para começar a usar o Valtrea. Confirme seu e-mail clicando no botão abaixo.</p>
   <p style="margin:28px 0">
-    <a href="${link}" style="background:#22C55E;color:#111827;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Confirmar e-mail</a>
+    <a href="${link}" style="background:#55B02E;color:#0D0F12;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Confirmar e-mail</a>
   </p>
   <p style="font-size:13px;color:#5f6670">O link vale por ${TOKEN_TTL_HOURS} horas. Se você não criou uma conta no Valtrea, ignore este e-mail.</p>
 </div>`,

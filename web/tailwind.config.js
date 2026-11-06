@@ -13,8 +13,8 @@ export default {
         border: '#272C34',
         foreground: '#F9FAFB',
         muted: '#9CA3AF',
-        primary: { DEFAULT: '#22C55E', hover: '#16A34A' },
-        earning: '#22C55E',
+        primary: { DEFAULT: '#55B02E', hover: '#4A9A28' },
+        earning: '#55B02E',
         // texto vermelho mais claro para ter contraste suficiente no fundo escuro (WCAG AA)
         expense: '#F25C5C',
         danger: { DEFAULT: '#C62828', hover: '#B71C1C' },

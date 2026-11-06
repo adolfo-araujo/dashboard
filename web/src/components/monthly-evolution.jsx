@@ -13,7 +13,7 @@ const toDate = (month) => new Date(`${month}-01T00:00:00Z`)
 const shortMonth = (month) => monthFormat.format(toDate(month)).replace('.', '')
 
 const SERIES = {
-  earnings: { label: 'Ganhos', color: '#22C55E' },
+  earnings: { label: 'Ganhos', color: '#55B02E' },
   expenses: { label: 'Gastos', color: '#E93030' },
   balance: { label: 'Saldo do mês', color: '#F9FAFB' },
 }

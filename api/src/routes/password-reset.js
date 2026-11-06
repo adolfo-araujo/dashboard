@@ -36,11 +36,11 @@ const buildEmail = (firstName, link) => ({
     subject: 'Redefinir sua senha do Valtrea',
     text: `Olá, ${firstName}!\n\nRecebemos um pedido para redefinir a senha da sua conta no Valtrea.\nPara criar uma senha nova, acesse o link abaixo (válido por ${TOKEN_TTL_MINUTES} minutos):\n\n${link}\n\nSe não foi você, ignore este e-mail. Sua senha atual continua valendo.`,
     html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;color:#111827">
-  <h2 style="color:#15803D;margin-bottom:8px">Valtrea</h2>
+  <h2 style="color:#3D8121;margin-bottom:8px">Valtrea</h2>
   <p>Olá, ${firstName}!</p>
   <p>Recebemos um pedido para redefinir a senha da sua conta no Valtrea.</p>
   <p style="margin:28px 0">
-    <a href="${link}" style="background:#22C55E;color:#111827;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Criar nova senha</a>
+    <a href="${link}" style="background:#55B02E;color:#0D0F12;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Criar nova senha</a>
   </p>
   <p style="font-size:13px;color:#5f6670">O link vale por ${TOKEN_TTL_MINUTES} minutos. Se não foi você, ignore este e-mail: sua senha atual continua valendo.</p>
 </div>`,

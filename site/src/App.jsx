@@ -21,7 +21,7 @@ function Logo({ className = '' }) {
   return (
     <span className={`flex items-center gap-2.5 ${className}`}>
       <svg viewBox="26 29 56 56" className="h-9 w-9" aria-hidden="true">
-        <path d="M31 35h13l15 32-6 12z" fill="#16A34A" stroke="#16A34A" strokeWidth="2.4" strokeLinejoin="round" /><path d="M64 35h13L57 77c-1.5 3-5 3-6.5 0L48 71z" fill="#22C55E" stroke="#22C55E" strokeWidth="2.4" strokeLinejoin="round" />
+        <path d="M31 35h13l15 32-6 12z" fill="#4A9A28" stroke="#4A9A28" strokeWidth="2.4" strokeLinejoin="round" /><path d="M64 35h13L57 77c-1.5 3-5 3-6.5 0L48 71z" fill="#55B02E" stroke="#55B02E" strokeWidth="2.4" strokeLinejoin="round" />
       </svg>
       <span className="text-xl font-semibold tracking-tight">Valtrea</span>
     </span>

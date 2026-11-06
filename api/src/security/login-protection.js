@@ -100,12 +100,12 @@ async function sendLockEmail(user) {
         subject: 'Bloqueamos temporariamente o acesso à sua conta',
         text: `Olá, ${user.first_name}.\n\nDetectamos ${MAX_FAILURES_PER_EMAIL} tentativas de login com senha errada na sua conta do Valtrea. Por segurança, novas tentativas ficam bloqueadas por ${WINDOW_MINUTES} minutos.\n\nSe foi você, é só esperar e tentar de novo, ou criar uma senha nova em:\n${resetLink}\n\nSe não foi você, recomendamos trocar a senha assim que possível.`,
         html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;color:#111827">
-  <h2 style="color:#15803D;margin-bottom:8px">Valtrea</h2>
+  <h2 style="color:#3D8121;margin-bottom:8px">Valtrea</h2>
   <p>Olá, ${user.first_name}.</p>
   <p>Detectamos <strong>${MAX_FAILURES_PER_EMAIL} tentativas de login com senha errada</strong> na sua conta. Por segurança, novas tentativas ficam bloqueadas por ${WINDOW_MINUTES} minutos.</p>
   <p>Se foi você, é só esperar e tentar de novo. Se não foi, recomendamos trocar sua senha:</p>
   <p style="margin:28px 0">
-    <a href="${resetLink}" style="background:#22C55E;color:#111827;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Criar nova senha</a>
+    <a href="${resetLink}" style="background:#55B02E;color:#0D0F12;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Criar nova senha</a>
   </p>
 </div>`,
     })
