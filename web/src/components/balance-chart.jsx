@@ -2,6 +2,7 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import { PiggyBank, TrendingDown, TrendingUp } from 'lucide-react'
 import { Card } from './ui/card'
 import { TRANSACTION_TYPES, formatCurrency } from '../lib/format'
+import { coresDoGrafico, useTemaClaro } from '../lib/tema'
 
 const icons = { EARNING: TrendingUp, EXPENSE: TrendingDown, INVESTMENT: PiggyBank }
 
@@ -35,6 +36,7 @@ function formatPercent(pct, value) {
 }
 
 export function BalanceChart({ balance, isLoading }) {
+  const cores = coresDoGrafico(useTemaClaro())
   const keys = ['EARNING', 'EXPENSE', 'INVESTMENT']
   const values = [
     Number(balance?.earnings ?? 0),
@@ -81,12 +83,12 @@ export function BalanceChart({ balance, isLoading }) {
               <Tooltip
                 formatter={(value, key) => [formatCurrency(value), TRANSACTION_TYPES[key].plural]}
                 contentStyle={{
-                  background: '#1C2026',
-                  border: '1px solid #272C34',
+                  background: cores.caixa,
+                  border: `1px solid ${cores.borda}`,
                   borderRadius: 8,
-                  color: '#F9FAFB',
+                  color: cores.texto,
                 }}
-                itemStyle={{ color: '#F9FAFB' }}
+                itemStyle={{ color: cores.texto }}
               />
             </PieChart>
           </ResponsiveContainer>

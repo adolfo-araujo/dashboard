@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /reset-password
 Disallow: /verify-email
+Disallow: /admin
 
 Sitemap: https://finance.valtrea.com.br/sitemap.xml

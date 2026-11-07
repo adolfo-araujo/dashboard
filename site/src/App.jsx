@@ -104,6 +104,9 @@ export default function App() {
             <a href="#como-trabalhamos" className="hidden rounded-lg px-3 py-2 text-muted hover:text-foreground md:inline">
               Como trabalhamos
             </a>
+            <a href="#sobre" className="hidden rounded-lg px-3 py-2 text-muted hover:text-foreground md:inline">
+              Sobre
+            </a>
             <a href="#contato" className="ml-2 inline-flex h-9 items-center rounded-lg bg-primary px-4 text-background hover:bg-primary-hover">
               Fale conosco
             </a>
@@ -244,6 +247,37 @@ export default function App() {
         </section>
 
         {/* Contato */}
+        {/* Sobre */}
+        <section id="sobre" className="scroll-mt-16 border-t border-border">
+          <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1fr_1.1fr]">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight">Sobre a Valtrea</h2>
+              <p className="mt-4 text-lg leading-relaxed text-muted">
+                A Valtrea é feita por {COMPANY.owner}, no {COMPANY.city.replace('/', ' - ')}. Criamos produtos digitais
+                próprios e projetos sob medida para empresas e profissionais.
+              </p>
+              <p className="mt-4 leading-relaxed text-muted">
+                Os nossos produtos (Valtrea Finance, Volta, Pulso e Agora, e o Pay em testes) são a vitrine do jeito
+                que trabalhamos: no ar, gratuitos durante os testes e feitos do zero, do servidor ao app no celular.
+              </p>
+            </div>
+            <ul className="grid gap-4 sm:grid-cols-2">
+              {[
+                ['Privacidade de verdade', 'Só os dados necessários, sem anúncios nem rastreadores, e você baixa ou apaga os seus quando quiser.'],
+                ['Para todo mundo usar', 'Contraste, navegação por teclado e textos para leitor de tela pensados desde o início, seguindo as normas de acessibilidade (WCAG).'],
+                ['Código próprio', 'Nada de modelo pronto: cada sistema é desenhado para o problema de quem vai usar.'],
+                ['Transparência', 'Quem somos, onde estamos e como falar com a gente estão sempre à vista.'],
+              ].map(([titulo, texto]) => (
+                <li key={titulo} className="rounded-2xl border border-border bg-surface p-5">
+                  <CheckCircle2 className="h-5 w-5 text-primary" aria-hidden="true" />
+                  <h3 className="mt-2 font-bold">{titulo}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">{texto}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
         <section id="contato" className="scroll-mt-16 border-t border-border bg-surface/40">
           <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
             <h2 className="max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">

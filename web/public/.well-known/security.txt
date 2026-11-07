@@ -1,0 +1,5 @@
+# Achou uma falha de segurança? Conte para nós antes de divulgar; respondemos por e-mail.
+Contact: mailto:contato@valtrea.com.br
+Expires: 2027-11-06T00:00:00.000Z
+Preferred-Languages: pt, en
+Canonical: https://finance.valtrea.com.br/.well-known/security.txt

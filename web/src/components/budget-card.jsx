@@ -23,7 +23,7 @@ const levelOf = (spent, amount) => {
 
 const LEVEL_STYLE = {
   ok: { bar: '#55B02E', text: 'text-muted' },
-  near: { bar: '#F5A524', text: 'text-[#F5A524]' },
+  near: { bar: '#F5A524', text: 'text-[#92400E] dark:text-[#F5A524]' },
   over: { bar: '#E93030', text: 'text-expense' },
 }
 
