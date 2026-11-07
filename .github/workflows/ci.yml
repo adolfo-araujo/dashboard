@@ -33,7 +33,7 @@ jobs:
       SENTRY_DSN: https://public@o0.ingest.sentry.io/0
       PORT: 8080
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -58,7 +58,7 @@ jobs:
       run:
         working-directory: web
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -72,7 +72,7 @@ jobs:
       run:
         working-directory: site
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -102,7 +102,7 @@ jobs:
       PORT: 8080
       API_RATE_LIMIT: '100000'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -157,7 +157,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: grafana/setup-k6-action@v1
       # 100 pessoas usando ao mesmo tempo por 90 s, API com 0,5 CPU e 512 MB (Starter do Render)
       # e 120 ms até o banco (distância real Render ↔ Neon São Paulo, medida em 03/11/2026).
@@ -184,7 +184,7 @@ jobs:
     name: Dependências sem falhas de segurança críticas
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -211,7 +211,7 @@ jobs:
     name: Nenhuma senha ou chave no código
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # todo o histórico: um segredo apagado depois continua no histórico
       # gitleaks procura senhas, chaves de API, tokens e strings de conexão em todos os commits
