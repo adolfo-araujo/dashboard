@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { Download, Pencil, Plus, Repeat, Search, Trash2 } from 'lucide-react'
+import { Download, FileUp, Pencil, Plus, Repeat, Search, Trash2 } from 'lucide-react'
 import { Card } from './ui/card'
 import { Button } from './ui/button'
 import { Input, Select } from './ui/input'
@@ -11,6 +11,7 @@ import { getErrorMessage } from '../lib/api'
 import { cn } from '../lib/cn'
 import { getCategory } from '../lib/categories'
 import { downloadCsv, transactionsToCsv } from '../lib/csv'
+import { ImportDialog } from './import-dialog'
 
 function TypeBadge({ type }) {
   const cfg = TRANSACTION_TYPES[type]
@@ -51,6 +52,7 @@ export function TransactionsTable({ transactions = [], isLoading, onEdit, onCrea
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('ALL')
   const [toDelete, setToDelete] = useState(null)
+  const [importing, setImporting] = useState(false)
   const deleteMutation = useDeleteTransaction()
 
   const filtered = useMemo(() => {
@@ -137,6 +139,9 @@ export function TransactionsTable({ transactions = [], isLoading, onEdit, onCrea
           title="Baixar as transações exibidas em planilha (CSV)"
         >
           <Download className="h-4 w-4" /> Exportar
+        </Button>
+        <Button variant="secondary" onClick={() => setImporting(true)} className="shrink-0" title="Importar o extrato do banco (OFX ou CSV)">
+          <FileUp className="h-4 w-4" /> Importar
         </Button>
       </div>
 
@@ -232,6 +237,7 @@ export function TransactionsTable({ transactions = [], isLoading, onEdit, onCrea
         </>
       )}
 
+      <ImportDialog open={importing} onClose={() => setImporting(false)} />
       <ConfirmDialog
         open={Boolean(toDelete)}
         onClose={() => setToDelete(null)}
