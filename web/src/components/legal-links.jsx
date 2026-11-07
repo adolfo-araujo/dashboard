@@ -8,6 +8,9 @@ export function LegalLinks({ className }) {
       aria-label="Informações legais"
       className={cn('flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted', className)}
     >
+      <Link to="/ajuda" className="hover:text-foreground hover:underline">
+        Ajuda
+      </Link>
       <Link to="/termos" className="hover:text-foreground hover:underline">
         Termos de uso
       </Link>

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 
-export function Dialog({ open, onClose, title, description, children }) {
+export function Dialog({ open, onClose, title, description, wide = false, children }) {
   const panelRef = useRef(null)
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
@@ -54,7 +54,7 @@ export function Dialog({ open, onClose, title, description, children }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="dialog-title"
-        className="relative max-h-[90vh] w-full overflow-y-auto rounded-t-2xl border border-border bg-surface p-6 shadow-2xl sm:max-w-md sm:rounded-2xl"
+        className={`relative max-h-[90vh] w-full overflow-y-auto rounded-t-2xl border border-border bg-surface p-6 shadow-2xl sm:rounded-2xl ${wide ? 'sm:max-w-2xl' : 'sm:max-w-md'}`}
       >
         <button
           data-close

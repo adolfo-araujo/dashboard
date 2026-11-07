@@ -13,6 +13,7 @@ import { PrivacyPage } from './pages/privacy'
 import { LandingPage } from './pages/landing'
 import { AdminPage } from './pages/admin'
 import { AccessibilityPage } from './pages/accessibility'
+import { HelpPage } from './pages/help'
 import { SkipLink } from './components/skip-link'
 
 function FullScreenLoader() {
@@ -50,6 +51,7 @@ export default function App() {
         <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/ajuda" element={<HelpPage />} />
         <Route path="/termos" element={<TermsPage />} />
         <Route path="/privacidade" element={<PrivacyPage />} />
         <Route path="/acessibilidade" element={<AccessibilityPage />} />
