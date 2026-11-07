@@ -5,13 +5,14 @@ export default {
     extend: {
       fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], display: ['Manrope', 'Inter', 'system-ui', 'sans-serif'] },
       colors: {
-        background: '#0D0F12',
-        surface: '#15181D',
-        'surface-2': '#1C2026',
-        border: '#272C34',
-        foreground: '#F9FAFB',
-        muted: '#9CA3AF',
-        primary: { DEFAULT: '#55B02E', hover: '#4A9A28' },
+        // Cores em variáveis CSS (src/index.css): versão escura e clara, conforme o tema do aparelho
+        background: 'rgb(var(--c-background) / <alpha-value>)',
+        surface: 'rgb(var(--c-surface) / <alpha-value>)',
+        'surface-2': 'rgb(var(--c-surface-2) / <alpha-value>)',
+        border: 'rgb(var(--c-border) / <alpha-value>)',
+        foreground: 'rgb(var(--c-foreground) / <alpha-value>)',
+        muted: 'rgb(var(--c-muted) / <alpha-value>)',
+        primary: { DEFAULT: 'rgb(var(--c-primary) / <alpha-value>)', hover: 'rgb(var(--c-primary-hover) / <alpha-value>)' },
       },
     },
   },

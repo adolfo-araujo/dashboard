@@ -265,7 +265,7 @@ function WaitlistForm({ product, name }) {
           Cancelar
         </button>
       </div>
-      <p role="status" aria-live="polite" className="text-sm text-[#F87171]">
+      <p role="status" aria-live="polite" className="text-sm text-[#B91C1C] dark:text-[#F87171]">
         {status.kind === 'error' ? status.message : ''}
       </p>
     </form>
@@ -374,7 +374,7 @@ export function AvisoListaDeEspera() {
                 : 'Toque no botão para apagar seu e-mail da lista.')}
             {status.kind === 'sending' && 'Enviando…'}
             {status.kind === 'ok' && status.message}
-            {status.kind === 'error' && <span className="text-[#F87171]">{status.message}</span>}
+            {status.kind === 'error' && <span className="text-[#B91C1C] dark:text-[#F87171]">{status.message}</span>}
           </p>
         </div>
         {status.kind !== 'ok' ? (

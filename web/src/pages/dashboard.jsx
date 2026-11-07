@@ -10,6 +10,8 @@ import { RecurringDialog } from '../components/recurring-dialog'
 import { BudgetCard } from '../components/budget-card'
 import { PayWalletCard } from '../components/pay-wallet-card'
 import { ResumoMes } from '../components/resumo-mes'
+import { PrimeirosPassos } from '../components/primeiros-passos'
+import { ImportDialog } from '../components/import-dialog'
 import { useSyncRecurring } from '../hooks/use-recurring'
 import { TransactionsTable } from '../components/transactions-table'
 import { TransactionFormDialog } from '../components/transaction-form-dialog'
@@ -31,6 +33,7 @@ export function DashboardPage() {
   const [formState, setFormState] = useState({ open: false, transaction: null })
   const [accountOpen, setAccountOpen] = useState(false)
   const [recurringOpen, setRecurringOpen] = useState(false)
+  const [importOpen, setImportOpen] = useState(false)
 
   // Ao abrir o painel, lança as recorrentes que venceram desde a última visita
   const syncRecurring = useSyncRecurring()
@@ -68,6 +71,9 @@ export function DashboardPage() {
         </div>
 
         <TermsUpdateNotice />
+
+        <PrimeirosPassos onAdd={openCreate} onRecurring={() => setRecurringOpen(true)} onImport={() => setImportOpen(true)} />
+        <ImportDialog open={importOpen} onClose={() => setImportOpen(false)} />
 
         {error && (
           <div className="rounded-lg border border-expense/40 bg-expense/10 px-4 py-3 text-sm text-expense">

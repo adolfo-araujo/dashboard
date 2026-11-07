@@ -35,7 +35,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           </AppErrorBoundary>
           <CookieNotice />
           <AvisoServidorLento />
-          <Toaster theme="dark" position="top-right" richColors />
+          <Toaster theme="system" position="top-right" richColors />
         </AuthProvider>
       </BrowserRouter>
 

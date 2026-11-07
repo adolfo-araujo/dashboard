@@ -4,6 +4,7 @@ import { Card } from './ui/card'
 import { useMonthlySummary } from '../hooks/use-finance'
 import { formatCurrency, today } from '../lib/format'
 import { cn } from '../lib/cn'
+import { coresDoGrafico, useTemaClaro } from '../lib/tema'
 
 const monthFormat = new Intl.DateTimeFormat('pt-BR', { month: 'short', timeZone: 'UTC' })
 const monthYearFormat = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric', timeZone: 'UTC' })
@@ -15,7 +16,7 @@ const shortMonth = (month) => monthFormat.format(toDate(month)).replace('.', '')
 const SERIES = {
   earnings: { label: 'Ganhos', color: '#55B02E' },
   expenses: { label: 'Gastos', color: '#E93030' },
-  balance: { label: 'Saldo do mês', color: '#F9FAFB' },
+  balance: { label: 'Saldo do mês', color: 'rgb(var(--c-foreground))' },
 }
 
 function ChartTooltip({ active, payload, label }) {
@@ -36,6 +37,7 @@ function ChartTooltip({ active, payload, label }) {
 }
 
 export function MonthlyEvolution() {
+  const cores = coresDoGrafico(useTemaClaro())
   const [months, setMonths] = useState(12)
   const { data = [], isLoading } = useMonthlySummary(months, today())
 
@@ -89,31 +91,31 @@ export function MonthlyEvolution() {
           <div aria-hidden="true" className="h-full w-full">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={data} margin={{ top: 8, right: 4, left: -8, bottom: 0 }}>
-              <CartesianGrid stroke="#272C34" vertical={false} />
+              <CartesianGrid stroke={cores.grade} vertical={false} />
               <XAxis
                 dataKey="month"
                 tickFormatter={shortMonth}
-                tick={{ fill: '#9CA3AF', fontSize: 12 }}
+                tick={{ fill: cores.fraco, fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
                 interval={months > 6 ? 1 : 0}
               />
               <YAxis
                 tickFormatter={(v) => compact.format(v)}
-                tick={{ fill: '#9CA3AF', fontSize: 12 }}
+                tick={{ fill: cores.fraco, fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
                 width={48}
               />
-              <Tooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
+              <Tooltip content={<ChartTooltip />} cursor={{ fill: cores.cursor }} />
               <Bar dataKey="earnings" fill={SERIES.earnings.color} radius={[4, 4, 0, 0]} maxBarSize={18} />
               <Bar dataKey="expenses" fill={SERIES.expenses.color} radius={[4, 4, 0, 0]} maxBarSize={18} />
               <Line
                 dataKey="balance"
                 type="monotone"
-                stroke={SERIES.balance.color}
+                stroke={cores.texto}
                 strokeWidth={2}
-                dot={{ r: 2.5, fill: SERIES.balance.color }}
+                dot={{ r: 2.5, fill: cores.texto }}
               />
             </ComposedChart>
           </ResponsiveContainer>
