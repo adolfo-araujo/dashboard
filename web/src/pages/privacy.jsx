@@ -98,7 +98,8 @@ export function PrivacyPage() {
           para manter você conectado (identificadores de sessão) e permitir que o app funcione instalado. Não
           usamos cookies de publicidade nem ferramentas de rastreamento de terceiros, e as fontes do site são
           servidas pelo próprio Valtrea, sem acessar servidores de terceiros. Também guardamos se você
-          já viu o aviso de cookies, para não mostrá-lo de novo. Como tudo isso é essencial para o serviço
+          já viu o aviso de cookies, para não mostrá-lo de novo, e, se você escolher o tema claro no rodapé, essa
+          preferência. Como tudo isso é essencial para o serviço
           funcionar, não pedimos consentimento; se você limpar os dados do navegador, será desconectado.
         </p>
       </Section>

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { COMPANY } from './config'
 import { AvisoListaDeEspera, ProjetosEmDesenvolvimento } from './projetos'
+import { BotaoTema } from './components/tema'
 
 const mailto = (subject) => `mailto:${COMPANY.email}?subject=${encodeURIComponent(subject)}`
 const whatsappUrl = COMPANY.whatsapp
@@ -319,6 +320,7 @@ export default function App() {
             <a href={`mailto:${COMPANY.email}`} className="hover:text-foreground hover:underline">
               {COMPANY.email}
             </a>
+            <BotaoTema />
           </nav>
           <p className="text-center text-xs md:text-right">
             © 2026 Valtrea · {COMPANY.owner} · {COMPANY.city}

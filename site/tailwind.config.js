@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  // dark: vale no tema escuro (o padrão); o claro só quando a pessoa escolhe (public/tema.js)
+  darkMode: ['selector', '[data-tema="escuro"]'],
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {

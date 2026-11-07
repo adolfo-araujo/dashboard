@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { LEGAL } from '../lib/legal'
+import { BotaoTema } from './tema'
 import { cn } from '../lib/cn'
 
 export function LegalLinks({ className }) {
@@ -20,6 +21,7 @@ export function LegalLinks({ className }) {
       <a href={`mailto:${LEGAL.email}?subject=${assunto}&body=${corpo}`} className="hover:text-foreground hover:underline">
         Enviar sugestão
       </a>
+      <BotaoTema />
       <Link to="/termos" className="hover:text-foreground hover:underline">
         Termos de uso
       </Link>

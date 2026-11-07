@@ -1,19 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useTema } from '../components/tema'
 
-// Cores dos gráficos (SVG não lê as variáveis CSS do tema): acompanham o modo claro/escuro do aparelho.
-const consulta = '(prefers-color-scheme: light)'
-
-export function useTemaClaro() {
-  const [claro, setClaro] = useState(() => typeof window !== 'undefined' && window.matchMedia?.(consulta).matches)
-  useEffect(() => {
-    const m = window.matchMedia?.(consulta)
-    if (!m) return undefined
-    const mudar = (e) => setClaro(e.matches)
-    m.addEventListener('change', mudar)
-    return () => m.removeEventListener('change', mudar)
-  }, [])
-  return claro
-}
+// Cores dos gráficos (SVG não lê as variáveis CSS do tema): acompanham o tema escolhido.
+export const useTemaClaro = () => useTema() === 'claro'
 
 export const coresDoGrafico = (claro) =>
   claro
