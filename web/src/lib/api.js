@@ -96,12 +96,15 @@ api.interceptors.response.use(
 )
 
 export const getErrorMessage = (error, fallback = 'Algo deu errado. Tente novamente.') => {
-  if (!error?.response) return 'Não foi possível conectar à API. Ela está rodando?'
+  // Mensagens que dizem o que fazer, não só o que deu errado
+  if (!error?.response) return 'Sem conexão com o servidor. Confira a internet e tente de novo. Na primeira vez do dia, ele pode levar até 1 minuto para acordar.'
+  const status = error.response.status
   const message = error.response.data?.message
+  if (status >= 500) return 'Tivemos um problema do nosso lado. Tente de novo em alguns minutos; se continuar, conte para nós em "Enviar sugestão", no rodapé.'
+  if (status === 429) return message || 'Muitas tentativas seguidas. Aguarde alguns minutos e tente de novo.'
   if (!message) return fallback
-  if (message.includes('already in use')) return 'Este e-mail já está em uso.'
-  if (message === 'Forbidden') return 'Você não tem permissão para esta ação.'
-  if (message.toLowerCase().includes('not found')) return 'Registro não encontrado.'
-  if (message === 'Internal server error') return fallback
+  if (message.includes('already in use')) return 'Este e-mail já está em uso. Se a conta é sua, entre ou use "Esqueci a senha".'
+  if (message === 'Forbidden') return 'Você não tem permissão para esta ação. Confira se entrou com a conta certa.'
+  if (message.toLowerCase().includes('not found')) return 'Não encontramos este registro. Ele pode ter sido apagado; atualize a página.'
   return message
 }

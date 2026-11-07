@@ -4,7 +4,7 @@ Documento interno (LGPD art. 37), no formato simplificado para agente de tratame
 
 - **Controlador:** João Adolfo Martins Araújo (pessoa física), Rio de Janeiro/RJ
 - **Encarregado / canal:** sem encarregado indicado (dispensa de pequeno porte); canal: contato@valtrea.com.br
-- **Elaborado em:** 04/11/2026 · **Revisar:** a cada 12 meses ou a cada nova funcionalidade que trate dados
+- **Elaborado em:** 04/11/2026 · **Atualizado em:** 07/11/2026 · **Revisar:** a cada 12 meses ou a cada nova funcionalidade que trate dados
 - **Serviços cobertos:** Valtrea Finance (finance.valtrea.com.br, app instalável e API) e site da Valtrea (www.valtrea.com.br)
 
 ## Operações
@@ -47,3 +47,9 @@ Documento interno (LGPD art. 37), no formato simplificado para agente de tratame
 
 - Confirmar se os termos de tratamento de dados (DPA) de cada fornecedor incluem cláusulas para transferência internacional (Resolução CD/ANPD nº 19/2024).
 - Se o número de usuários adolescentes crescer, reavaliar se o tratamento passa a ser de alto risco (nesse caso, a dispensa de encarregado deixa de valer).
+
+## Revisão de 07/11/2026
+
+- Finance: previsão do fim do mês, relatório do ano e gráfico do saldo mês a mês são calculados no navegador com os lançamentos que a pessoa já tem. Nenhum dado novo é coletado, guardado ou enviado.
+- Site da empresa: versões em inglês (/en) e espanhol (/es) e seção Segurança, sem formulários novos. A preferência de tema já está na Política de privacidade.
+- Busca rápida (Ctrl+K) e mensagens de erro mais claras: sem dados novos.

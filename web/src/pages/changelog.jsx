@@ -8,6 +8,8 @@ const VERSOES = [
   [
     "7 de novembro de 2026",
     [
+      "Gráfico do saldo no fim de cada mês e do total investido nos últimos 12 meses.",
+      "Mensagens de erro mais claras, dizendo o que fazer.",
       "Previsão do saldo no fim do mês, contando as recorrentes que ainda vão cair.",
       "Relatório do ano para imprimir ou salvar em PDF, com os totais de cada mês e por categoria.",
       "Busca rápida: aperte Ctrl+K (ou / ) para ir a qualquer tela."
