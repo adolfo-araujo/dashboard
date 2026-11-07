@@ -26,11 +26,11 @@ export function trocarTema() {
   window.dispatchEvent(new Event('valtrea:tema'))
 }
 
-export function BotaoTema({ className = 'hover:text-foreground hover:underline' }) {
+export function BotaoTema({ className = 'hover:text-foreground hover:underline', rotulos = ['Tema escuro', 'Tema claro'] }) {
   const tema = useTema()
   return (
     <button type="button" onClick={trocarTema} className={className} aria-pressed={tema === 'claro'}>
-      {tema === 'claro' ? 'Tema escuro' : 'Tema claro'}
+      {tema === 'claro' ? rotulos[0] : rotulos[1]}
     </button>
   )
 }

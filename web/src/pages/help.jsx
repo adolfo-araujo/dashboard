@@ -21,6 +21,7 @@ const SECOES = [
     ['Como defino um limite de gastos?', 'No cartão de orçamento do mês, toque em Definir orçamentos e escolha o limite de cada categoria. A barra fica amarela perto do limite e vermelha quando passa.'],
     ['O que é o Resumo do mês?', 'Compara quanto você gastou até hoje com o mesmo período do mês passado e mostra as categorias que mais mudaram. Aparece quando há gastos registrados neste mês ou no anterior.'],
     ['O que é a Previsão do mês?', 'Mostra quanto deve sobrar no último dia do mês: o saldo de hoje, mais os lançamentos com data futura e as recorrentes que ainda vão cair neste mês. Não tenta adivinhar os gastos do dia a dia.'],
+    ['O que mostra o gráfico do saldo mês a mês?', 'Em "Seu dinheiro ao longo do tempo", a linha verde é o saldo no fim de cada mês dos últimos 12 meses e a tracejada é quanto você investiu no período, somado mês a mês.'],
     ['Como tiro o relatório do ano para o Imposto de Renda?', 'No cartão Previsão, toque em Relatório do ano (ou abra finance.valtrea.com.br/relatorio-anual). Escolha o ano e toque em Imprimir ou salvar em PDF. Ele traz os totais de cada mês e por categoria; serve de apoio e não substitui os informes oficiais.'],
     ['Como conecto o Valtrea Pay?', 'No cartão Carteira Valtrea Pay, toque em Conectar e copie o código. No app Valtrea Pay, abra Perfil → Valtrea Finance e cole o código. Seus pagamentos da carteira passam a entrar aqui sozinhos.'],
   ]],

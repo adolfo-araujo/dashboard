@@ -49,6 +49,14 @@
     {
       "source": "/api/lista-de-espera/:acao",
       "destination": "https://api.valtrea.com.br/api/lista-de-espera/:acao"
+    },
+    {
+      "source": "/en",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/es",
+      "destination": "/index.html"
     }
   ],
   "headers": [

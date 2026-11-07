@@ -352,6 +352,12 @@ export default function App() {
             <a href="#seguranca" className="hover:text-foreground hover:underline">
               Segurança
             </a>
+            <a href="/en" lang="en" hrefLang="en" className="hover:text-foreground hover:underline">
+              English
+            </a>
+            <a href="/es" lang="es" hrefLang="es" className="hover:text-foreground hover:underline">
+              Español
+            </a>
             <a href={`mailto:${COMPANY.email}`} className="hover:text-foreground hover:underline">
               {COMPANY.email}
             </a>

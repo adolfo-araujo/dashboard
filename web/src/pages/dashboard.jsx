@@ -11,6 +11,7 @@ import { BudgetCard } from '../components/budget-card'
 import { PayWalletCard } from '../components/pay-wallet-card'
 import { ResumoMes } from '../components/resumo-mes'
 import { PrevisaoMes } from '../components/previsao-mes'
+import { Patrimonio } from '../components/patrimonio'
 import { PrimeirosPassos } from '../components/primeiros-passos'
 import { ImportDialog } from '../components/import-dialog'
 import { useSyncRecurring } from '../hooks/use-recurring'
@@ -100,6 +101,8 @@ export function DashboardPage() {
         <PayWalletCard />
 
         <MonthlyEvolution />
+
+        <Patrimonio />
 
         <TransactionsTable
           transactions={transactionsQuery.data}
