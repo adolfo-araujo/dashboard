@@ -10,6 +10,7 @@ import { RecurringDialog } from '../components/recurring-dialog'
 import { BudgetCard } from '../components/budget-card'
 import { PayWalletCard } from '../components/pay-wallet-card'
 import { ResumoMes } from '../components/resumo-mes'
+import { PrevisaoMes } from '../components/previsao-mes'
 import { PrimeirosPassos } from '../components/primeiros-passos'
 import { ImportDialog } from '../components/import-dialog'
 import { useSyncRecurring } from '../hooks/use-recurring'
@@ -86,7 +87,10 @@ export function DashboardPage() {
           <BalanceChart balance={balanceQuery.data} isLoading={balanceQuery.isLoading} />
         </div>
 
-        <ResumoMes />
+        <div className="grid gap-6 lg:grid-cols-2">
+          <ResumoMes />
+          <PrevisaoMes />
+        </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
           <CategoryBreakdown transactions={transactionsQuery.data} isLoading={transactionsQuery.isLoading} />

@@ -8,6 +8,7 @@ import {
   ServerCog,
   Wrench,
   CheckCircle2,
+  ShieldCheck,
 } from 'lucide-react'
 import { COMPANY } from './config'
 import { AvisoListaDeEspera, ProjetosEmDesenvolvimento } from './projetos'
@@ -279,6 +280,37 @@ export default function App() {
           </div>
         </section>
 
+        {/* Segurança */}
+        <section id="seguranca" className="scroll-mt-16 border-t border-border">
+          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+            <h2 className="text-3xl font-bold tracking-tight">Segurança</h2>
+            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted">
+              O que fazemos para proteger quem usa os produtos Valtrea. Vale para o Finance, o Volta, o Pulso e o Agora.
+            </p>
+            <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                ['Conexão sempre criptografada', 'Todo acesso usa HTTPS, e o navegador é instruído a nunca abrir os sites sem criptografia.'],
+                ['Senhas que nem nós vemos', 'Guardamos só uma versão embaralhada (bcrypt) da senha. Se você esquecer, cria outra; ninguém consegue ler a antiga.'],
+                ['Freio contra tentativas', 'Entrar, pedir código e criar conta têm limite de tentativas, o que dificulta quem tenta adivinhar senhas.'],
+                ['Proteção no navegador', 'As páginas só carregam código dos nossos próprios endereços, o que bloqueia scripts injetados por terceiros.'],
+                ['Seus dados, sua decisão', 'Na sua conta, você baixa uma cópia de tudo o que guardamos ou exclui a conta e os dados de vez.'],
+                ['Sem rastreadores', 'Não usamos anúncios nem ferramentas de rastreamento. Os cookies servem só para manter você conectado.'],
+              ].map(([titulo, texto]) => (
+                <li key={titulo} className="rounded-2xl border border-border bg-surface p-5">
+                  <ShieldCheck className="h-5 w-5 text-primary" aria-hidden="true" />
+                  <h3 className="mt-2 font-bold">{titulo}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">{texto}</p>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-8 rounded-2xl border border-border bg-surface/60 p-5 text-sm leading-relaxed text-muted">
+              <strong className="text-foreground">Achou uma falha de segurança?</strong> Conte para nós em{' '}
+              <a href={`mailto:${COMPANY.email}?subject=${encodeURIComponent('Falha de segurança')}`} className="font-semibold text-primary hover:underline">{COMPANY.email}</a>{' '}
+              antes de divulgar. Respondemos por e-mail e corrigimos o quanto antes.
+            </p>
+          </div>
+        </section>
+
         <section id="contato" className="scroll-mt-16 border-t border-border bg-surface/40">
           <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
             <h2 className="max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">
@@ -316,6 +348,9 @@ export default function App() {
             </a>
             <a href={`${COMPANY.financeUrl}/acessibilidade`} className="hover:text-foreground hover:underline">
               Acessibilidade
+            </a>
+            <a href="#seguranca" className="hover:text-foreground hover:underline">
+              Segurança
             </a>
             <a href={`mailto:${COMPANY.email}`} className="hover:text-foreground hover:underline">
               {COMPANY.email}

@@ -6,6 +6,14 @@ import { LegalLinks } from '../components/legal-links'
 // O que mudou em cada versão. Acrescente no topo a cada novidade.
 const VERSOES = [
   [
+    "7 de novembro de 2026",
+    [
+      "Previsão do saldo no fim do mês, contando as recorrentes que ainda vão cair.",
+      "Relatório do ano para imprimir ou salvar em PDF, com os totais de cada mês e por categoria.",
+      "Busca rápida: aperte Ctrl+K (ou / ) para ir a qualquer tela."
+    ]
+  ],
+  [
     "6 de novembro de 2026",
     [
       "Importar extrato do banco (OFX ou CSV), com revisão antes de salvar e sem duplicar o que já existe.",

@@ -20,12 +20,15 @@ const SECOES = [
   ['Planejamento', [
     ['Como defino um limite de gastos?', 'No cartão de orçamento do mês, toque em Definir orçamentos e escolha o limite de cada categoria. A barra fica amarela perto do limite e vermelha quando passa.'],
     ['O que é o Resumo do mês?', 'Compara quanto você gastou até hoje com o mesmo período do mês passado e mostra as categorias que mais mudaram. Aparece quando há gastos registrados neste mês ou no anterior.'],
+    ['O que é a Previsão do mês?', 'Mostra quanto deve sobrar no último dia do mês: o saldo de hoje, mais os lançamentos com data futura e as recorrentes que ainda vão cair neste mês. Não tenta adivinhar os gastos do dia a dia.'],
+    ['Como tiro o relatório do ano para o Imposto de Renda?', 'No cartão Previsão, toque em Relatório do ano (ou abra finance.valtrea.com.br/relatorio-anual). Escolha o ano e toque em Imprimir ou salvar em PDF. Ele traz os totais de cada mês e por categoria; serve de apoio e não substitui os informes oficiais.'],
     ['Como conecto o Valtrea Pay?', 'No cartão Carteira Valtrea Pay, toque em Conectar e copie o código. No app Valtrea Pay, abra Perfil → Valtrea Finance e cole o código. Seus pagamentos da carteira passam a entrar aqui sozinhos.'],
   ]],
   ['Conta e dados', [
     ['O site demorou para abrir. É normal?', 'Quando o serviço fica um tempo sem uso, a primeira ação pode levar até 1 minuto, porque o servidor estava em repouso. Aparece o aviso "Acordando o servidor" e, depois disso, fica rápido.'],
     ['Esqueci a senha.', 'Na tela de entrar, toque em "Esqueci a senha" e informe seu e-mail. Você recebe um link para criar uma senha nova.'],
     ['Como baixo meus dados ou excluo a conta?', 'Em Minha conta: "Baixar meus dados" gera uma cópia de tudo o que guardamos sobre você e "Excluir minha conta" apaga o cadastro e todas as transações de forma permanente.'],
+    ['Tem atalho para ir mais rápido?', 'No computador, aperte Ctrl+K (ou Cmd+K no Mac) ou a tecla / em qualquer tela. Digite o que procura, como "relatório" ou "ajuda", e aperte Enter.'],
     ['Dá para usar como app no celular?', 'Sim. No Android, abra no Chrome e toque em "Instalar app". No iPhone, abra no Safari, toque em Compartilhar e depois em "Adicionar à Tela de Início".'],
   ]],
 ]
