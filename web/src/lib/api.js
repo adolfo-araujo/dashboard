@@ -22,7 +22,29 @@ export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
 })
 
+// Pedidos que passaram de 4 s: mostram o aviso de "servidor acordando" (components/aviso-servidor-lento.jsx).
+let lentos = 0
+const marcarLento = (delta) => {
+  lentos = Math.max(0, lentos + delta)
+  window.dispatchEvent(new CustomEvent('valtrea:lento', { detail: lentos }))
+}
+const iniciarRelogio = (config) => {
+  config._relogio = setTimeout(() => {
+    config._avisou = true
+    marcarLento(1)
+  }, 4000)
+}
+const pararRelogio = (config) => {
+  if (!config) return
+  clearTimeout(config._relogio)
+  if (config._avisou) {
+    config._avisou = false
+    marcarLento(-1)
+  }
+}
+
 api.interceptors.request.use((config) => {
+  iniciarRelogio(config)
   const token = tokenStorage.getAccess()
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
@@ -42,8 +64,12 @@ const refreshTokens = async () => {
 }
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    pararRelogio(response.config)
+    return response
+  },
   async (error) => {
+    pararRelogio(error.config)
     const original = error.config
     const status = error.response?.status
     const isAuthRoute =
