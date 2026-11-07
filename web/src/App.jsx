@@ -15,7 +15,22 @@ import { AdminPage } from './pages/admin'
 import { AccessibilityPage } from './pages/accessibility'
 import { HelpPage } from './pages/help'
 import { ChangelogPage } from './pages/changelog'
+import { RelatorioAnualPage } from './pages/relatorio-anual'
 import { SkipLink } from './components/skip-link'
+import { BuscaRapida } from './components/busca-rapida'
+
+// Telas da busca rápida (Ctrl+K): rótulo, endereço, palavras para achar
+const TELAS = [
+  ["Painel", "/", "inicio saldo transacoes lancamentos"],
+  ["Relatório do ano (imprimir ou PDF)", "/relatorio-anual", "imposto de renda irpf pdf anual"],
+  ["Entrar", "/login", "login"],
+  ["Criar conta", "/signup", "cadastro"],
+  ["Central de ajuda", "/ajuda", "duvidas perguntas suporte"],
+  ["Novidades", "/novidades", "mudancas versao"],
+  ["Termos de uso", "/termos", "contrato"],
+  ["Política de privacidade", "/privacidade", "lgpd dados"],
+  ["Acessibilidade", "/acessibilidade", ""],
+]
 
 function FullScreenLoader() {
   return (
@@ -44,6 +59,7 @@ function PublicRoute({ children }) {
 export default function App() {
   return (
     <>
+      <BuscaRapida itens={TELAS} />
       <SkipLink />
       <Routes>
         <Route path="/" element={<HomeRoute />} />
@@ -53,6 +69,7 @@ export default function App() {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/ajuda" element={<HelpPage />} />
+        <Route path="/relatorio-anual" element={<RelatorioAnualPage />} />
         <Route path="/novidades" element={<ChangelogPage />} />
         <Route path="/termos" element={<TermsPage />} />
         <Route path="/privacidade" element={<PrivacyPage />} />
