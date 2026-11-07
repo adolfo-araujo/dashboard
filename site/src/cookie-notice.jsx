@@ -13,7 +13,14 @@ const seen = () => {
   }
 }
 
-export function CookieNotice() {
+const TEXTOS = {
+  pt: ['Aviso de cookies', 'Este site não usa cookies de rastreamento nem de publicidade.', 'Saiba mais sobre cookies', 'Entendi'],
+  en: ['Cookie notice', 'This site does not use tracking or advertising cookies.', 'Learn more (in Portuguese)', 'Got it'],
+  es: ['Aviso de cookies', 'Este sitio no usa cookies de rastreo ni de publicidad.', 'Más información (en portugués)', 'Entendido'],
+}
+
+export function CookieNotice({ idioma = 'pt' }) {
+  const t = TEXTOS[idioma] ?? TEXTOS.pt
   const [open, setOpen] = useState(() => !seen())
   if (!open) return null
 
@@ -28,17 +35,17 @@ export function CookieNotice() {
 
   return (
     <section
-      aria-label="Aviso de cookies"
+      aria-label={t[0]}
       className="fixed inset-x-0 bottom-0 z-40 p-3 sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-md sm:p-0"
     >
       <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface-2 p-4 text-sm shadow-2xl sm:flex-row sm:items-center">
         <p className="flex-1 leading-relaxed text-foreground">
-          Este site não usa cookies de rastreamento nem de publicidade.{' '}
+          {t[1]}{' '}
           <a
             href={`${COMPANY.financeUrl}/privacidade#cookies`}
             className="font-semibold text-primary underline-offset-2 hover:underline"
           >
-            Saiba mais sobre cookies
+            {t[2]}
           </a>
         </p>
         <button
@@ -46,7 +53,7 @@ export function CookieNotice() {
           onClick={close}
           className="h-9 shrink-0 rounded-lg bg-primary px-4 font-semibold text-background hover:bg-primary-hover"
         >
-          Entendi
+          {t[3]}
         </button>
       </div>
     </section>

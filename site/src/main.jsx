@@ -12,6 +12,6 @@ const idioma = { '/en': 'en', '/es': 'es' }[window.location.pathname.replace(/\/
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     {idioma ? <Internacional idioma={idioma} /> : <App />}
-    <CookieNotice />
+    <CookieNotice idioma={idioma} />
   </React.StrictMode>,
 )
