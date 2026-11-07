@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
 import App from './App'
 import { CookieNotice } from './components/cookie-notice'
+import { AvisoServidorLento } from './components/aviso-servidor-lento'
 import { AuthProvider } from './contexts/auth'
 import './fonts.css'
 import './index.css'
@@ -33,6 +34,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <App />
           </AppErrorBoundary>
           <CookieNotice />
+          <AvisoServidorLento />
           <Toaster theme="dark" position="top-right" richColors />
         </AuthProvider>
       </BrowserRouter>
