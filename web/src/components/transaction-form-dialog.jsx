@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -9,9 +9,10 @@ import { Button } from './ui/button'
 import { Field, Input, Select } from './ui/input'
 import { cn } from '../lib/cn'
 import { TRANSACTION_TYPES, toApiDate, toDateOnly, today } from '../lib/format'
-import { useCreateTransaction, useUpdateTransaction } from '../hooks/use-finance'
+import { useCreateTransaction, useTransactionHistory, useUpdateTransaction } from '../hooks/use-finance'
 import { getErrorMessage } from '../lib/api'
-import { CATEGORIES } from '../lib/categories'
+import { CATEGORIES, getCategory } from '../lib/categories'
+import { sugerirCategoria } from '../lib/sugestoes'
 
 const schema = z.object({
   name: z.string().trim().min(1, 'Informe um nome.').max(50, 'Máximo de 50 caracteres.'),
@@ -61,6 +62,14 @@ export function TransactionFormDialog({ open, onClose, transaction }) {
 
   const selectedType = watch('type')
   const categoryOptions = CATEGORIES[selectedType] ?? []
+  const history = useTransactionHistory(open)
+  const typedName = watch('name')
+  const selectedCategory = watch('category')
+  const suggestion = useMemo(
+    () => sugerirCategoria(typedName, selectedType, history.data ?? []),
+    [typedName, selectedType, history.data],
+  )
+  const showSuggestion = suggestion && suggestion.chave !== selectedCategory
 
   useEffect(() => {
     const current = getValues('category')
@@ -159,6 +168,18 @@ export function TransactionFormDialog({ open, onClose, transaction }) {
             ))}
           </Select>
         </Field>
+        {showSuggestion && (
+          <p className="-mt-2 text-sm text-muted" aria-live="polite">
+            Sugestão {suggestion.motivo}:{' '}
+            <button
+              type="button"
+              className="font-semibold text-primary underline-offset-2 hover:underline"
+              onClick={() => setValue('category', suggestion.chave, { shouldValidate: true })}
+            >
+              usar {getCategory(selectedType, suggestion.chave).label}
+            </button>
+          </p>
+        )}
 
         <div className="flex gap-3 pt-2">
           <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>

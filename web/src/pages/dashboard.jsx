@@ -9,6 +9,7 @@ import { MonthlyEvolution } from '../components/monthly-evolution'
 import { RecurringDialog } from '../components/recurring-dialog'
 import { BudgetCard } from '../components/budget-card'
 import { PayWalletCard } from '../components/pay-wallet-card'
+import { ResumoMes } from '../components/resumo-mes'
 import { useSyncRecurring } from '../hooks/use-recurring'
 import { TransactionsTable } from '../components/transactions-table'
 import { TransactionFormDialog } from '../components/transaction-form-dialog'
@@ -78,6 +79,8 @@ export function DashboardPage() {
           <BalanceCards balance={balanceQuery.data} isLoading={balanceQuery.isLoading} from={from} to={to} />
           <BalanceChart balance={balanceQuery.data} isLoading={balanceQuery.isLoading} />
         </div>
+
+        <ResumoMes />
 
         <div className="grid gap-6 lg:grid-cols-2">
           <CategoryBreakdown transactions={transactionsQuery.data} isLoading={transactionsQuery.isLoading} />
