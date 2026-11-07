@@ -96,7 +96,7 @@ jobs:
         run: |
           ulimit -n 65535
           bash loadtest/run.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: ${{ format('resultado-{0}-{1}cpu-{2}x-{3}ms', matrix.users, matrix.cpus, matrix.instances, matrix.latency || 'medida') }}

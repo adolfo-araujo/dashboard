@@ -135,14 +135,14 @@ jobs:
           npm install
           npx playwright install --with-deps chromium
           npx playwright test
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: previas-do-site
           path: e2e/previas/
           if-no-files-found: ignore
           retention-days: 14
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: relatorio-qa-navegador
@@ -174,7 +174,7 @@ jobs:
         run: |
           ulimit -n 65535
           bash loadtest/run.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: teste-de-carga
