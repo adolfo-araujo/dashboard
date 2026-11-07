@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Tema: escuro por padrão; claro quando o aparelho está no modo claro. Contraste AA nos dois. */
+/* Tema: escuro por padrão; claro quando a pessoa escolhe no rodapé. Contraste AA nos dois. */
 @layer base {
   :root {
     color-scheme: dark;
@@ -15,18 +15,16 @@
     --c-primary: 85 176 46;
     --c-primary-hover: 74 154 40;
   }
-  @media (prefers-color-scheme: light) {
-    :root {
-      color-scheme: light;
-      --c-background: 255 255 255;
-      --c-surface: 245 246 248;
-      --c-surface-2: 236 238 241;
-      --c-border: 217 221 227;
-      --c-foreground: 17 24 39;
-      --c-muted: 75 85 99;
-      --c-primary: 56 122 30;
-      --c-primary-hover: 46 102 25;
-    }
+  :root[data-tema='claro'] {
+    color-scheme: light;
+    --c-background: 255 255 255;
+    --c-surface: 245 246 248;
+    --c-surface-2: 236 238 241;
+    --c-border: 217 221 227;
+    --c-foreground: 17 24 39;
+    --c-muted: 75 85 99;
+    --c-primary: 56 122 30;
+    --c-primary-hover: 46 102 25;
   }
 }
 

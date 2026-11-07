@@ -8,6 +8,7 @@ import { Toaster } from 'sonner'
 import App from './App'
 import { CookieNotice } from './components/cookie-notice'
 import { AvisoServidorLento } from './components/aviso-servidor-lento'
+import { useTema } from './components/tema'
 import { AuthProvider } from './contexts/auth'
 import './fonts.css'
 import './index.css'
@@ -15,6 +16,11 @@ import { api } from './lib/api'
 
 // acorda a API (plano gratuito do Render) enquanto a pessoa vê a tela de login
 api.get('/health').catch(() => {})
+
+function ToasterTema(props) {
+  const tema = useTema()
+  return <Toaster theme={tema === 'claro' ? 'light' : 'dark'} {...props} />
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,7 +41,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           </AppErrorBoundary>
           <CookieNotice />
           <AvisoServidorLento />
-          <Toaster theme="system" position="top-right" richColors />
+          <ToasterTema position="top-right" richColors />
         </AuthProvider>
       </BrowserRouter>
 
