@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import dayjs from 'dayjs'
 import { api } from '../lib/api'
 import { today as localToday } from '../lib/format'
 
@@ -18,6 +19,18 @@ export const useTransactions = (from, to) =>
     queryFn: async () => (await api.get('/transactions/me', { params: { from, to } })).data,
     enabled: from <= to,
   })
+
+// Últimos 12 meses de lançamentos, para sugerir a categoria pelo que a pessoa já registrou
+export const useTransactionHistory = (enabled) => {
+  const to = localToday()
+  const from = dayjs(to).subtract(12, 'month').format('YYYY-MM-DD')
+  return useQuery({
+    queryKey: ['transactions', 'history', from, to],
+    queryFn: async () => (await api.get('/transactions/me', { params: { from, to } })).data,
+    enabled,
+    staleTime: 5 * 60_000,
+  })
+}
 
 // Totais por mês (independente do filtro de período)
 export const useMonthlySummary = (months, to) =>
