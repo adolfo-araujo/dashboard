@@ -38,7 +38,7 @@ export function CategoryBreakdown({ transactions = [], isLoading }) {
           <h2 className="font-bold">Por categoria</h2>
           <p className="text-sm text-muted">Para onde o dinheiro foi no período</p>
         </div>
-        <div role="tablist" aria-label="Tipo" className="inline-flex rounded-lg border border-border bg-background p-1">
+        <div role="tablist" aria-label="Tipo" className="inline-flex rounded-xl border border-border bg-surface p-1">
           {TABS.map((tab) => (
             <button
               key={tab.type}

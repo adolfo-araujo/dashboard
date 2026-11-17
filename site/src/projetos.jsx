@@ -73,7 +73,7 @@ function VoltaPreview() {
       <p className="mt-3 rounded-lg bg-surface-2 px-3 py-2 text-sm text-muted">
         “Encontrei sua mochila. Como combinamos a devolução?”
       </p>
-      <span className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-lg bg-primary text-sm font-semibold text-background">
+      <span className="botao-verde mt-3 inline-flex h-9 w-full items-center justify-center rounded-full bg-primary text-sm font-semibold text-background">
         Avisar o dono
       </span>
     </Frame>
@@ -117,7 +117,7 @@ function AgoraPreview() {
           </span>
         ))}
       </div>
-      <span className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-lg bg-primary text-sm font-semibold text-background">
+      <span className="botao-verde mt-3 inline-flex h-9 w-full items-center justify-center rounded-full bg-primary text-sm font-semibold text-background">
         Reservar horário
       </span>
     </Frame>
@@ -181,7 +181,7 @@ function WaitlistForm({ product, name }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-surface-2 px-5 font-semibold transition-colors hover:bg-border"
+        className="inline-flex h-11 items-center justify-center gap-2 botao-vidro rounded-full px-6 font-semibold text-foreground"
       >
         <Bell className="h-4 w-4" /> Quero ser avisado
       </button>
@@ -222,7 +222,7 @@ function WaitlistForm({ product, name }) {
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 h-11 w-full rounded-lg border border-border bg-background px-3 text-foreground placeholder:text-muted"
+          className="mt-1 h-11 w-full rounded-xl border border-border bg-surface px-3 text-foreground placeholder:text-muted"
           placeholder="voce@exemplo.com"
         />
       </div>
@@ -253,7 +253,7 @@ function WaitlistForm({ product, name }) {
         <button
           type="submit"
           disabled={status.kind === 'sending'}
-          className="inline-flex h-11 items-center justify-center rounded-lg bg-primary px-5 font-semibold text-background transition-colors hover:bg-primary-hover disabled:opacity-60"
+          className="botao-verde inline-flex h-11 items-center justify-center rounded-full bg-primary px-5 font-semibold text-background transition-colors hover:bg-primary-hover disabled:opacity-60"
         >
           {status.kind === 'sending' ? 'Enviando…' : 'Avisar quando lançar'}
         </button>
@@ -282,7 +282,7 @@ export function ProjetosEmDesenvolvimento() {
       </p>
       <ul className="mt-8 grid gap-6 lg:grid-cols-2">
         {PROJECTS.map(({ id, name, icon: Icon, stage, tagline, text, url, Preview }) => (
-          <li key={id} className="grid gap-5 rounded-2xl border border-border bg-surface p-6 sm:grid-cols-[1.2fr_1fr]">
+          <li key={id} className="grid gap-5 vidro rounded-2xl p-6 sm:grid-cols-[1.2fr_1fr]">
             <div className="flex flex-col">
               <div className="flex flex-wrap items-center gap-2">
                 <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
@@ -297,7 +297,7 @@ export function ProjetosEmDesenvolvimento() {
                 {url ? (
                   <a
                     href={url}
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-background hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    className="botao-verde inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-background hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                   >
                     Usar o {name.replace('Valtrea ', '')}
                     <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
@@ -382,7 +382,7 @@ export function AvisoListaDeEspera() {
             type="button"
             onClick={act}
             disabled={status.kind === 'sending'}
-            className="inline-flex h-11 items-center justify-center rounded-lg bg-primary px-5 font-semibold text-background hover:bg-primary-hover disabled:opacity-60"
+            className="botao-verde inline-flex h-11 items-center justify-center rounded-full bg-primary px-5 font-semibold text-background hover:bg-primary-hover disabled:opacity-60"
           >
             {confirming ? 'Confirmar inscrição' : 'Sair da lista'}
           </button>

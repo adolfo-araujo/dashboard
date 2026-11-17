@@ -45,7 +45,7 @@ export function CookieNotice() {
         <button
           type="button"
           onClick={close}
-          className="h-9 shrink-0 rounded-lg bg-primary px-4 font-semibold text-background hover:bg-primary-hover"
+          className="botao-verde h-9 shrink-0 rounded-full bg-primary px-4 font-semibold text-background hover:bg-primary-hover"
         >
           Entendi
         </button>

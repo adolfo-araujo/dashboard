@@ -4,17 +4,17 @@ import { cn } from '../../lib/cn'
 
 const variants = {
   // texto escuro no verde: contraste 7:1 (texto branco ficava em 2,7:1)
-  primary: 'bg-primary text-background hover:bg-primary-hover',
-  secondary: 'bg-surface-2 text-foreground border border-border hover:bg-border',
+  primary: 'botao-verde bg-primary text-background hover:bg-primary-hover',
+  secondary: 'botao-vidro text-foreground',
   ghost: 'text-muted hover:text-foreground hover:bg-surface-2',
   danger: 'bg-danger text-white hover:bg-danger-hover',
-  outline: 'border border-border text-foreground hover:bg-surface-2',
+  outline: 'botao-vidro text-foreground',
 }
 
 const sizes = {
-  sm: 'h-8 px-3 text-sm',
-  md: 'h-10 px-4 text-sm',
-  lg: 'h-11 px-5 text-base',
+  sm: 'h-8 px-3.5 text-sm',
+  md: 'h-10 px-5 text-sm',
+  lg: 'h-11 px-6 text-base',
   icon: 'h-9 w-9',
 }
 
@@ -27,7 +27,7 @@ export const Button = forwardRef(function Button(
       ref={ref}
       disabled={disabled || isLoading}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60',
+        'inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60',
         variants[variant],
         sizes[size],
         className,

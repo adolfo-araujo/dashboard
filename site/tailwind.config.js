@@ -1,11 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  // dark: vale no tema escuro (o padrão); o claro só quando a pessoa escolhe (public/tema.js)
+  // dark: vale só no tema escuro, que a pessoa escolhe no rodapé (public/tema.js); o padrão é o claro
   darkMode: ['selector', '[data-tema="escuro"]'],
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
-      fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], display: ['Manrope', 'Inter', 'system-ui', 'sans-serif'] },
+      fontFamily: { sans: ['Poppins', 'Inter', 'system-ui', 'sans-serif'], display: ['Bricolage Grotesque', 'Inter', 'system-ui', 'sans-serif'] },
       colors: {
         // Cores em variáveis CSS (src/index.css): versão escura e clara, conforme o tema do aparelho
         background: 'rgb(var(--c-background) / <alpha-value>)',

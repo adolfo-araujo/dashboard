@@ -51,7 +51,7 @@ export function HelpPage() {
         {SECOES.map(([titulo, perguntas]) => (
           <section key={titulo} aria-labelledby={`sec-${titulo}`} className="mt-8">
             <h2 id={`sec-${titulo}`} className="text-xl font-bold">{titulo}</h2>
-            <div className="mt-3 divide-y divide-border rounded-xl border border-border bg-surface">
+            <div className="mt-3 divide-y divide-border vidro rounded-xl">
               {perguntas.map(([p, r]) => (
                 <details key={p} className="group p-5">
                   <summary className="cursor-pointer list-none font-semibold marker:hidden">
@@ -63,7 +63,7 @@ export function HelpPage() {
             </div>
           </section>
         ))}
-        <section className="mt-10 rounded-xl border border-border bg-surface p-5">
+        <section className="mt-10 vidro rounded-xl p-5">
           <h2 className="font-bold">Não achou a resposta?</h2>
           <p className="mt-1 text-sm text-muted">
             Escreva para <a href={`mailto:${LEGAL.email}`} className="font-semibold text-primary hover:underline">{LEGAL.email}</a>. Respondemos por e-mail.

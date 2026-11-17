@@ -9,6 +9,7 @@ import {
   Wrench,
   CheckCircle2,
   ShieldCheck,
+  Menu,
 } from 'lucide-react'
 import { COMPANY } from './config'
 import { AvisoListaDeEspera, ProjetosEmDesenvolvimento } from './projetos'
@@ -32,9 +33,28 @@ function Logo({ className = '' }) {
 
 const btn = {
   primary:
-    'inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 font-semibold text-background transition-colors hover:bg-primary-hover',
+    'botao-verde inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 font-semibold text-background hover:bg-primary-hover',
   secondary:
-    'inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-surface-2 px-5 font-semibold text-foreground transition-colors hover:bg-border',
+    'botao-vidro inline-flex h-11 items-center justify-center gap-2 rounded-full px-6 font-semibold text-foreground',
+}
+
+/** Menu do celular: botão de três linhas que abre a lista de seções num cartão de vidro. */
+export function MenuCelular({ itens, rotulo = 'Abrir menu' }) {
+  return (
+    <details className="group relative ml-1 md:hidden">
+      <summary className="botao-vidro flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full [&::-webkit-details-marker]:hidden" aria-label={rotulo}>
+        <Menu className="h-5 w-5" aria-hidden="true" />
+      </summary>
+      <div className="vidro absolute right-0 top-12 z-40 w-56 rounded-2xl p-2">
+        {itens.map(([href, texto]) => (
+          <a key={href} href={href} onClick={(e) => e.currentTarget.closest('details')?.removeAttribute('open')}
+            className="block rounded-xl px-4 py-3 font-semibold text-foreground hover:bg-surface-2">
+            {texto}
+          </a>
+        ))}
+      </div>
+    </details>
+  )
 }
 
 const services = [
@@ -91,7 +111,7 @@ export default function App() {
       >
         Pular para o conteúdo
       </a>
-      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-border/50 bg-background/70 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <a href="#inicio" aria-label="Valtrea, início">
             <Logo />
@@ -109,9 +129,10 @@ export default function App() {
             <a href="#sobre" className="hidden rounded-lg px-3 py-2 text-muted hover:text-foreground md:inline">
               Sobre
             </a>
-            <a href="#contato" className="ml-2 inline-flex h-9 items-center rounded-lg bg-primary px-4 text-background hover:bg-primary-hover">
+            <a href="#contato" className="botao-verde ml-2 inline-flex h-9 items-center rounded-full bg-primary px-4 text-background hover:bg-primary-hover">
               Fale conosco
             </a>
+            <MenuCelular itens={[['#servicos', 'Serviços'], ['#produtos', 'Produtos'], ['#como-trabalhamos', 'Como trabalhamos'], ['#sobre', 'Sobre'], ['#seguranca', 'Segurança']]} />
           </nav>
         </div>
       </header>
@@ -119,55 +140,80 @@ export default function App() {
       <main id="inicio" tabIndex={-1}>
         <AvisoListaDeEspera />
         {/* Abertura */}
-        <section className="mx-auto max-w-6xl px-4 pb-20 pt-16 sm:px-6 lg:pt-28">
-          <h1 className="max-w-3xl text-4xl font-black leading-[1.05] tracking-tight sm:text-6xl">
-            Tecnologia sob medida para o seu negócio crescer.
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
-            A Valtrea cria sites, sistemas web e produtos digitais. Do domínio ao painel de gestão, com código de
-            qualidade e suporte depois da entrega.
-          </p>
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <a href="#contato" className={btn.primary}>
-              Solicitar orçamento
-            </a>
-            <a href="#produtos" className={btn.secondary}>
-              Conhecer nossos produtos
-            </a>
+        <section className="relative overflow-hidden px-4 pb-16 pt-14 sm:px-6 sm:pt-20 lg:pb-24 lg:pt-28">
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="botao-vidro mx-auto inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold text-muted sm:text-sm">
+              <span className="h-2 w-2 rounded-full bg-primary" aria-hidden="true" /> Sites, sistemas e produtos digitais
+            </p>
+            <h1 className="mt-6 text-[2.6rem] font-extrabold leading-[1.02] sm:text-6xl lg:text-7xl">
+              Tecnologia sob medida
+              <span className="block text-primary">para o seu negócio crescer.</span>
+            </h1>
           </div>
-          <p className="mt-5 flex items-center gap-2 text-sm text-muted">
-            <MapPin className="h-4 w-4" /> {COMPANY.city}, atendendo todo o Brasil
+          <div className="vidro mx-auto mt-10 max-w-2xl rounded-3xl p-6 text-left sm:p-8">
+            <h2 className="text-xl font-extrabold sm:text-2xl">Do domínio ao painel de gestão.</h2>
+            <p className="mt-2 leading-relaxed text-muted">
+              A Valtrea cria sites, sistemas web e produtos digitais, com código de qualidade e suporte depois da
+              entrega. Escopo, prazo e preço combinados por escrito antes de começar.
+            </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <a href="#contato" className={btn.primary}>
+                Solicitar orçamento
+              </a>
+              <a href="#produtos" className={btn.secondary}>
+                Conhecer nossos produtos
+              </a>
+            </div>
+          </div>
+          <p className="mt-6 flex items-center justify-center gap-2 text-sm text-muted">
+            <MapPin className="h-4 w-4" aria-hidden="true" /> {COMPANY.city}, atendendo todo o Brasil
           </p>
         </section>
 
+        {/* Faixa de tecnologias */}
+        <section aria-label="Tecnologias que usamos" className="border-y border-border/70 bg-surface/80">
+          <ul className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-3 px-4 py-6 text-sm font-semibold text-muted sm:gap-x-12 sm:px-6">
+            {['React', 'Node.js', 'Java e Spring', 'Kotlin e Android', 'PostgreSQL', 'Tailwind CSS', 'Vercel'].map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
+        </section>
+
         {/* Serviços */}
-        <section id="servicos" className="scroll-mt-16 border-t border-border">
-          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="max-w-xl text-3xl font-bold tracking-tight">O que fazemos para a sua empresa</h2>
-            <div className="mt-12 grid gap-x-12 sm:grid-cols-2">
+        <section id="servicos" className="scroll-mt-16">
+          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-28">
+            <h2 className="max-w-2xl text-3xl font-extrabold sm:text-5xl">O que fazemos para a sua empresa</h2>
+            <p className="mt-4 max-w-xl text-lg leading-relaxed text-muted">
+              Do site que traz clientes ao sistema que organiza o dia a dia. Estes são os pedidos mais comuns, mas não o limite.
+            </p>
+            <div className="mt-12 grid gap-4 sm:grid-cols-2">
               {services.map(({ icon: Icon, title, text }) => (
-                <div key={title} className="flex gap-4 border-t border-border py-7">
-                  <Icon className="mt-0.5 h-6 w-6 shrink-0 text-primary" />
-                  <div>
-                    <h3 className="text-lg font-bold">{title}</h3>
-                    <p className="mt-1.5 leading-relaxed text-muted">{text}</p>
-                  </div>
+                <div key={title} className="vidro rounded-3xl p-6 sm:p-8">
+                  <span className="botao-vidro flex h-14 w-14 items-center justify-center rounded-2xl">
+                    <Icon className="h-6 w-6 text-primary" aria-hidden="true" />
+                  </span>
+                  <h3 className="mt-5 text-xl font-extrabold sm:text-2xl">{title}</h3>
+                  <p className="mt-2 leading-relaxed text-muted">{text}</p>
                 </div>
               ))}
             </div>
+            <p className="mt-8 text-center text-muted">
+              <strong className="text-foreground">Tem uma ideia que não está aqui?</strong> Se roda numa tela, a gente constrói.{' '}
+              <a href="#contato" className="font-semibold text-primary hover:underline">Contar minha ideia →</a>
+            </p>
           </div>
         </section>
 
         {/* Produtos */}
-        <section id="produtos" className="scroll-mt-16 border-t border-border bg-surface/40">
-          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="text-3xl font-bold tracking-tight">Nossos produtos</h2>
+        <section id="produtos" className="scroll-mt-16 border-y border-border/70 bg-surface-2/60">
+          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-28">
+            <h2 className="text-3xl font-extrabold sm:text-5xl">Nossos produtos</h2>
             <p className="mt-3 max-w-xl text-muted">
               Além de desenvolver para clientes, criamos produtos próprios. Eles também mostram, na prática, o que
               entregamos.
             </p>
 
-            <div className="mt-10 grid overflow-hidden rounded-2xl border border-border bg-surface lg:grid-cols-[1.1fr_1fr]">
+            <div className="mt-10 grid overflow-hidden vidro rounded-3xl lg:grid-cols-[1.1fr_1fr]">
               <div className="p-7 sm:p-10">
                 <p className="text-sm font-bold text-primary">Valtrea Finance</p>
                 <h3 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
@@ -191,8 +237,8 @@ export default function App() {
               </div>
 
               {/* Prévia simplificada do produto */}
-              <div className="flex items-center border-t border-border bg-background/60 p-7 sm:p-10 lg:border-l lg:border-t-0" aria-hidden="true">
-                <div className="w-full rounded-xl border border-border bg-surface p-5 shadow-2xl shadow-black/40">
+              <div className="flex items-center border-t border-border/70 bg-surface-2/50 p-7 sm:p-10 lg:border-l lg:border-t-0" aria-hidden="true">
+                <div className="w-full vidro rounded-2xl p-5">
                   <p className="text-sm text-muted">Saldo de outubro</p>
                   <p className="mt-2 text-3xl font-bold tabular-nums">R$ 4.218,40</p>
                   <div className="mt-5 space-y-3 text-sm">
@@ -222,25 +268,28 @@ export default function App() {
         </section>
 
         {/* Como trabalhamos */}
-        <section id="como-trabalhamos" className="scroll-mt-16 border-t border-border">
-          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="text-3xl font-bold tracking-tight">Como trabalhamos</h2>
-            <ol className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <section id="como-trabalhamos" className="scroll-mt-16">
+          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-28">
+            <h2 className="max-w-2xl text-3xl font-extrabold sm:text-5xl">Profissional do início ao fim</h2>
+            <p className="mt-4 max-w-xl text-lg leading-relaxed text-muted">
+              Tudo combinado por escrito, com entregas que você acompanha.
+            </p>
+            <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {steps.map(({ title, text }, i) => (
-                <li key={title}>
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-primary text-lg font-bold text-primary">
+                <li key={title} className="vidro rounded-3xl p-6">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary font-display text-lg font-extrabold text-background">
                     {i + 1}
                   </span>
-                  <h3 className="mt-4 font-bold">{title}</h3>
+                  <h3 className="mt-5 text-lg font-extrabold">{title}</h3>
                   <p className="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
                 </li>
               ))}
             </ol>
 
-            <ul className="mt-16 grid gap-x-12 border-t border-border sm:grid-cols-2">
+            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
               {commitments.map((c) => (
-                <li key={c} className="flex items-start gap-3 border-b border-border py-4">
-                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                <li key={c} className="botao-vidro flex items-start gap-3 rounded-2xl px-5 py-4">
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
                   <span>{c}</span>
                 </li>
               ))}
@@ -250,10 +299,10 @@ export default function App() {
 
         {/* Contato */}
         {/* Sobre */}
-        <section id="sobre" className="scroll-mt-16 border-t border-border">
-          <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1fr_1.1fr]">
+        <section id="sobre" className="scroll-mt-16 border-y border-border/70 bg-surface-2/60">
+          <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:py-28">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight">Sobre a Valtrea</h2>
+              <h2 className="text-3xl font-extrabold sm:text-5xl">Sobre a Valtrea</h2>
               <p className="mt-4 text-lg leading-relaxed text-muted">
                 A Valtrea é feita por {COMPANY.owner}, no {COMPANY.city.replace('/', ' - ')}. Criamos produtos digitais
                 próprios e projetos sob medida para empresas e profissionais.
@@ -270,7 +319,7 @@ export default function App() {
                 ['Código próprio', 'Nada de modelo pronto: cada sistema é desenhado para o problema de quem vai usar.'],
                 ['Transparência', 'Quem somos, onde estamos e como falar com a gente estão sempre à vista.'],
               ].map(([titulo, texto]) => (
-                <li key={titulo} className="rounded-2xl border border-border bg-surface p-5">
+                <li key={titulo} className="vidro rounded-2xl p-5">
                   <CheckCircle2 className="h-5 w-5 text-primary" aria-hidden="true" />
                   <h3 className="mt-2 font-bold">{titulo}</h3>
                   <p className="mt-1 text-sm leading-relaxed text-muted">{texto}</p>
@@ -281,9 +330,9 @@ export default function App() {
         </section>
 
         {/* Segurança */}
-        <section id="seguranca" className="scroll-mt-16 border-t border-border">
-          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="text-3xl font-bold tracking-tight">Segurança</h2>
+        <section id="seguranca" className="scroll-mt-16">
+          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-28">
+            <h2 className="text-3xl font-extrabold sm:text-5xl">Segurança</h2>
             <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted">
               O que fazemos para proteger quem usa os produtos Valtrea. Vale para o Finance, o Volta, o Pulso e o Agora.
             </p>
@@ -296,14 +345,14 @@ export default function App() {
                 ['Seus dados, sua decisão', 'Na sua conta, você baixa uma cópia de tudo o que guardamos ou exclui a conta e os dados de vez.'],
                 ['Sem rastreadores', 'Não usamos anúncios nem ferramentas de rastreamento. Os cookies servem só para manter você conectado.'],
               ].map(([titulo, texto]) => (
-                <li key={titulo} className="rounded-2xl border border-border bg-surface p-5">
+                <li key={titulo} className="vidro rounded-2xl p-5">
                   <ShieldCheck className="h-5 w-5 text-primary" aria-hidden="true" />
                   <h3 className="mt-2 font-bold">{titulo}</h3>
                   <p className="mt-1 text-sm leading-relaxed text-muted">{texto}</p>
                 </li>
               ))}
             </ul>
-            <p className="mt-8 rounded-2xl border border-border bg-surface/60 p-5 text-sm leading-relaxed text-muted">
+            <p className="mt-8 vidro rounded-2xl p-5 text-sm leading-relaxed text-muted">
               <strong className="text-foreground">Achou uma falha de segurança?</strong> Conte para nós em{' '}
               <a href={`mailto:${COMPANY.email}?subject=${encodeURIComponent('Falha de segurança')}`} className="font-semibold text-primary hover:underline">{COMPANY.email}</a>{' '}
               antes de divulgar. Respondemos por e-mail e corrigimos o quanto antes.
@@ -311,29 +360,30 @@ export default function App() {
           </div>
         </section>
 
-        <section id="contato" className="scroll-mt-16 border-t border-border bg-surface/40">
-          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">
-              Tem um projeto em mente? Vamos conversar.
-            </h2>
-            <p className="mt-4 max-w-xl leading-relaxed text-muted">
-              Conte o que você precisa. Respondemos em até um dia útil com os próximos passos, sem compromisso.
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a href={mailto('Orçamento pelo site')} className={btn.primary}>
-                <Mail className="h-4 w-4" /> {COMPANY.email}
-              </a>
-              {whatsappUrl && (
-                <a href={whatsappUrl} target="_blank" rel="noreferrer" className={btn.secondary}>
-                  <MessageCircle className="h-4 w-4" /> Conversar no WhatsApp
+        <section id="contato" className="scroll-mt-16 px-4 pb-20 sm:px-6 lg:pb-28">
+          <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] bg-[linear-gradient(160deg,#0F3D2E_0%,#1E5A26_55%,#2E6619_100%)] px-6 py-14 text-white shadow-[0_30px_60px_-30px_rgba(15,61,46,0.7)] sm:px-12 sm:py-20">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_80%_at_50%_0%,rgba(255,255,255,0.16),transparent_70%)]" aria-hidden="true" />
+            <div className="relative">
+              <h2 className="max-w-2xl text-3xl font-extrabold sm:text-5xl">Tem um projeto em mente? Vamos construir.</h2>
+              <p className="mt-4 max-w-xl text-lg leading-relaxed text-white/85">
+                Conte o que você precisa. Respondemos por e-mail com os próximos passos, sem compromisso.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <a href={mailto('Orçamento pelo site')} className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-6 font-semibold text-[#0F3D2E] shadow-[0_10px_24px_-12px_rgba(0,0,0,0.5)] transition-transform hover:-translate-y-0.5">
+                  <Mail className="h-4 w-4" aria-hidden="true" /> {COMPANY.email}
                 </a>
-              )}
+                {whatsappUrl && (
+                  <a href={whatsappUrl} target="_blank" rel="noreferrer" className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/40 px-6 font-semibold text-white transition-colors hover:bg-white/10">
+                    <MessageCircle className="h-4 w-4" aria-hidden="true" /> Conversar no WhatsApp
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-border">
+      <footer className="border-t border-border/70 bg-surface/60">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-10 text-sm text-muted sm:px-6 md:flex-row md:justify-between">
           <Logo />
           <nav className="flex flex-wrap justify-center gap-x-5 gap-y-1">

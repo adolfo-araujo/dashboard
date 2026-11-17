@@ -110,11 +110,11 @@ const faq = [
 
 // Links com aparência de botão (evita colocar <button> dentro de <a>)
 const linkButton = {
-  base: 'inline-flex items-center justify-center rounded-lg font-semibold transition-colors',
-  primary: 'bg-primary text-background hover:bg-primary-hover',
-  secondary: 'border border-border bg-surface-2 text-foreground hover:bg-border',
-  sm: 'h-8 px-3 text-sm',
-  lg: 'h-11 px-5 text-base',
+  base: 'inline-flex items-center justify-center rounded-full font-semibold transition-colors',
+  primary: 'botao-verde bg-primary text-background hover:bg-primary-hover',
+  secondary: 'botao-vidro text-foreground',
+  sm: 'h-9 px-4 text-sm',
+  lg: 'h-12 px-6 text-base',
 }
 const lb = (variant, size, extra = '') => `${linkButton.base} ${linkButton[variant]} ${linkButton[size]} ${extra}`
 
@@ -133,7 +133,7 @@ function ProductPreview() {
     <div
       role="img"
       aria-label="Exemplo do painel do Valtrea: saldo do período de R$ 4.218,40, com ganhos, gastos, investimentos e um gráfico de distribuição."
-      className="relative rounded-2xl border border-border bg-surface p-5 shadow-2xl shadow-black/40 sm:p-6"
+      className="relative vidro rounded-3xl p-5 sm:p-7"
     >
       <div className="flex items-center gap-2.5 text-sm text-muted">
         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-2 text-foreground">
@@ -160,7 +160,7 @@ function ProductPreview() {
         </ul>
 
         <svg viewBox="0 0 120 120" className="mx-auto h-32 w-32 -rotate-90" aria-hidden="true">
-          <circle cx="60" cy="60" r="44" fill="none" stroke="#1C2026" strokeWidth="16" />
+          <circle cx="60" cy="60" r="44" fill="none" stroke="rgb(var(--c-surface-2))" strokeWidth="16" />
           {parts.map(({ label, pct, color }) => {
             const el = (
               <circle
@@ -205,11 +205,11 @@ function ProductPreview() {
 export function LandingPage() {
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-border/50 bg-background/70 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Logo />
           <nav className="flex items-center gap-2">
-            <Link to="/login" className="rounded-lg px-3 py-2 text-sm font-semibold text-muted hover:text-foreground">
+            <Link to="/login" className="rounded-full px-4 py-2 text-sm font-semibold text-muted hover:text-foreground">
               Entrar
             </Link>
             <Link to="/signup" className={lb('primary', 'sm')}>
@@ -221,10 +221,14 @@ export function LandingPage() {
 
       <main id="conteudo" tabIndex={-1}>
         {/* Abertura */}
-        <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-20 pt-14 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:pt-24">
+        <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-20 pt-12 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:pt-24">
           <div>
-            <h1 className="max-w-xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
-              Saiba para onde vai o seu dinheiro.
+            <p className="botao-vidro inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold text-muted sm:text-sm">
+              <span className="h-2 w-2 rounded-full bg-primary" aria-hidden="true" /> Gratuito · no computador e no celular
+            </p>
+            <h1 className="mt-6 max-w-xl text-[2.5rem] font-extrabold leading-[1.03] sm:text-6xl lg:text-7xl">
+              Saiba para onde
+              <span className="block text-primary">vai o seu dinheiro.</span>
             </h1>
             <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted">
               Registre ganhos, gastos e investimentos, automatize as contas fixas e defina limites por categoria.
@@ -244,16 +248,18 @@ export function LandingPage() {
         </section>
 
         {/* Funcionalidades */}
-        <section className="border-t border-border">
-          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="max-w-xl text-3xl font-bold tracking-tight">
+        <section>
+          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-28">
+            <h2 className="max-w-2xl text-3xl font-extrabold sm:text-5xl">
               Tudo para organizar suas finanças, sem complicação
             </h2>
-            <div className="mt-12 grid gap-x-12 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {features.map(({ icon: Icon, title, text }) => (
-                <div key={title} className="border-t border-border py-6">
-                  <Icon className="h-5 w-5 text-primary" />
-                  <h3 className="mt-3 font-bold">{title}</h3>
+                <div key={title} className="vidro rounded-3xl p-6">
+                  <span className="botao-vidro flex h-12 w-12 items-center justify-center rounded-2xl">
+                    <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
+                  </span>
+                  <h3 className="mt-4 text-lg font-extrabold">{title}</h3>
                   <p className="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
                 </div>
               ))}
@@ -262,13 +268,13 @@ export function LandingPage() {
         </section>
 
         {/* Passos */}
-        <section className="border-t border-border bg-surface/40">
-          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="text-3xl font-bold tracking-tight">Comece em três passos</h2>
-            <ol className="mt-12 grid gap-10 md:grid-cols-3">
+        <section className="border-y border-border/70 bg-surface-2/60">
+          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-28">
+            <h2 className="text-3xl font-extrabold sm:text-5xl">Comece em três passos</h2>
+            <ol className="mt-12 grid gap-4 md:grid-cols-3">
               {steps.map(({ title, text }, i) => (
-                <li key={title} className="flex gap-4">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-primary text-lg font-bold text-primary">
+                <li key={title} className="vidro flex gap-4 rounded-3xl p-6">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary font-display text-lg font-extrabold text-background">
                     {i + 1}
                   </span>
                   <div>
@@ -282,10 +288,10 @@ export function LandingPage() {
         </section>
 
         {/* Segurança */}
-        <section className="border-t border-border">
-          <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1fr_1.2fr]">
+        <section>
+          <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1fr_1.2fr] lg:py-28">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight">Seus dados ficam com você</h2>
+              <h2 className="text-3xl font-extrabold sm:text-5xl">Seus dados ficam com você</h2>
               <p className="mt-4 max-w-md leading-relaxed text-muted">
                 Suas finanças são assunto seu. O Valtrea guarda só o necessário para funcionar e segue a Lei Geral
                 de Proteção de Dados.
@@ -294,7 +300,7 @@ export function LandingPage() {
                 Ler a Política de privacidade
               </Link>
             </div>
-            <ul className="divide-y divide-border border-y border-border">
+            <ul className="vidro divide-y divide-border/70 rounded-3xl px-6">
               {security.map(({ icon: Icon, text }) => (
                 <li key={text} className="flex items-center gap-4 py-4">
                   <Icon className="h-5 w-5 shrink-0 text-primary" />
@@ -306,12 +312,12 @@ export function LandingPage() {
         </section>
 
         {/* Perguntas frequentes */}
-        <section className="border-t border-border">
-          <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
-            <h2 className="text-3xl font-bold tracking-tight">Perguntas frequentes</h2>
-            <div className="mt-8 divide-y divide-border border-y border-border">
+        <section className="border-t border-border/70 bg-surface-2/60">
+          <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:py-28">
+            <h2 className="text-3xl font-extrabold sm:text-5xl">Perguntas frequentes</h2>
+            <div className="mt-8 space-y-3">
               {faq.map(({ q, a }) => (
-                <details key={q} className="group py-4">
+                <details key={q} className="vidro group rounded-2xl px-5 py-4">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
                     {q}
                     <span className="text-xl text-muted transition-transform group-open:rotate-45" aria-hidden="true">
@@ -326,20 +332,21 @@ export function LandingPage() {
         </section>
 
         {/* Chamada final */}
-        <section className="border-t border-border">
-          <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-4 py-20 sm:px-6 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h2 className="text-3xl font-bold tracking-tight">Organize seu mês ainda hoje.</h2>
-              <p className="mt-2 text-muted">Leva menos de um minuto para criar sua conta.</p>
+        <section className="px-4 py-20 sm:px-6 lg:py-28">
+          <div className="relative mx-auto flex max-w-6xl flex-col items-start gap-6 overflow-hidden rounded-[2rem] bg-[linear-gradient(160deg,#0F3D2E_0%,#1E5A26_55%,#2E6619_100%)] px-6 py-14 text-white shadow-[0_30px_60px_-30px_rgba(15,61,46,0.7)] sm:px-12 md:flex-row md:items-center md:justify-between">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_80%_at_50%_0%,rgba(255,255,255,0.16),transparent_70%)]" aria-hidden="true" />
+            <div className="relative">
+              <h2 className="text-3xl font-extrabold sm:text-5xl">Organize seu mês ainda hoje.</h2>
+              <p className="mt-3 text-lg text-white/85">Leva menos de um minuto para criar sua conta.</p>
             </div>
-            <Link to="/signup" className={lb('primary', 'lg')}>
+            <Link to="/signup" className="relative inline-flex h-12 items-center justify-center rounded-full bg-white px-7 font-semibold text-[#0F3D2E] shadow-[0_10px_24px_-12px_rgba(0,0,0,0.5)] transition-transform hover:-translate-y-0.5">
               Criar conta grátis
             </Link>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-border">
+      <footer className="border-t border-border/70 bg-surface/60">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-10 sm:px-6 md:flex-row md:justify-between">
           <Logo />
           <LegalLinks />

@@ -14,7 +14,7 @@ export function AvisoServidorLento() {
   return (
     <div role="status" aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex justify-center px-4">
       {lento && (
-        <p className="max-w-md rounded-xl border border-border bg-surface px-4 py-3 text-sm leading-relaxed text-foreground shadow-xl">
+        <p className="max-w-md vidro rounded-xl px-4 py-3 text-sm leading-relaxed text-foreground shadow-xl">
           <strong>Acordando o servidor…</strong> Quando o site fica um tempo sem uso, a primeira ação pode levar até
           1 minuto. Depois fica rápido.
         </p>
