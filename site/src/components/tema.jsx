@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 
-const temaAtual = () => (document.documentElement.getAttribute('data-tema') === 'claro' ? 'claro' : 'escuro')
+const temaAtual = () => (document.documentElement.getAttribute('data-tema') === 'escuro' ? 'escuro' : 'claro')
 
-/** Tema claro ou escuro, escolhido pela pessoa. O padrão é o escuro. A escolha fica só neste aparelho. */
+/** Tema claro ou escuro, escolhido pela pessoa. O padrão é o claro. A escolha fica só neste aparelho. */
 export function useTema() {
   const [tema, setTema] = useState(temaAtual)
   useEffect(() => {
@@ -16,9 +16,9 @@ export function useTema() {
 export function trocarTema() {
   const novo = temaAtual() === 'claro' ? 'escuro' : 'claro'
   document.documentElement.setAttribute('data-tema', novo)
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', novo === 'claro' ? '#FFFFFF' : '#0D0F12')
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', novo === 'escuro' ? '#0D0F12' : '#F3F4F6')
   try {
-    if (novo === 'claro') localStorage.setItem('valtrea:tema', 'claro')
+    if (novo === 'escuro') localStorage.setItem('valtrea:tema', 'escuro')
     else localStorage.removeItem('valtrea:tema')
   } catch {
     // navegação privada: vale até fechar a aba

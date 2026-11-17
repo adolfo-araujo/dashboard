@@ -60,7 +60,7 @@ export function MonthlyEvolution() {
           <h2 className="font-bold">Evolução mês a mês</h2>
           <p className="text-sm text-muted">Ganhos, gastos e saldo dos últimos {months} meses</p>
         </div>
-        <div role="tablist" aria-label="Quantidade de meses" className="inline-flex rounded-lg border border-border bg-background p-1">
+        <div role="tablist" aria-label="Quantidade de meses" className="inline-flex rounded-xl border border-border bg-surface p-1">
           {[6, 12].map((n) => (
             <button
               key={n}

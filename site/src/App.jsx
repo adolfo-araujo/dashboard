@@ -32,9 +32,9 @@ function Logo({ className = '' }) {
 
 const btn = {
   primary:
-    'inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 font-semibold text-background transition-colors hover:bg-primary-hover',
+    'botao-verde inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 font-semibold text-background hover:bg-primary-hover',
   secondary:
-    'inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-surface-2 px-5 font-semibold text-foreground transition-colors hover:bg-border',
+    'botao-vidro inline-flex h-11 items-center justify-center gap-2 rounded-full px-6 font-semibold text-foreground',
 }
 
 const services = [
@@ -91,7 +91,7 @@ export default function App() {
       >
         Pular para o conteúdo
       </a>
-      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-border/50 bg-background/70 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <a href="#inicio" aria-label="Valtrea, início">
             <Logo />
@@ -109,7 +109,7 @@ export default function App() {
             <a href="#sobre" className="hidden rounded-lg px-3 py-2 text-muted hover:text-foreground md:inline">
               Sobre
             </a>
-            <a href="#contato" className="ml-2 inline-flex h-9 items-center rounded-lg bg-primary px-4 text-background hover:bg-primary-hover">
+            <a href="#contato" className="botao-verde ml-2 inline-flex h-9 items-center rounded-full bg-primary px-4 text-background hover:bg-primary-hover">
               Fale conosco
             </a>
           </nav>
@@ -167,7 +167,7 @@ export default function App() {
               entregamos.
             </p>
 
-            <div className="mt-10 grid overflow-hidden rounded-2xl border border-border bg-surface lg:grid-cols-[1.1fr_1fr]">
+            <div className="mt-10 grid overflow-hidden vidro rounded-2xl lg:grid-cols-[1.1fr_1fr]">
               <div className="p-7 sm:p-10">
                 <p className="text-sm font-bold text-primary">Valtrea Finance</p>
                 <h3 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
@@ -192,7 +192,7 @@ export default function App() {
 
               {/* Prévia simplificada do produto */}
               <div className="flex items-center border-t border-border bg-background/60 p-7 sm:p-10 lg:border-l lg:border-t-0" aria-hidden="true">
-                <div className="w-full rounded-xl border border-border bg-surface p-5 shadow-2xl shadow-black/40">
+                <div className="w-full vidro rounded-xl p-5 shadow-2xl shadow-black/40">
                   <p className="text-sm text-muted">Saldo de outubro</p>
                   <p className="mt-2 text-3xl font-bold tabular-nums">R$ 4.218,40</p>
                   <div className="mt-5 space-y-3 text-sm">
@@ -270,7 +270,7 @@ export default function App() {
                 ['Código próprio', 'Nada de modelo pronto: cada sistema é desenhado para o problema de quem vai usar.'],
                 ['Transparência', 'Quem somos, onde estamos e como falar com a gente estão sempre à vista.'],
               ].map(([titulo, texto]) => (
-                <li key={titulo} className="rounded-2xl border border-border bg-surface p-5">
+                <li key={titulo} className="vidro rounded-2xl p-5">
                   <CheckCircle2 className="h-5 w-5 text-primary" aria-hidden="true" />
                   <h3 className="mt-2 font-bold">{titulo}</h3>
                   <p className="mt-1 text-sm leading-relaxed text-muted">{texto}</p>
@@ -296,14 +296,14 @@ export default function App() {
                 ['Seus dados, sua decisão', 'Na sua conta, você baixa uma cópia de tudo o que guardamos ou exclui a conta e os dados de vez.'],
                 ['Sem rastreadores', 'Não usamos anúncios nem ferramentas de rastreamento. Os cookies servem só para manter você conectado.'],
               ].map(([titulo, texto]) => (
-                <li key={titulo} className="rounded-2xl border border-border bg-surface p-5">
+                <li key={titulo} className="vidro rounded-2xl p-5">
                   <ShieldCheck className="h-5 w-5 text-primary" aria-hidden="true" />
                   <h3 className="mt-2 font-bold">{titulo}</h3>
                   <p className="mt-1 text-sm leading-relaxed text-muted">{texto}</p>
                 </li>
               ))}
             </ul>
-            <p className="mt-8 rounded-2xl border border-border bg-surface/60 p-5 text-sm leading-relaxed text-muted">
+            <p className="mt-8 vidro rounded-2xl p-5 text-sm leading-relaxed text-muted">
               <strong className="text-foreground">Achou uma falha de segurança?</strong> Conte para nós em{' '}
               <a href={`mailto:${COMPANY.email}?subject=${encodeURIComponent('Falha de segurança')}`} className="font-semibold text-primary hover:underline">{COMPANY.email}</a>{' '}
               antes de divulgar. Respondemos por e-mail e corrigimos o quanto antes.

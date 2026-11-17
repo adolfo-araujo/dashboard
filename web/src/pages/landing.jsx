@@ -133,7 +133,7 @@ function ProductPreview() {
     <div
       role="img"
       aria-label="Exemplo do painel do Valtrea: saldo do período de R$ 4.218,40, com ganhos, gastos, investimentos e um gráfico de distribuição."
-      className="relative rounded-2xl border border-border bg-surface p-5 shadow-2xl shadow-black/40 sm:p-6"
+      className="relative vidro rounded-2xl p-5 shadow-2xl shadow-black/40 sm:p-6"
     >
       <div className="flex items-center gap-2.5 text-sm text-muted">
         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-2 text-foreground">

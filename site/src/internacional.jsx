@@ -114,8 +114,8 @@ const TEXTOS = {
 }
 
 const btn = {
-  primary: 'inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 font-semibold text-background transition-colors hover:bg-primary-hover',
-  secondary: 'inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-surface-2 px-5 font-semibold text-foreground transition-colors hover:bg-border',
+  primary: 'botao-verde inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 font-semibold text-background hover:bg-primary-hover',
+  secondary: 'botao-vidro inline-flex h-11 items-center justify-center gap-2 rounded-full px-6 font-semibold text-foreground',
 }
 
 function Logo() {
@@ -146,14 +146,14 @@ export function Internacional({ idioma }) {
       <a href="#start" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:font-semibold focus:text-background">
         {t.pular}
       </a>
-      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-border/50 bg-background/70 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <a href={`/${idioma}`} aria-label="Valtrea"><Logo /></a>
           <nav className="flex items-center gap-1 text-sm font-semibold">
             {t.nav.map((rotulo, i) => (
               <a key={rotulo} href={`#${ids[i]}`} className="hidden rounded-lg px-3 py-2 text-muted hover:text-foreground md:inline">{rotulo}</a>
             ))}
-            <a href="#contact" className="ml-2 inline-flex h-9 items-center rounded-lg bg-primary px-4 text-background hover:bg-primary-hover">{t.contato}</a>
+            <a href="#contact" className="botao-verde ml-2 inline-flex h-9 items-center rounded-full bg-primary px-4 text-background hover:bg-primary-hover">{t.contato}</a>
           </nav>
         </div>
       </header>
@@ -192,7 +192,7 @@ export function Internacional({ idioma }) {
             <p className="mt-3 max-w-2xl text-muted">{t.produtosSub}</p>
             <ul className="mt-10 grid gap-4 sm:grid-cols-2">
               {t.produtos.map(([nome, texto, url]) => (
-                <li key={nome} className="flex flex-col rounded-2xl border border-border bg-surface p-6">
+                <li key={nome} className="flex flex-col vidro rounded-2xl p-6">
                   <h3 className="font-bold text-primary">{nome}</h3>
                   <p className="mt-2 flex-1 leading-relaxed text-muted">{texto}</p>
                   <a href={url} lang="pt-BR" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
@@ -232,7 +232,7 @@ export function Internacional({ idioma }) {
             <h2 className="text-3xl font-bold tracking-tight">{t.segurancaTitulo}</h2>
             <ul className="mt-10 grid gap-4 sm:grid-cols-2">
               {t.seguranca.map((s) => (
-                <li key={s} className="flex items-start gap-3 rounded-2xl border border-border bg-surface p-5">
+                <li key={s} className="flex items-start gap-3 vidro rounded-2xl p-5">
                   <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
                   <span className="leading-relaxed">{s}</span>
                 </li>

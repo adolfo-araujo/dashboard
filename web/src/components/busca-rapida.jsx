@@ -64,7 +64,7 @@ export function BuscaRapida({ itens }) {
 
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/60 px-4 pt-[12vh]" onMouseDown={(e) => e.target === e.currentTarget && setAberta(false)}>
-      <div role="dialog" aria-modal="true" aria-label="Busca rápida" className="w-full max-w-lg overflow-hidden rounded-xl border border-border bg-surface shadow-2xl">
+      <div role="dialog" aria-modal="true" aria-label="Busca rápida" className="w-full max-w-lg overflow-hidden vidro rounded-xl shadow-2xl">
         <div className="flex items-center gap-2 border-b border-border px-4">
           <Search className="h-4 w-4 shrink-0 text-muted" aria-hidden="true" />
           <input
