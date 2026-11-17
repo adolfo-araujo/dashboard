@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { ArrowUpRight, CheckCircle2, Globe, LayoutDashboard, Mail, MapPin, ServerCog, ShieldCheck, Wrench } from 'lucide-react'
 import { COMPANY } from './config'
 import { BotaoTema } from './components/tema'
+import { MenuCelular } from './App'
 
 // Versão em inglês (/en) e espanhol (/es) do site da empresa. Os produtos continuam em português, para o Brasil.
 const TEXTOS = {
@@ -153,6 +154,7 @@ export function Internacional({ idioma }) {
             {t.nav.map((rotulo, i) => (
               <a key={rotulo} href={`#${ids[i]}`} className="hidden rounded-lg px-3 py-2 text-muted hover:text-foreground md:inline">{rotulo}</a>
             ))}
+            <MenuCelular itens={ids.map((id, i) => [`#${id}`, t.nav[i]])} rotulo={t.lang === 'en' ? 'Open menu' : 'Abrir menú'} />
             <a href="#contact" className="botao-verde ml-2 inline-flex h-9 items-center rounded-full bg-primary px-4 text-background hover:bg-primary-hover">{t.contato}</a>
           </nav>
         </div>

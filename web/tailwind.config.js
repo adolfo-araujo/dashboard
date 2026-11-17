@@ -6,7 +6,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'], display: ['Bricolage Grotesque', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['Poppins', 'Inter', 'system-ui', 'sans-serif'], display: ['Bricolage Grotesque', 'Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
         // Cores em variáveis CSS (src/index.css): versão escura e clara, conforme o tema do aparelho

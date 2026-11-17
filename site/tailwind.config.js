@@ -5,7 +5,7 @@ export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
-      fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], display: ['Bricolage Grotesque', 'Inter', 'system-ui', 'sans-serif'] },
+      fontFamily: { sans: ['Poppins', 'Inter', 'system-ui', 'sans-serif'], display: ['Bricolage Grotesque', 'Inter', 'system-ui', 'sans-serif'] },
       colors: {
         // Cores em variáveis CSS (src/index.css): versão escura e clara, conforme o tema do aparelho
         background: 'rgb(var(--c-background) / <alpha-value>)',
