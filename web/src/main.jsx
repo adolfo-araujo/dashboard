@@ -13,6 +13,7 @@ import { AuthProvider } from './contexts/auth'
 import './fonts.css'
 import './index.css'
 import { api } from './lib/api'
+import { TemaNoCanto } from './components/tema'
 
 // acorda a API (plano gratuito do Render) enquanto a pessoa vê a tela de login
 api.get('/health').catch(() => {})
@@ -38,6 +39,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <AuthProvider>
           <AppErrorBoundary>
             <App />
+            <TemaNoCanto />
           </AppErrorBoundary>
           <CookieNotice />
           <AvisoServidorLento />

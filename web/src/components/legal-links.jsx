@@ -21,7 +21,7 @@ export function LegalLinks({ className }) {
       <a href={`mailto:${LEGAL.email}?subject=${assunto}&body=${corpo}`} className="hover:text-foreground hover:underline">
         Enviar sugestão
       </a>
-      <BotaoTema />
+      <BotaoTema className="xl:hidden" />
       <Link to="/termos" className="hover:text-foreground hover:underline">
         Termos de uso
       </Link>
