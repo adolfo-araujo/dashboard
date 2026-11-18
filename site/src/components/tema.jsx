@@ -26,11 +26,26 @@ export function trocarTema() {
   window.dispatchEvent(new Event('valtrea:tema'))
 }
 
-export function BotaoTema({ className = 'hover:text-foreground hover:underline', rotulos = ['Tema escuro', 'Tema claro'] }) {
+/** Interruptor de tema: a bolinha desliza para a direita no tema escuro. */
+export function BotaoTema({ className = '', rotulos = ['Tema escuro', 'Tema claro'] }) {
   const tema = useTema()
+  const escuro = tema === 'escuro'
   return (
-    <button type="button" onClick={trocarTema} className={className} aria-pressed={tema === 'claro'}>
-      {tema === 'claro' ? rotulos[0] : rotulos[1]}
+    <button
+      type="button"
+      role="switch"
+      aria-checked={escuro}
+      onClick={trocarTema}
+      title={escuro ? rotulos[1] : rotulos[0]}
+      className={`relative inline-flex h-7 w-14 shrink-0 items-center rounded-full bg-surface shadow-[0_4px_10px_rgba(0,0,0,0.12)] ring-1 ring-border transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${className}`}
+    >
+      <span className="sr-only">{rotulos[0]}</span>
+      <span
+        aria-hidden="true"
+        className={`absolute left-[3px] top-1/2 h-[22px] w-[22px] -translate-y-1/2 rounded-full transition-all duration-300 ease-in-out ${
+          escuro ? 'translate-x-[28px] bg-[#18191a] ring-1 ring-white/25' : 'translate-x-0 bg-[#ffebcd] ring-1 ring-black/10'
+        }`}
+      />
     </button>
   )
 }

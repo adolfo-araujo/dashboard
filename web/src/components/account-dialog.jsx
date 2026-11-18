@@ -8,7 +8,7 @@ import { AlertTriangle, Download, FileJson } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Dialog } from './ui/dialog'
 import { Button } from './ui/button'
-import { Field, Input } from './ui/input'
+import { Field, Input, PasswordField } from './ui/input'
 import { useAuth } from '../contexts/auth'
 import { api, getErrorMessage } from '../lib/api'
 import { downloadCsv, downloadJson, transactionsToCsv } from '../lib/csv'
@@ -69,19 +69,17 @@ function DeleteAccountDialog({ open, onClose }) {
             <li>todas as suas transações</li>
           </ul>
         </div>
-        <Field label="Digite sua senha para confirmar" htmlFor="delete-password" error={error}>
-          <Input
-            id="delete-password"
-            type="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value)
-              setError('')
-            }}
-            hasError={!!error}
-          />
-        </Field>
+        <PasswordField
+          label="Digite sua senha para confirmar"
+          id="delete-password"
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value)
+            setError('')
+          }}
+          error={error}
+        />
         <div className="flex gap-3">
           <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>
             Cancelar
@@ -176,16 +174,14 @@ export function AccountDialog({ open, onClose }) {
           <Field label="E-mail" htmlFor="acc-email" error={errors.email?.message}>
             <Input id="acc-email" type="email" hasError={!!errors.email} {...register('email')} />
           </Field>
-          <Field label="Nova senha" htmlFor="acc-pass" error={errors.password?.message}>
-            <Input
-              id="acc-pass"
-              type="password"
-              placeholder="Deixe em branco para manter a atual"
-              autoComplete="new-password"
-              hasError={!!errors.password}
-              {...register('password')}
-            />
-          </Field>
+          <PasswordField
+            label="Nova senha"
+            id="acc-pass"
+            hint="Deixe em branco para manter a atual"
+            autoComplete="new-password"
+            error={errors.password?.message}
+            {...register('password')}
+          />
           <Button type="submit" className="w-full" isLoading={isSubmitting}>
             Salvar alterações
           </Button>

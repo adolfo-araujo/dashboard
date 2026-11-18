@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { AuthLayout } from './auth-layout'
 import { Button } from '../components/ui/button'
-import { Field, Input } from '../components/ui/input'
+import { PasswordField } from '../components/ui/input'
 import { api, getErrorMessage } from '../lib/api'
 import { passwordSchema } from '../lib/password'
 
@@ -67,25 +67,8 @@ export function ResetPasswordPage() {
       }
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-        <Field label="Nova senha" htmlFor="password" error={errors.password?.message}>
-          <Input
-            id="password"
-            type="password"
-            placeholder="8+ caracteres, letras e números"
-            autoComplete="new-password"
-            hasError={!!errors.password}
-            {...register('password')}
-          />
-        </Field>
-        <Field label="Confirmar nova senha" htmlFor="passwordConfirmation" error={errors.passwordConfirmation?.message}>
-          <Input
-            id="passwordConfirmation"
-            type="password"
-            autoComplete="new-password"
-            hasError={!!errors.passwordConfirmation}
-            {...register('passwordConfirmation')}
-          />
-        </Field>
+        <PasswordField label="Nova senha" id="password" hint="8+ caracteres, letras e números" autoComplete="new-password" error={errors.password?.message} {...register('password')} />
+        <PasswordField label="Confirmar nova senha" id="passwordConfirmation" autoComplete="new-password" error={errors.passwordConfirmation?.message} {...register('passwordConfirmation')} />
         <Button type="submit" className="w-full" size="lg" isLoading={isSubmitting}>
           Salvar nova senha
         </Button>

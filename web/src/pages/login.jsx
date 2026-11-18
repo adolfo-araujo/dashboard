@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { AuthLayout } from './auth-layout'
 import { Button } from '../components/ui/button'
-import { Field, Input } from '../components/ui/input'
+import { Field, Input, PasswordField } from '../components/ui/input'
 import { useAuth } from '../contexts/auth'
 import { getErrorMessage } from '../lib/api'
 
@@ -58,9 +58,7 @@ export function LoginPage() {
         <Field label="E-mail" htmlFor="email" error={errors.email?.message}>
           <Input id="email" type="email" autoComplete="email" placeholder="voce@email.com" hasError={!!errors.email} {...register('email')} />
         </Field>
-        <Field label="Senha" htmlFor="password" error={errors.password?.message}>
-          <Input id="password" type="password" autoComplete="current-password" placeholder="••••••" hasError={!!errors.password} {...register('password')} />
-        </Field>
+        <PasswordField label="Senha" id="password" autoComplete="current-password" error={errors.password?.message} {...register('password')} />
         <div className="-mt-1 text-center">
           <Link to="/forgot-password" className="text-sm font-medium text-primary hover:underline">
             Esqueci a senha
