@@ -1818,6 +1818,106 @@
                 },
                 "security": []
             }
+        },
+        "/api/assistente/mensagens": {
+            "post": {
+                "tags": [
+                    "Assistente"
+                ],
+                "summary": "Envia uma mensagem ao assistente do Finance",
+                "description": "Entende frases como \"gastei 40 no mercado\", \"quanto gastei esse mês?\" e \"era 45\". Roda dentro do Valtrea, sem serviço de IA de fora. O texto não é guardado.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "texto"
+                                ],
+                                "properties": {
+                                    "texto": {
+                                        "type": "string",
+                                        "maxLength": 300,
+                                        "example": "gastei 40 no mercado"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Respostas do assistente e sugestões de resposta rápida",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "respostas": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "opcoes": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Mensagem vazia ou longa demais"
+                    },
+                    "401": {
+                        "description": "Sem login"
+                    }
+                }
+            }
+        },
+        "/api/assistente/memoria": {
+            "get": {
+                "tags": [
+                    "Assistente"
+                ],
+                "summary": "O que o assistente aprendeu com a pessoa",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Termos ensinados e a categoria de cada um"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Assistente"
+                ],
+                "summary": "Esquece tudo o que o assistente aprendeu (os lançamentos continuam)",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Memória apagada"
+                    }
+                }
+            }
         }
     },
     "definitions": {

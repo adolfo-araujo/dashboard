@@ -64,6 +64,14 @@ export function PrivacyPage() {
           dos limites de orçamento que você definir.
         </p>
         <p>
+          <strong>Assistente (lançar conversando):</strong> as mensagens que você escreve no assistente são
+          interpretadas pelo próprio {LEGAL.appName}, sem enviar nada a serviços de inteligência artificial de
+          terceiros. O texto da conversa não é guardado no servidor: ficam só os lançamentos que ele criar e as
+          palavras que você ensinar a ele (por exemplo, que "zezinho" é Lazer), junto com uma indicação do seu
+          jeito de escrever (mais formal ou informal, com ou sem emoji) para responder no mesmo tom. Você pode ver
+          e apagar o que ele aprendeu a qualquer momento, e isso também sai na exportação dos seus dados.
+        </p>
+        <p>
           <strong>Dados recebidos da carteira Valtrea Pay (só se você conectar):</strong> se você gerar um
           código de conexão no painel e informá-lo no Valtrea Pay, passamos a receber de lá os pagamentos
           enviados e recebidos na carteira (nome, valor, data e tipo, que viram transações no{' '}
@@ -109,6 +117,7 @@ export function PrivacyPage() {
           items={[
             'Criar e manter sua conta, autenticar seu acesso e exibir suas informações financeiras (execução de contrato, art. 7º, V, da LGPD).',
             'Enviar e-mails essenciais, como confirmação de cadastro, recuperação de senha e confirmação de exclusão de conta (execução de contrato, art. 7º, V).',
+            'Entender as mensagens do assistente, lançar o que você pedir e lembrar das categorias que você ensinou (execução de contrato, a seu pedido, art. 7º, V).',
             'Lançar automaticamente os pagamentos da carteira Valtrea Pay e mostrar o saldo dela, quando você conecta as duas contas (execução de contrato, a seu pedido, art. 7º, V).',
             'Proteger o serviço contra fraudes, abusos e acessos indevidos, registrar erros técnicos para corrigir falhas e manter cópias de segurança (legítimo interesse, art. 7º, IX).',
             'Guardar a data e a versão em que você aceitou os Termos e esta Política, para comprovar o aceite (exercício regular de direitos, art. 7º, VI).',
