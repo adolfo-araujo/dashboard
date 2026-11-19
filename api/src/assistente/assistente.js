@@ -1,4 +1,4 @@
-import { interpretar, encontrarCategoria } from './entender.js'
+import { dividirLancamentos, interpretar, encontrarCategoria } from './entender.js'
 import { extrairValor } from './valores.js'
 import { formatarData, hojeEm } from './datas.js'
 import { combinarEstilo, escolher, lerEstilo, semente } from './estilo.js'
@@ -68,9 +68,17 @@ export function criarAssistente(repo) {
         }
 
         const entendido = interpretar(texto, { hoje, memoria })
+        if (entendido.intencao === 'registrar' && !entendido.futuro) {
+            const partes = dividirLancamentos(texto)
+            if (partes.length > 1) return registrarVarios(ctx, partes, entendido)
+        }
         switch (entendido.intencao) {
             case 'registrar':
                 return registrar(ctx, entendido)
+            case 'reclamacao':
+                return reclamacao(ctx)
+            case 'quantidade':
+                return fala.verOuApagar(Math.min(entendido.quantidade, MAXIMO_PARA_APAGAR))
             case 'corrigir':
                 return corrigir(ctx, entendido)
             case 'desfazer':
@@ -109,7 +117,7 @@ export function criarAssistente(repo) {
         }
 
         // Se a mensagem já é um pedido novo e completo, a pergunta anterior fica para trás.
-        const outroAssunto = ['consulta', 'desfazer', 'corrigir', 'ajuda', 'orcamento', 'saudacao'].includes(novo.intencao)
+        const outroAssunto = ['consulta', 'desfazer', 'corrigir', 'ajuda', 'orcamento', 'saudacao', 'reclamacao', 'quantidade'].includes(novo.intencao)
         const outroLancamento =
             novo.intencao === 'registrar' &&
             (p.etapa === 'valor' ? Boolean(novo.categoria || novo.tipoExplicito) : Boolean(novo.valor))
@@ -118,7 +126,7 @@ export function criarAssistente(repo) {
         const negou = /^(nenhum|nenhuma|nao|n|cancela|cancelar|esquece|deixa|deixa pra la)\b/.test(f)
         if (negou) {
             await repo.salvarPendencia(userId, null)
-            return fala.cancelado()
+            return p.etapa === 'apagar' ? fala.naoApaguei() : fala.cancelado()
         }
 
         if (p.etapa === 'confirmar') {
@@ -198,7 +206,61 @@ export function criarAssistente(repo) {
     }
 
     async function lancar(ctx, l, aprender) {
+        const { descricao, alerta } = await gravar(ctx, l, aprender)
+        const respostas = [ctx.fala.lancado(descricao, Boolean(aprender?.termo))]
+        if (alerta) respostas.push(alerta)
+        return { respostas, opcoes: [], acao: 'lancado' }
+    }
+
+    // Vários lançamentos numa mensagem: lança os que entendeu por inteiro e pergunta pelo primeiro que faltar algo.
+    async function registrarVarios(ctx, partes, inteiro) {
+        const { hoje, memoria, fala } = ctx
+        let tipoAnterior = null
+        const itens = []
+        for (const parte of partes) {
+            const e = interpretar(parte, { hoje, memoria })
+            if (e.intencao !== 'registrar') return registrar(ctx, inteiro)
+            // "gastei 40 no mercado e 20 no zezinho": o verbo do começo vale para o resto
+            if (!e.tipo && tipoAnterior) {
+                const achado = encontrarCategoria(parte, tipoAnterior, memoria)
+                Object.assign(e, { tipo: tipoAnterior, categoria: achado?.categoria ?? null, origemCategoria: achado?.origem ?? null })
+            }
+            if (e.tipo) tipoAnterior = e.tipo
+            itens.push({ e, parte })
+        }
+        const completo = ({ e }) => e.tipo && e.valor && e.categoria && e.origemCategoria !== 'aproximado' && !e.futuro
+        const prontos = itens.filter(completo)
+        const faltando = itens.filter((i) => !completo(i))
+
+        const descricoes = []
+        const alertas = []
+        for (const { e, parte } of prontos) {
+            const g = await gravar(ctx, { type: e.tipo, amount: e.valor, category: e.categoria, name: e.nome, date: e.data, textoOriginal: parte })
+            descricoes.push(g.descricao)
+            if (g.alerta) alertas.push(g.alerta)
+        }
+        const pergunta = faltando.length ? await registrar({ ...ctx, texto: faltando[0].parte }, faltando[0].e) : null
+
+        const respostas = []
+        if (descricoes.length === 1) respostas.push(fala.lancado(descricoes[0], false))
+        if (descricoes.length > 1) respostas.push(fala.lancadosVarios(descricoes))
+        respostas.push(...alertas)
+        if (faltando.length > 1) respostas.push(fala.depoisOsOutros(faltando.slice(1).map((i) => i.parte.trim())))
+        if (pergunta) respostas.push(...pergunta.respostas)
+        return { respostas, opcoes: pergunta?.opcoes ?? [], acao: descricoes.length ? 'lancado' : pergunta?.acao }
+    }
+
+    async function reclamacao(ctx) {
         const { userId, hoje, fala } = ctx
+        const ultimo = await repo.ultimoLancamentoDoAssistente(userId)
+        if (!ultimo) return fala.desculpaSemNada()
+        await repo.salvarPendencia(userId, { etapa: 'apagar', ids: [ultimo.id] })
+        return fala.desculpa(descrever(ultimo, hoje))
+    }
+
+    // Grava um lançamento e devolve a descrição e o aviso de orçamento, se houver.
+    async function gravar(ctx, l, aprender) {
+        const { userId, hoje } = ctx
         const nome = (l.name ?? rotulo(l.type, l.category)).slice(0, 50)
         const criado = await repo.criarLancamento(userId, {
             name: capitalizar(nome),
@@ -211,12 +273,9 @@ export function criarAssistente(repo) {
         if (aprender?.termo) await repo.ensinar(userId, aprender.tipo, aprender.termo, aprender.categoria)
         await repo.salvarEstilo(userId, ctx.estilo)
 
-        const respostas = [fala.lancado(descrever({ ...criado, date: l.date ?? hoje }, hoje), Boolean(aprender?.termo))]
-        if (l.type === 'EXPENSE') {
-            const alerta = await alertaDeOrcamento(ctx, l.category, Number(criado.amount))
-            if (alerta) respostas.push(alerta)
-        }
-        return { respostas, opcoes: [], acao: 'lancado' }
+        const descricao = descrever({ ...criado, date: l.date ?? hoje }, hoje)
+        const alerta = l.type === 'EXPENSE' ? await alertaDeOrcamento(ctx, l.category, Number(criado.amount)) : null
+        return { descricao, alerta }
     }
 
     async function alertaDeOrcamento(ctx, categoria, valor) {
@@ -276,7 +335,7 @@ export function criarAssistente(repo) {
         const { userId, fala } = ctx
         const { inicio, fim, nome } = e.periodo
         if (e.tipoConsulta === 'ultimos') {
-            const lista = await repo.ultimos(userId, 5)
+            const lista = await repo.ultimos(userId, Math.min(e.quantidade ?? 5, MAXIMO_PARA_APAGAR))
             return fala.ultimos(lista.map((l) => descrever(l, ctx.hoje)))
         }
         if (e.tipoConsulta === 'maior') {
@@ -399,6 +458,19 @@ function criarFala(estilo, s, primeiroNome) {
             const pergunta = n === 1 ? 'Apago?' : `Apago ${n === 2 ? 'os dois' : `os ${n}`}?`
             return r([titulo, ...linhas.map((l) => `• ${capitalizar(l)}`), pergunta].join('\n'), ['Sim, apagar', 'Não'])
         },
+        lancadosVarios: (descricoes) =>
+            [`${solto ? `Anotei os ${descricoes.length}${e('✅')}:` : `Lancei ${descricoes.length}:`}`, ...descricoes.map((d) => `• ${capitalizar(d)}`)].join('\n'),
+        depoisOsOutros: (partes) =>
+            `Também tinha ${partes.map((p) => `"${p}"`).join(', ')}: me manda ${partes.length === 1 ? 'esse' : 'esses'} de novo depois desta pergunta.`,
+        desculpa: (descricao) =>
+            r(
+                `${solto ? 'Foi mal!' : 'Desculpe!'} O último que eu lancei foi ${descricao}. Quer que eu apague?`,
+                ['Sim, apagar', 'Não'],
+            ),
+        desculpaSemNada: () =>
+            r('Desculpe pela confusão. Agora não tenho nenhum lançamento meu para desfazer. Se algo ficou errado, dá para ajustar pelo painel.'),
+        naoApaguei: () => r(solto ? 'Beleza, não apaguei nada.' : 'Certo, não apaguei nada.'),
+        verOuApagar: (n) => r(`Quer ver ou apagar os ${n} últimos lançamentos?`, [`Mostra os ${n} últimos`, `Apaga os ${n} últimos`]),
         apagadosVarios: (n) =>
             r(n === 1 ? 'Pronto, apaguei. Seu saldo já foi atualizado.' : `Pronto, apaguei os ${n} lançamentos. Seu saldo já foi atualizado.`),
         apagado: (descricao) => r(solto ? `Apaguei: ${descricao}.` : `Pronto, apaguei ${descricao}.`),

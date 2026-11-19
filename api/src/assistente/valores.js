@@ -76,9 +76,12 @@ function porExtenso(frase) {
 // "os últimos 3", "as 3 coisas", "três lançamentos": é uma quantidade de lançamentos, não dinheiro.
 const NUMERO_PEQUENO = `\\d{1,2}|${Object.keys(UNIDADES).filter((k) => UNIDADES[k] > 0 && UNIDADES[k] <= 20).join('|')}`
 const CONTAGEM = new RegExp(
-    `\\b(?:ultim[oa]s\\s+(${NUMERO_PEQUENO})|(${NUMERO_PEQUENO})\\s+(?:ultim[oa]s|lancamentos?|coisas|itens|registros))\\b`,
+    `\\b(?:ultim[oa]s\\s+(${NUMERO_PEQUENO})|(${NUMERO_PEQUENO})\\s+(?:ultim[oa]s|lancamentos?|coisas|itens|registros|gastos|ganhos|investimentos))\\b`,
     'g',
 )
+/** Palavra que é número por extenso ('duzentos', 'mil'). */
+export const ehNumeroPorExtenso = (palavra) => palavra in UNIDADES || palavra === 'mil'
+
 const numeroPequeno = (t) => (/^\d{1,2}$/.test(t ?? '') ? Number(t) : UNIDADES[t] ?? null)
 
 /** Quantidade de lançamentos citada ("apaga os 3 últimos"), ou null. */

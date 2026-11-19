@@ -237,6 +237,42 @@ describe('assistente', () => {
         expect(repo.estado.lancamentos).toHaveLength(0)
     })
 
+    it('lança vários gastos mandados na mesma mensagem', async () => {
+        const repo = repoFalso()
+        const falar = conversa(repo)
+        const r = await falar('gasto de R$ 60,00 em Alimentação, gasto de R$ 80,00 em Contas e serviços')
+        expect(r.texto).toMatch(/Lancei 2/)
+        expect(repo.estado.lancamentos.map((l) => [l.category, l.amount])).toEqual([
+            ['alimentacao', 60],
+            ['contas', 80],
+        ])
+        await falar('gastei 40 no mercado e 20 no zezinho')
+        expect(repo.estado.lancamentos).toHaveLength(3)
+        expect(repo.estado.pendencia).toMatchObject({ etapa: 'categoria' })
+        await falar('lazer')
+        expect(repo.estado.lancamentos.at(-1)).toMatchObject({ amount: 20, category: 'lazer', type: 'EXPENSE' })
+        await falar('paguei mil e duzentos de aluguel')
+        expect(repo.estado.lancamentos.at(-1)).toMatchObject({ amount: 1200, category: 'moradia' })
+    })
+
+    it('pede desculpa e oferece apagar quando a pessoa reclama', async () => {
+        const repo = repoFalso()
+        const falar = conversa(repo)
+        await falar('gastei 60 no mercado')
+        const r = await falar('nao nao, voce me pediu para falar o valor e onde foi, eu mandei os dois e voce lançou mais um')
+        expect(r.texto).toMatch(/Quer que eu apague/)
+        expect((await falar('não')).texto).toMatch(/não apaguei/)
+        await falar('voce lançou errado')
+        await falar('sim')
+        expect(repo.estado.lancamentos).toHaveLength(0)
+    })
+
+    it('pergunta se é para ver ou apagar quando só vem a quantidade', async () => {
+        const falar = conversa(repoFalso())
+        const r = await falar('os ultimos 3 que te disse')
+        expect(r.opcoes).toEqual(['Mostra os 3 últimos', 'Apaga os 3 últimos'])
+    })
+
     it('responde no tom de quem escreve', async () => {
         const falar = conversa(repoFalso())
         expect((await falar('gastei 50 conto no bar kkk 🍺')).texto).toMatch(/✅/)
