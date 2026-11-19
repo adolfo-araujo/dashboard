@@ -22,6 +22,7 @@ function repoFalso({ orcamentos = [] } = {}) {
             estado.lancamentos.push(criado)
             return criado
         },
+        lancamentosDoAssistente: async (_, { limite = 20 } = {}) => estado.lancamentos.filter((l) => l.assistente).slice(-limite).reverse(),
         ultimoLancamentoDoAssistente: async () => estado.lancamentos.filter((l) => l.assistente).at(-1) ?? null,
         apagarLancamento: async (_, id) => {
             estado.lancamentos = estado.lancamentos.filter((l) => l.id !== id)
@@ -184,6 +185,56 @@ describe('assistente', () => {
             ['transporte', 20, 'Flanelinha'],
             ['alimentacao', 15, 'Ifood'],
         ])
+    })
+
+    it('não lança o que ainda vai acontecer, mas lança se a pessoa disser que já foi', async () => {
+        const repo = repoFalso()
+        const falar = conversa(repo)
+        const plano = await falar('quero gastar 60 em comida')
+        expect(plano.texto).toMatch(/não lancei/)
+        expect(plano.texto).toMatch(/orçamento de Alimentação/)
+        expect(plano.opcoes).toEqual(['Já aconteceu, pode lançar', 'Não lançar'])
+        expect(repo.estado.lancamentos).toHaveLength(0)
+        expect((await falar('Não lançar')).texto).toMatch(/Nada foi lançado|não anotei|deixei/)
+
+        const amanha = await falar('gastarei amanha 80 no plano de celular')
+        expect(amanha.texto).toMatch(/amanhã/)
+        expect(repo.estado.lancamentos).toHaveLength(0)
+        await falar('Já aconteceu, pode lançar')
+        expect(repo.estado.lancamentos[0]).toMatchObject({ amount: 80, category: 'contas', name: 'Plano de celular', date: '2026-11-19' })
+    })
+
+    it('apaga vários de uma vez, mas confirma antes', async () => {
+        const repo = repoFalso()
+        const falar = conversa(repo)
+        await falar('recebi 3000 de salário')
+        await falar('gastei 40 no mercado')
+        await falar('uber 20')
+
+        const doisUltimos = await falar('apaga os 2 últimos')
+        expect(doisUltimos.texto).toMatch(/Os 2 últimos que eu lancei/)
+        expect(doisUltimos.opcoes).toEqual(['Sim, apagar', 'Não'])
+        expect(repo.estado.lancamentos).toHaveLength(3)
+        await falar('apaga')
+        expect(repo.estado.lancamentos.map((l) => l.amount)).toEqual([3000])
+
+        await falar('gastei 50 no bar')
+        expect((await falar('apague todos esses que mandei')).texto).toMatch(/Estes são os 2 que eu lancei hoje/)
+        expect((await falar('Sim, apagar')).texto).toMatch(/apaguei os 2/)
+        expect(repo.estado.lancamentos).toHaveLength(0)
+    })
+
+    it('larga a pergunta quando a pessoa pede para tirar do saldo o que mandou', async () => {
+        const repo = repoFalso()
+        const falar = conversa(repo)
+        await falar('gastei 40 no mercado')
+        await falar('uber 20')
+        await falar('gastei 15 no ifood')
+        expect((await falar('gaste os ultimos 3 que lancei')).texto).not.toMatch(/R\$\s?3,00/)
+        const r = await falar('nenhum dos 3, eu quero que voce tire do saldo as 3 coisas que te mandei anteriormente')
+        expect(r.texto).toMatch(/Os 3 últimos que eu lancei/)
+        await falar('sim')
+        expect(repo.estado.lancamentos).toHaveLength(0)
     })
 
     it('responde no tom de quem escreve', async () => {
