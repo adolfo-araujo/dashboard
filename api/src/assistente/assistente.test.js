@@ -273,6 +273,18 @@ describe('assistente', () => {
         expect(r.opcoes).toEqual(['Mostra os 3 últimos', 'Apaga os 3 últimos'])
     })
 
+    it('apaga tudo o que lançou desde o início, com confirmação', async () => {
+        const repo = repoFalso()
+        const falar = conversa(repo)
+        await falar('gastei 40 no mercado')
+        await falar('uber 20')
+        const r = await falar('tire todos os gastos que lancei contigo desde o inicio')
+        expect(r.texto).toMatch(/Desde o início, eu lancei 2/)
+        expect(r.texto).toMatch(/o que você lançou pelo painel continua/)
+        await falar('Sim, apagar')
+        expect(repo.estado.lancamentos).toHaveLength(0)
+    })
+
     it('responde no tom de quem escreve', async () => {
         const falar = conversa(repoFalso())
         expect((await falar('gastei 50 conto no bar kkk 🍺')).texto).toMatch(/✅/)

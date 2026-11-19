@@ -14,6 +14,8 @@ const porcento = (parte, total) => (total > 0 ? Math.round((parte / total) * 100
 // Termo que o assistente vai lembrar quando a pessoa ensinar uma categoria ("ifood", "padaria do zé").
 const CONFIRMA = /^(sim|s|isso|pode|ok|beleza|blz|certo|confirmo|confirma|manda|bora|claro|exato|aham|uhum|fechou|show)\b/
 const MAXIMO_PARA_APAGAR = 20
+const MAXIMO_DESDE_O_INICIO = 200
+const LINHAS_NA_LISTA = 10
 
 function termoParaAprender(nome) {
     const uteis = palavras(nome ?? '').filter((p) => !PALAVRAS_VAZIAS.has(p) && !/^\d/.test(p))
@@ -311,18 +313,21 @@ export function criarAssistente(repo) {
 
     async function desfazer(ctx, e = {}) {
         const { userId, hoje, fala } = ctx
-        if (e.quantidade === 'todos' || e.quantidade > 1) {
+        if (e.quantidade === 'todos' || e.quantidade === 'sempre' || e.quantidade > 1) {
             const todos = e.quantidade === 'todos'
-            // "todos" = o que eu lancei hoje (horário de Brasília); com número, os N últimos que eu lancei
+            const sempre = e.quantidade === 'sempre'
+            // "todos" = o que eu lancei hoje (horário de Brasília); "desde o início" = tudo o que eu lancei;
+            // com número, os N últimos que eu lancei. Sempre só o que tem a marca do assistente.
             const lista = await repo.lancamentosDoAssistente(userId, {
                 desde: todos ? new Date(`${hoje}T03:00:00.000Z`) : undefined,
-                limite: todos ? MAXIMO_PARA_APAGAR : Math.min(e.quantidade, MAXIMO_PARA_APAGAR),
+                sempre,
+                limite: sempre ? MAXIMO_DESDE_O_INICIO : todos ? MAXIMO_PARA_APAGAR : Math.min(e.quantidade, MAXIMO_PARA_APAGAR),
             })
             if (!lista.length) return fala.nadaParaApagar()
             await repo.salvarPendencia(userId, { etapa: 'apagar', ids: lista.map((l) => l.id) })
             return fala.confirmarApagar(
                 lista.map((l) => descrever(l, hoje)),
-                todos ? 'todos' : e.quantidade,
+                e.quantidade,
             )
         }
         const ultimo = await repo.ultimoLancamentoDoAssistente(userId)
@@ -448,7 +453,11 @@ function criarFala(estilo, s, primeiroNome) {
         confirmarApagar: (linhas, pedido) => {
             const n = linhas.length
             const titulo =
-                pedido === 'todos'
+                pedido === 'sempre'
+                    ? n === 1
+                        ? 'Desde o início, só achei este lançado por mim:'
+                        : `Desde o início, eu lancei ${n}:`
+                    : pedido === 'todos'
                     ? n === 1
                         ? 'Hoje eu só lancei este:'
                         : `Estes são os ${n} que eu lancei hoje:`
@@ -456,7 +465,10 @@ function criarFala(estilo, s, primeiroNome) {
                       ? `Só achei ${n} ${n === 1 ? 'lançamento feito' : 'lançamentos feitos'} por mim nos últimos 7 dias:`
                       : `Os ${n} últimos que eu lancei:`
             const pergunta = n === 1 ? 'Apago?' : `Apago ${n === 2 ? 'os dois' : `os ${n}`}?`
-            return r([titulo, ...linhas.map((l) => `• ${capitalizar(l)}`), pergunta].join('\n'), ['Sim, apagar', 'Não'])
+            const lista = linhas.slice(0, LINHAS_NA_LISTA).map((l) => `• ${capitalizar(l)}`)
+            if (n > LINHAS_NA_LISTA) lista.push(`… e mais ${n - LINHAS_NA_LISTA}`)
+            const aviso = pedido === 'sempre' ? ' (Só o que eu lancei; o que você lançou pelo painel continua.)' : ''
+            return r([titulo, ...lista, `${pergunta}${aviso}`].join('\n'), ['Sim, apagar', 'Não'])
         },
         lancadosVarios: (descricoes) =>
             [`${solto ? `Anotei os ${descricoes.length}${e('✅')}:` : `Lancei ${descricoes.length}:`}`, ...descricoes.map((d) => `• ${capitalizar(d)}`)].join('\n'),
