@@ -95,6 +95,10 @@ export function criarAssistente(repo) {
                 return fala.agradecimento()
             case 'ajuda':
                 return fala.ajuda()
+            case 'sobre':
+                return fala.sobre()
+            case 'foraDoAssunto':
+                return fala.foraDoAssunto()
             case 'confirmar':
             case 'negar':
                 return fala.semPendencia()
@@ -119,7 +123,7 @@ export function criarAssistente(repo) {
         }
 
         // Se a mensagem já é um pedido novo e completo, a pergunta anterior fica para trás.
-        const outroAssunto = ['consulta', 'desfazer', 'corrigir', 'ajuda', 'orcamento', 'saudacao', 'reclamacao', 'quantidade'].includes(novo.intencao)
+        const outroAssunto = ['consulta', 'desfazer', 'corrigir', 'ajuda', 'sobre', 'orcamento', 'saudacao', 'reclamacao', 'quantidade'].includes(novo.intencao)
         const outroLancamento =
             novo.intencao === 'registrar' &&
             (p.etapa === 'valor' ? Boolean(novo.categoria || novo.tipoExplicito) : Boolean(novo.valor))
@@ -339,6 +343,11 @@ export function criarAssistente(repo) {
     async function consultar(ctx, e) {
         const { userId, fala } = ctx
         const { inicio, fim, nome } = e.periodo
+        if (e.tipoConsulta === 'doAssistente') {
+            const meus = await repo.lancamentosDoAssistente(userId, { sempre: true, limite: MAXIMO_DESDE_O_INICIO })
+            const noPeriodo = meus.filter((l) => l.date >= inicio && l.date <= fim)
+            return fala.doAssistente(noPeriodo.map((l) => descrever(l, ctx.hoje)), nome)
+        }
         if (e.tipoConsulta === 'ultimos') {
             const lista = await repo.ultimos(userId, Math.min(e.quantidade ?? 5, MAXIMO_PARA_APAGAR))
             return fala.ultimos(lista.map((l) => descrever(l, ctx.hoje)))
@@ -391,10 +400,31 @@ function criarFala(estilo, s, primeiroNome) {
         agradecimento: () => r(solto ? v(`Tmj!${e('🤝')}`, `De nada!${e('😉')}`, 'Precisando, é só mandar.') : v('Por nada!', 'Disponha. Precisando, é só escrever.')),
         ajuda: () =>
             r([
+                'Sou o assistente do Finance e funciono aqui dentro, sem IA de fora.',
                 'Eu anoto seus gastos, ganhos e investimentos, respondo quanto você gastou e aviso quando chegar perto do orçamento.',
                 exemplos,
                 'Quanto mais você usa, mais eu aprendo o seu jeito de escrever e as suas categorias.',
-            ]),
+            ], ['Gastei 30 no almoço', 'Quanto gastei esse mês?', 'Apaga o último']),
+        sobre: () =>
+            r(
+                [
+                    `Sou o assistente do Valtrea Finance${e('🤖')}. Não sou uma IA de fora: funciono com regras próprias, aqui dentro do Finance, e aprendo as categorias que você me ensina.`,
+                    'Me conta seus gastos e ganhos do seu jeito, pergunta quanto gastou ou o seu saldo, e eu aviso quando o orçamento estiver chegando perto.',
+                ].join(' '),
+                ['Gastei 30 no almoço', 'Quanto gastei esse mês?', 'Ajuda'],
+            ),
+        foraDoAssunto: () =>
+            r(
+                `${solto ? 'Essa eu não sei responder' : 'Não sei responder essa'}${e('😅')}. Eu cuido só das suas finanças no Valtrea: anoto gastos e ganhos, respondo saldo e resumos e aviso do orçamento.`,
+                ['Ajuda', 'Quanto gastei esse mês?'],
+            ),
+        doAssistente: (linhas, periodo) => {
+            const quando = capitalizar(periodo)
+            if (!linhas.length) return r(`${quando} eu não lancei nada por aqui.`)
+            const lista = linhas.slice(0, LINHAS_NA_LISTA).map((l) => `• ${capitalizar(l)}`)
+            if (linhas.length > LINHAS_NA_LISTA) lista.push(`… e mais ${linhas.length - LINHAS_NA_LISTA}`)
+            return r([`${quando} eu lancei ${linhas.length === 1 ? 'só este' : linhas.length}:`, ...lista].join('\n'))
+        },
         naoEntendi: () =>
             r(
                 solto

@@ -285,6 +285,19 @@ describe('assistente', () => {
         expect(repo.estado.lancamentos).toHaveLength(0)
     })
 
+    it('responde sobre si mesmo e não confunde pergunta qualquer com resumo', async () => {
+        const repo = repoFalso()
+        const falar = conversa(repo)
+        expect((await falar('oque voce é?')).texto).toMatch(/Sou o assistente do Valtrea Finance/)
+        expect((await falar('como voce funciona?')).texto).toMatch(/Eu anoto seus gastos/)
+        expect((await falar('oque eu devo fazer com voce?')).texto).toMatch(/Eu anoto seus gastos/)
+        expect((await falar('qual a capital da frança?')).texto).toMatch(/sei responder/)
+        expect((await falar('voce fez algum lançamento esse mes?')).texto).toMatch(/não lancei nada/)
+        await falar('gastei 40 no mercado')
+        expect((await falar('voce fez algum lançamento esse mes?')).texto).toMatch(/eu lancei só este:\n• Gasto de R\$\s?40,00/)
+        expect((await falar('quanto gastei esse mês?')).texto).toMatch(/R\$\s?40,00/)
+    })
+
     it('responde no tom de quem escreve', async () => {
         const falar = conversa(repoFalso())
         expect((await falar('gastei 50 conto no bar kkk 🍺')).texto).toMatch(/✅/)

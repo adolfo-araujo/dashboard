@@ -7,6 +7,16 @@ const TIPOS = ['EXPENSE', 'EARNING', 'INVESTMENT']
 
 const comeca = (frase, padrao) => new RegExp(`^(${padrao})\\b`).test(frase)
 const tem = (frase, padrao) => new RegExp(`\\b(${padrao})\\b`).test(frase)
+// Jeitos curtos de escrever que viram a forma completa antes de entender a frase
+const abreviacoes = (frase) =>
+    frase
+        .replace(/\boque\b/g, 'o que')
+        .replace(/\b(vc|vce|ce)\b/g, 'voce')
+        .replace(/\b(pq|pk)\b/g, 'por que')
+        .replace(/\b(eh)\b/g, 'e')
+// Palavras que fazem uma pergunta ser sobre dinheiro (senão é uma pergunta que eu não sei responder)
+const ASSUNTO_FINANCEIRO =
+    'gast\\w*|ganh\\w*|receb\\w*|saldo|sobr\\w*|entr(ou|aram|ada|adas)|sai(u|ram|da|das)|invest\\w*|apliq\\w*|aplica\\w*|resumo|extrato|balanco|quanto|categorias?|lanc\\w*|dinheiro|grana|reais|real|mes|semana|ano|hoje|ontem|ultim\\w*|orcamentos?|pagu\\w*|pag(o|ar|amento)|compr\\w*|despesas?|receitas?|economi\\w*|poupei|guardei'
 
 function tipoPeloVerbo(lista) {
     for (const tipo of TIPOS) if (lista.some((p) => VERBOS[tipo].includes(p))) return tipo
@@ -102,7 +112,7 @@ export function nomeDoLancamento(texto, retirar = []) {
  * Em registrar, `futuro` diz que a pessoa contou algo que ainda vai acontecer (não é para lançar já).
  */
 export function interpretar(texto, { hoje, memoria = {} }) {
-    const frase = normalizar(texto)
+    const frase = abreviacoes(normalizar(texto))
     const lista = palavras(frase)
     if (!frase) return { intencao: 'vazio' }
 
@@ -117,8 +127,15 @@ export function interpretar(texto, { hoje, memoria = {} }) {
     if (!valor && tem(frase, 'obrigad[oa]|valeu|vlw|brigad[oa]|obg|tmj|agradeco') && lista.length <= 6) {
         return { intencao: 'agradecimento' }
     }
-    if (tem(frase, 'ajuda|help|o que (voce|vc) faz|como (funciona|usa|usar)|comandos|o que da pra fazer')) {
+    if (tem(frase, 'o que (e )?voce e|quem e voce|quem voce e|voce e (uma |um |o |a )?(ia|inteligencia artificial|robo|bot|humano|pessoa|gente|chatgpt|gpt|de verdade)|o que e (isso|esse assistente|esse chat|voce)|qual (e )?(o )?seu nome|como voce se chama')) {
+        return { intencao: 'sobre' }
+    }
+    if (tem(frase, 'ajuda|help|o que voce (faz|sabe fazer|consegue fazer|sabe)|como (voce |isso |o assistente )?(funciona|usa|usar|te uso|eu uso)|comandos|o que da (pra|para) fazer|o que (eu )?(devo|posso|consigo) fazer( com voce| com isso| aqui)?|(pra|para) que (voce )?serve')) {
         return { intencao: 'ajuda' }
+    }
+    // "você fez algum lançamento esse mês?": pergunta sobre o que o assistente lançou
+    if (pergunta && tem(frase, 'voce (fez|lancou|registrou|anotou|colocou|botou|adicionou)|o que voce (lancou|registrou|anotou)')) {
+        return { intencao: 'consulta', tipoConsulta: 'doAssistente', periodo: extrairPeriodo(texto, hoje) }
     }
     if (curta && !valor && comeca(frase, 'sim|s|isso|isso mesmo|pode|pode ser|ok|okay|beleza|blz|certo|confirmo|confirma|manda|bora|claro|exato|aham|uhum|positivo|perfeito|fechou|show')) {
         return { intencao: 'confirmar' }
@@ -133,7 +150,7 @@ export function interpretar(texto, { hoje, memoria = {} }) {
         const quantidade = desdeOInicio ? 'sempre' : extrairQuantidade(texto) ?? (tem(frase, 'todos|todas|tudo') ? 'todos' : null)
         return { intencao: 'desfazer', quantidade }
     }
-    if (tem(frase, '(voce|vc) (lancou|colocou|botou|registrou|anotou|adicionou|lancaste)|lancou (errado|a mais|de novo|duas vezes|mais um|outro)|nao (pedi|mandei) (isso|pra lancar|para lancar)|ta errado|esta errado|ficou errado|deu errado')) {
+    if (!pergunta && tem(frase, '(voce|vc) (lancou|colocou|botou|registrou|anotou|adicionou|lancaste)|lancou (errado|a mais|de novo|duas vezes|mais um|outro)|nao (pedi|mandei) (isso|pra lancar|para lancar)|ta errado|esta errado|ficou errado|deu errado')) {
         return { intencao: 'reclamacao' }
     }
     if (comeca(frase, 'era|na verdade|corrige|corrigir|corrija|muda|mudar|troca|trocar|altera|alterar|nao era|ops|opa era|errei')) {
@@ -145,6 +162,8 @@ export function interpretar(texto, { hoje, memoria = {} }) {
     }
 
     if (pergunta && (!valor || /\?\s*$/.test(String(texto).trim()))) {
+        const sobreDinheiro = tem(frase, ASSUNTO_FINANCEIRO) || Boolean(valor) || TIPOS.some((t) => encontrarCategoria(texto, t, memoria)?.origem === 'dicionario')
+        if (!sobreDinheiro) return { intencao: 'foraDoAssunto' }
         let tipoConsulta = 'resumo'
         if (tem(frase, 'saldo|sobrou|sobra|tenho|quanto tenho|balanco')) tipoConsulta = 'saldo'
         if (tem(frase, 'onde|mais gastei|maior gasto|mais pesou|categoria que mais|com o que mais')) tipoConsulta = 'maior'
