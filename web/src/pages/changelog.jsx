@@ -6,6 +6,13 @@ import { LegalLinks } from '../components/legal-links'
 // O que mudou em cada versão. Acrescente no topo a cada novidade.
 const VERSOES = [
   [
+    "19 de novembro de 2026",
+    [
+      "Assistente: lance gastos e ganhos conversando (\"gastei 40 no mercado\"), pergunte quanto gastou, corrija ou apague o último lançamento e receba aviso do orçamento.",
+      "O assistente funciona dentro do Valtrea, sem IA de fora, e aprende as suas categorias e o seu jeito de escrever."
+    ]
+  ],
+  [
     "7 de novembro de 2026",
     [
       "Gráfico do saldo no fim de cada mês e do total investido nos últimos 12 meses.",

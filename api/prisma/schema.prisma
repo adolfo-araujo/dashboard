@@ -26,6 +26,8 @@ model User {
   recurringTransactions   RecurringTransaction[]
   budgets                 Budget[]
   payIntegration          PayIntegration?
+  assistenteMemorias      AssistenteMemoria[]
+  assistentePendencia     AssistentePendencia?
 }
 
 model Transaction {
@@ -147,4 +149,30 @@ enum TransactionType {
   EARNING
   EXPENSE
   INVESTMENT
+}
+
+// Assistente do Finance: o que a pessoa ensinou ("zezinho" é Lazer) e o jeito de escrever dela.
+// Nada disso sai do Valtrea: o assistente não usa serviço de IA de fora.
+model AssistenteMemoria {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  tipo       String   @db.VarChar(12)
+  termo      String   @db.VarChar(60)
+  categoria  String   @db.VarChar(30)
+  usos       Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([user_id, tipo, termo])
+}
+
+// Conversa em andamento (ex.: o assistente perguntou a categoria e espera a resposta). Vence em minutos.
+model AssistentePendencia {
+  user_id    String   @id
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  dados      Json
+  estilo     Json?
+  expira_em  DateTime
+  updated_at DateTime @updatedAt
 }

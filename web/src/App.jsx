@@ -16,12 +16,14 @@ import { AccessibilityPage } from './pages/accessibility'
 import { HelpPage } from './pages/help'
 import { ChangelogPage } from './pages/changelog'
 import { RelatorioAnualPage } from './pages/relatorio-anual'
+import { AssistentePage } from './pages/assistente'
 import { SkipLink } from './components/skip-link'
 import { BuscaRapida } from './components/busca-rapida'
 
 // Telas da busca rápida (Ctrl+K): rótulo, endereço, palavras para achar
 const TELAS = [
   ["Painel", "/", "inicio saldo transacoes lancamentos"],
+  ["Assistente (lançar conversando)", "/assistente", "chat conversa whatsapp lancar rapido"],
   ["Relatório do ano (imprimir ou PDF)", "/relatorio-anual", "imposto de renda irpf pdf anual"],
   ["Entrar", "/login", "login"],
   ["Criar conta", "/signup", "cadastro"],
@@ -70,6 +72,7 @@ export default function App() {
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/ajuda" element={<HelpPage />} />
         <Route path="/relatorio-anual" element={<RelatorioAnualPage />} />
+        <Route path="/assistente" element={<AssistentePage />} />
         <Route path="/novidades" element={<ChangelogPage />} />
         <Route path="/termos" element={<TermsPage />} />
         <Route path="/privacidade" element={<PrivacyPage />} />

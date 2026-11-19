@@ -9,7 +9,7 @@ export const LEGAL = {
   controllerType: 'pessoa física',
   email: 'contato@valtrea.com.br',
   forum: 'Rio de Janeiro/RJ',
-  updatedAt: '4 de novembro de 2026',
+  updatedAt: '19 de novembro de 2026',
   // mantenha igual ao TERMS_VERSION em api/src/routes/users.js
   version: '2026-11-04',
 }

@@ -89,6 +89,7 @@ usersRouter.get('/me/export', auth, async (request, response) => {
                 },
                 recurringTransactions: true,
                 budgets: true,
+                assistenteMemorias: { select: { tipo: true, termo: true, categoria: true, usos: true, created_at: true, updated_at: true } },
                 payIntegration: { select: { created_at: true, last_used_at: true, balance: true, balance_at: true } },
             },
         })
@@ -96,7 +97,7 @@ usersRouter.get('/me/export', auth, async (request, response) => {
             return response.status(404).send({ message: 'User not found.' })
         }
 
-        const { transactions, recurringTransactions, budgets, payIntegration, ...account } = user
+        const { transactions, recurringTransactions, budgets, assistenteMemorias, payIntegration, ...account } = user
         const today = new Date().toISOString().slice(0, 10)
         response.setHeader('Content-Disposition', `attachment; filename="valtrea-meus-dados-${today}.json"`)
         response.status(200).send({
@@ -106,6 +107,7 @@ usersRouter.get('/me/export', auth, async (request, response) => {
             transactions,
             recurring_transactions: recurringTransactions,
             budgets,
+            assistant_memory: assistenteMemorias,
             pay_integration: payIntegration
                 ? { connected: true, connected_at: payIntegration.created_at, ...payIntegration, created_at: undefined }
                 : { connected: false },

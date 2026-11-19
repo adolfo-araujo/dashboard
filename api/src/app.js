@@ -10,6 +10,7 @@ import { budgetsRouter } from './routes/budgets.js'
 import { adminRouter } from './routes/admin.js'
 import { payEventsRouter, payIntegrationRouter } from './routes/pay-integration.js'
 import { waitlistRouter } from './routes/waitlist.js'
+import { assistenteRouter } from './routes/assistente.js'
 import {
     apiLimiter,
     payLimiter,
@@ -91,6 +92,7 @@ app.use('/api/transactions', transactionsRouter)
 app.use('/api/reports', reportsRouter)
 app.use('/api/recurring', recurringRouter)
 app.use('/api/budgets', budgetsRouter)
+app.use('/api/assistente', assistenteRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/integrations/pay', payIntegrationRouter)
 

@@ -33,6 +33,12 @@ export async function runRetentionCleanup(now = new Date()) {
         prisma.passwordResetToken.deleteMany({ where: expired }),
     ])
 
+    // Conversas do assistente que ficaram pela metade (a pergunta vence em minutos)
+    await prisma.assistentePendencia.updateMany({
+        where: { expira_em: { lt: new Date(now.getTime() - DAY) }, NOT: { dados: { equals: {} } } },
+        data: { dados: {} },
+    })
+
     const [{ count: waitlistUnconfirmed }, { count: waitlistOld }] = await Promise.all([
         prisma.waitlistEntry.deleteMany({
             where: {
