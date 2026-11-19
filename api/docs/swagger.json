@@ -1870,6 +1870,11 @@
                                             "items": {
                                                 "type": "string"
                                             }
+                                        },
+                                        "acao": {
+                                            "type": "string",
+                                            "enum": ["lancado", "corrigido"],
+                                            "description": "Presente quando a mensagem lançou ou corrigiu algo"
                                         }
                                     }
                                 }

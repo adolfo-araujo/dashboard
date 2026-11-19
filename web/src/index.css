@@ -84,6 +84,44 @@
     transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s;
   }
   .botao-verde:hover { transform: translateY(-1px); }
+
+  /* Assistente: balões entram subindo; o da pessoa vem da direita, o do assistente da esquerda */
+  .balao-entra { animation: balao-entra 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .balao-entra-voce { transform-origin: bottom right; }
+  .balao-entra-assistente { transform-origin: bottom left; }
+  /* Lançamento confirmado: um brilho verde que some */
+  .balao-ok { animation: balao-entra 0.32s cubic-bezier(0.22, 1, 0.36, 1) both, balao-brilho 1.4s ease-out 0.1s both; }
+  /* Três pontinhos de "digitando" */
+  .digitando span {
+    display: inline-block; width: 0.4rem; height: 0.4rem; border-radius: 9999px;
+    background: currentColor; animation: digitando 1.1s ease-in-out infinite;
+  }
+  .digitando span:nth-child(2) { animation-delay: 0.15s; }
+  .digitando span:nth-child(3) { animation-delay: 0.3s; }
+  /* Sugestões aparecem uma depois da outra */
+  .opcao-entra { animation: opcao-entra 0.3s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  /* Cursor piscando enquanto o assistente "escreve" */
+  .cursor-escrevendo::after { content: '▍'; margin-left: 1px; opacity: 0.6; animation: piscar 0.8s steps(1) infinite; }
+}
+
+@keyframes balao-entra {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes balao-brilho {
+  0% { box-shadow: 0 0 0 0 rgb(var(--c-primary) / 0.55); }
+  100% { box-shadow: 0 0 0 10px rgb(var(--c-primary) / 0); }
+}
+@keyframes digitando {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+@keyframes opcao-entra {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes piscar {
+  50% { opacity: 0; }
 }
 
 body {
