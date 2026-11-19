@@ -36,10 +36,10 @@ export function CookieNotice({ idioma = 'pt' }) {
   return (
     <section
       aria-label={t[0]}
-      className="fixed inset-x-0 bottom-0 z-40 p-3 sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-md sm:p-0"
+      className="fixed inset-x-0 bottom-3 z-40 mx-auto max-w-lg px-3"
     >
-      <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface-2 p-4 text-sm shadow-2xl sm:flex-row sm:items-center">
-        <p className="flex-1 leading-relaxed text-foreground">
+      <div className="vidro flex flex-row items-center gap-3 rounded-2xl p-3 pl-4 text-sm sm:rounded-full sm:py-2.5 sm:pl-5">
+        <p className="flex-1 text-xs leading-snug text-foreground sm:text-sm">
           {t[1]}{' '}
           <a
             href={`${COMPANY.financeUrl}/privacidade#cookies`}

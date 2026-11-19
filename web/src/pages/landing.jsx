@@ -209,10 +209,10 @@ export function LandingPage() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Logo />
           <nav className="flex items-center gap-2">
-            <Link to="/login" className="rounded-full px-4 py-2 text-sm font-semibold text-muted hover:text-foreground">
+            <Link to="/login" className="botao-vidro inline-flex h-9 items-center whitespace-nowrap rounded-full px-4 text-sm font-semibold text-foreground">
               Entrar
             </Link>
-            <Link to="/signup" className={lb('primary', 'sm')}>
+            <Link to="/signup" className={lb('primary', 'sm', 'hidden whitespace-nowrap min-[460px]:inline-flex')}>
               Criar conta grátis
             </Link>
           </nav>

@@ -31,11 +31,11 @@ export function CookieNotice() {
   return (
     <section
       aria-label="Aviso de cookies"
-      className="fixed inset-x-0 bottom-0 z-40 p-3 sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-md sm:p-0"
+      className="fixed inset-x-0 bottom-3 z-40 mx-auto max-w-lg px-3"
     >
-      <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface-2 p-4 text-sm shadow-2xl sm:flex-row sm:items-center">
+      <div className="vidro flex flex-row items-center gap-3 rounded-2xl p-3 pl-4 text-sm sm:rounded-full sm:py-2.5 sm:pl-5">
         <Cookie className="hidden h-5 w-5 shrink-0 text-primary sm:block" aria-hidden="true" />
-        <p className="flex-1 leading-relaxed text-foreground">
+        <p className="flex-1 text-xs leading-snug text-foreground sm:text-sm">
           Usamos só o armazenamento essencial para manter você conectado. Nada de cookies de rastreamento
           ou publicidade.{' '}
           <Link to="/privacidade#cookies" className="font-semibold text-primary underline-offset-2 hover:underline">
