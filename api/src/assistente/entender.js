@@ -1,5 +1,5 @@
 import { capitalizar, contemTermo, normalizar, palavras, parecidas } from './texto.js'
-import { extrairQuantidade, extrairValor } from './valores.js'
+import { ehNumeroPorExtenso, extrairQuantidade, extrairValor } from './valores.js'
 import { extrairData, extrairPeriodo } from './datas.js'
 import { PALAVRAS_VAZIAS, PLANO, QUANDO_FUTURO, ROTULOS, TERMOS_POR_TIPO, VERBOS, VERBO_FUTURO } from './dicionario.js'
 
@@ -131,6 +131,9 @@ export function interpretar(texto, { hoje, memoria = {} }) {
         const quantidade = extrairQuantidade(texto) ?? (tem(frase, 'todos|todas|tudo') ? 'todos' : null)
         return { intencao: 'desfazer', quantidade }
     }
+    if (tem(frase, '(voce|vc) (lancou|colocou|botou|registrou|anotou|adicionou|lancaste)|lancou (errado|a mais|de novo|duas vezes|mais um|outro)|nao (pedi|mandei) (isso|pra lancar|para lancar)|ta errado|esta errado|ficou errado|deu errado')) {
+        return { intencao: 'reclamacao' }
+    }
     if (comeca(frase, 'era|na verdade|corrige|corrigir|corrija|muda|mudar|troca|trocar|altera|alterar|nao era|ops|opa era|errei')) {
         const categorias = Object.fromEntries(TIPOS.map((tipo) => [tipo, encontrarCategoria(texto, tipo, memoria)]))
         return { intencao: 'corrigir', valor: valor?.valor ?? null, data: data?.data ?? null, categorias }
@@ -149,6 +152,7 @@ export function interpretar(texto, { hoje, memoria = {} }) {
         return {
             intencao: 'consulta',
             tipoConsulta,
+            quantidade: extrairQuantidade(texto),
             tipo,
             categoria: categoria && categoria.origem !== 'aproximado' ? categoria.categoria : null,
             periodo: extrairPeriodo(texto, hoje),
@@ -177,5 +181,49 @@ export function interpretar(texto, { hoje, memoria = {} }) {
         }
     }
 
+    // Só um número de lançamentos ("os últimos 3 que te disse"): pergunta se é para ver ou apagar.
+    const quantidade = extrairQuantidade(texto)
+    if (quantidade) return { intencao: 'quantidade', quantidade }
+
     return { intencao: 'desconhecido' }
+}
+
+/**
+ * Separa uma mensagem com vários lançamentos ("40 no mercado e 20 de uber", "gasto de R$ 60,00 em X, gasto de R$ 80,00 em Y").
+ * Cada parte precisa ter um valor; o que não tem valor volta a se juntar ao vizinho ("Contas e serviços").
+ * Retorna [texto] quando não há o que separar.
+ */
+export function dividirLancamentos(texto) {
+    const original = String(texto)
+    const separador = /[;\n]+|,(?!\d)|\s+(?:e|mais|tamb[eé]m)\s+/gi
+    const pedacos = []
+    let inicio = 0
+    for (const m of original.matchAll(separador)) {
+        const antes = palavras(normalizar(original.slice(inicio, m.index))).at(-1) ?? ''
+        const depois = palavras(normalizar(original.slice(m.index + m[0].length)))[0] ?? ''
+        // "mil e duzentos", "cento e vinte": é um número só
+        if (ehNumeroPorExtenso(antes) && ehNumeroPorExtenso(depois)) continue
+        pedacos.push({ texto: original.slice(inicio, m.index), sep: m[0] })
+        inicio = m.index + m[0].length
+    }
+    pedacos.push({ texto: original.slice(inicio), sep: '' })
+
+    const partes = []
+    let pendente = ''
+    for (const p of pedacos) {
+        const atual = pendente + p.texto
+        if (extrairValor(atual)) {
+            partes.push({ texto: atual, sep: p.sep })
+            pendente = ''
+        } else if (partes.length && !pendente) {
+            const ultima = partes[partes.length - 1]
+            ultima.texto += ultima.sep + p.texto
+            ultima.sep = p.sep
+        } else {
+            pendente = atual + p.sep
+        }
+    }
+    if (pendente && partes.length) partes[partes.length - 1].texto += partes[partes.length - 1].sep + pendente
+    const limpas = partes.map((p) => p.texto.trim()).filter(Boolean)
+    return limpas.length > 1 ? limpas : [original]
 }
