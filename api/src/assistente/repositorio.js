@@ -96,13 +96,14 @@ export const repositorioDoAssistente = {
         return simples(t)
     },
 
-    async lancamentosDoAssistente(userId, { desde, limite = 20 } = {}) {
+    // sempre: tudo o que o assistente já lançou (a pessoa pediu "desde o início" e confirma a lista antes)
+    async lancamentosDoAssistente(userId, { desde, sempre = false, limite = 20 } = {}) {
         const limiteDeDias = new Date(Date.now() - DIAS_PARA_DESFAZER * 24 * 60 * 60 * 1000)
         const lista = await prisma.transaction.findMany({
             where: {
                 user_id: userId,
                 external_id: { startsWith: MARCA },
-                created_at: { gte: desde && desde > limiteDeDias ? desde : limiteDeDias },
+                ...(sempre ? {} : { created_at: { gte: desde && desde > limiteDeDias ? desde : limiteDeDias } }),
             },
             orderBy: { created_at: 'desc' },
             take: limite,

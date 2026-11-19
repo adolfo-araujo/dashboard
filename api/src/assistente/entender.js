@@ -128,7 +128,9 @@ export function interpretar(texto, { hoje, memoria = {} }) {
     }
     if (tem(frase, 'apaga|apagar|apague|desfaz|desfazer|desfaca|exclui|excluir|exclua|remove|remover|remova|tira|tirar|tire|retira|retire|deleta|deletar|delete') && !pergunta) {
         // quantos: "os 3 últimos" → 3; "todos" / "tudo" → os que eu lancei hoje; sem nada → só o último
-        const quantidade = extrairQuantidade(texto) ?? (tem(frase, 'todos|todas|tudo') ? 'todos' : null)
+        // "desde o início" = tudo o que eu já lancei, de qualquer dia
+        const desdeOInicio = tem(frase, 'desde o (inicio|comeco|primeiro dia)|desde sempre|de sempre|de todos os tempos|desde que comecei')
+        const quantidade = desdeOInicio ? 'sempre' : extrairQuantidade(texto) ?? (tem(frase, 'todos|todas|tudo') ? 'todos' : null)
         return { intencao: 'desfazer', quantidade }
     }
     if (tem(frase, '(voce|vc) (lancou|colocou|botou|registrou|anotou|adicionou|lancaste)|lancou (errado|a mais|de novo|duas vezes|mais um|outro)|nao (pedi|mandei) (isso|pra lancar|para lancar)|ta errado|esta errado|ficou errado|deu errado')) {

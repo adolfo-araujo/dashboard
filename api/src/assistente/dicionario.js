@@ -75,6 +75,6 @@ export const PALAVRAS_VAZIAS = new Set(
     ('a o as os um uma uns umas de do da dos das no na nos nas em com pra pro para por pelo pela e eu me meu minha ' +
         'foi fui hoje ontem anteontem agora real reais r$ conto contos pila pilas pau paus mil k valor de ja so la ai ' +
         'tipo mano cara ne ta tá blz beleza oi ola reais. dia que nesse neste esse este essa esta uns umas cerca deu kkk kkkk kkkkk haha hahaha rs rsrs coloquei botei ' +
-        'quero queria vou vai vamos pretendo planejo preciso tenho devo gostaria penso pensando amanha depois vem proximo proxima semana ' +
+        'acho achando talvez quero queria vou vai vamos pretendo planejo preciso tenho devo gostaria penso pensando amanha depois vem proximo proxima semana ' +
         Object.values(VERBOS).flat().join(' ')).split(' '),
 )

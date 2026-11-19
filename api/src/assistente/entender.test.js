@@ -116,6 +116,7 @@ describe('lerEstilo', () => {
         const plano = interpretar('quero gastar 60 em comida', { hoje })
         expect(plano).toMatchObject({ intencao: 'registrar', futuro: true, plano: true, tipo: 'EXPENSE', valor: 60, categoria: 'alimentacao' })
         expect(plano.nome).toBe('Comida')
+        expect(interpretar('acho que vou gastar 200 hoje', { hoje })).toMatchObject({ futuro: true, nome: null })
         const amanha = interpretar('gastarei amanha 80 no plano de celular', { hoje })
         expect(amanha).toMatchObject({ futuro: true, quando: 'amanha', valor: 80, categoria: 'contas', nome: 'Plano de celular' })
         expect(interpretar('vou receber 3000 de salario mes que vem', { hoje })).toMatchObject({ futuro: true, tipo: 'EARNING' })
