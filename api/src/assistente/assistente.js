@@ -42,7 +42,8 @@ function categoriaDaResposta(texto, tipo, memoria) {
 
 /**
  * Cria o assistente. `repo` é quem fala com o banco (veja repositorio.js); nos testes, um falso em memória.
- * processar() recebe uma mensagem e devolve { respostas: string[], opcoes: string[] }.
+ * processar() recebe uma mensagem e devolve { respostas: string[], opcoes: string[], acao? }.
+ * acao ('lancado' | 'corrigido') diz à tela que algo mudou no Finance, para dar o retorno visual.
  */
 export function criarAssistente(repo) {
     async function processar({ userId, texto, agora = new Date() }) {
@@ -190,7 +191,7 @@ export function criarAssistente(repo) {
             const alerta = await alertaDeOrcamento(ctx, l.category, Number(criado.amount))
             if (alerta) respostas.push(alerta)
         }
-        return { respostas, opcoes: [] }
+        return { respostas, opcoes: [], acao: 'lancado' }
     }
 
     async function alertaDeOrcamento(ctx, categoria, valor) {
@@ -326,8 +327,10 @@ function criarFala(estilo, s, primeiroNome) {
             `${estilo.emoji ? '⚠️ ' : ''}Atenção: já usou ${pct}% do orçamento de ${cat} (${formatarDinheiro(gasto)} de ${formatarDinheiro(limite)}).`,
         nadaParaCorrigir: () => r('Não achei nada lançado por mim para corrigir. Você pode editar pelo painel.'),
         oQueCorrigir: (descricao) => r(`O último foi ${descricao}. O que mudo? Ex.: "era 45", "era transporte" ou "foi ontem".`),
-        corrigido: (descricao, aprendeu) =>
-            r(`Corrigido: ${descricao}.${aprendeu ? ' Também guardei essa categoria para a próxima.' : ''}`),
+        corrigido: (descricao, aprendeu) => ({
+            ...r(`Corrigido: ${descricao}.${aprendeu ? ' Também guardei essa categoria para a próxima.' : ''}`),
+            acao: 'corrigido',
+        }),
         nadaParaApagar: () => r('Não achei nada lançado por mim para apagar. Você pode excluir pelo painel.'),
         apagado: (descricao) => r(solto ? `Apaguei: ${descricao}.` : `Pronto, apaguei ${descricao}.`),
         ultimos: (linhas) => r(linhas.length ? ['Seus últimos lançamentos:', ...linhas.map((l) => `• ${capitalizar(l)}`)] : 'Você ainda não tem lançamentos.'),

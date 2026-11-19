@@ -17,6 +17,40 @@ const INICIO = [
 ]
 const SUGESTOES = ['Gastei 40 no mercado', 'Recebi 2500 de salário', 'Quanto gastei esse mês?', 'Ajuda']
 
+const ACOES_OK = ['lancado', 'corrigido']
+const esperar = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+// Quem pediu ao sistema menos movimento recebe as respostas de uma vez, sem efeito.
+const semMovimento = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+// Tempo para "escrever" um texto: rápido em frases curtas, no máximo ~0,7 s nas longas.
+const QUADROS = 45
+const MS_POR_QUADRO = 16
+const tempoDeEscrita = (texto) => Math.min(texto.length, QUADROS) * MS_POR_QUADRO
+
+// Mostra o texto aparecendo aos poucos. O leitor de tela recebe a frase inteira de uma vez.
+function TextoDigitado({ texto, animar }) {
+  const [visiveis, setVisiveis] = useState(animar ? 0 : texto.length)
+  useEffect(() => {
+    if (!animar) return undefined
+    const passo = Math.max(1, Math.ceil(texto.length / QUADROS))
+    const id = setInterval(() => {
+      setVisiveis((n) => {
+        const proximo = Math.min(texto.length, n + passo)
+        if (proximo >= texto.length) clearInterval(id)
+        return proximo
+      })
+    }, MS_POR_QUADRO)
+    return () => clearInterval(id)
+  }, [texto, animar])
+  return (
+    <>
+      <span className="sr-only">{texto}</span>
+      <span aria-hidden="true" className={cn(visiveis < texto.length && 'cursor-escrevendo')}>
+        {texto.slice(0, visiveis)}
+      </span>
+    </>
+  )
+}
+
 // A conversa fica só nesta aba do navegador (some ao fechar); o servidor não guarda o texto.
 const lerConversa = () => {
   try {
@@ -32,18 +66,30 @@ export function AssistentePage() {
   const [mensagens, setMensagens] = useState(lerConversa)
   const [opcoes, setOpcoes] = useState(SUGESTOES)
   const [texto, setTexto] = useState('')
-  const [enviando, setEnviando] = useState(false)
+  const [pensando, setPensando] = useState(false)
+  const [ocupado, setOcupado] = useState(false)
   const fimRef = useRef(null)
   const campoRef = useRef(null)
+  const listaRef = useRef(null)
 
   useEffect(() => {
     try {
-      sessionStorage.setItem(CHAVE, JSON.stringify(mensagens.slice(-60)))
+      // as marcas de animação não vão para o armazenamento: ao recarregar, nada se mexe de novo
+      const guardar = mensagens.slice(-60).map(({ nova, ok, ...m }) => m)
+      sessionStorage.setItem(CHAVE, JSON.stringify(guardar))
     } catch {
       // sem armazenamento da aba: a conversa só não sobrevive a um recarregar
     }
-    fimRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }, [mensagens])
+
+  // Acompanha o fim da conversa enquanto ela cresce (inclusive durante a "escrita")
+  useEffect(() => {
+    const lista = listaRef.current
+    if (!lista || typeof ResizeObserver === 'undefined') return undefined
+    const observador = new ResizeObserver(() => fimRef.current?.scrollIntoView({ block: 'end' }))
+    observador.observe(lista)
+    return () => observador.disconnect()
+  }, [user, isInitializing])
 
   if (isInitializing) {
     return (
@@ -56,20 +102,44 @@ export function AssistentePage() {
 
   async function enviar(conteudo) {
     const limpo = conteudo.trim()
-    if (!limpo || enviando) return
+    if (!limpo || ocupado) return
+    const parado = semMovimento()
     setTexto('')
     setOpcoes([])
-    setMensagens((m) => [...m, { de: 'voce', texto: limpo }])
-    setEnviando(true)
+    setMensagens((m) => [...m, { de: 'voce', texto: limpo, nova: !parado }])
+    setOcupado(true)
+    setPensando(true)
+    const inicio = Date.now()
     try {
       const { data } = await api.post('/assistente/mensagens', { texto: limpo })
-      setMensagens((m) => [...m, ...data.respostas.map((r) => ({ de: 'assistente', texto: r }))])
-      setOpcoes(data.opcoes ?? [])
       queryClient.invalidateQueries()
+      // os três pontinhos ficam um instante, mesmo quando a resposta chega rápido
+      if (!parado) await esperar(Math.max(0, 600 - (Date.now() - inicio)))
+      const respostas = data.respostas ?? []
+      // listas longas (ex.: últimos lançamentos) entram em cascata; respostas curtas são "escritas"
+      const emCascata = respostas.length > 2
+      for (const [i, resposta] of respostas.entries()) {
+        if (i > 0 && !parado) {
+          if (emCascata) {
+            await esperar(90)
+          } else {
+            setPensando(true)
+            await esperar(450)
+          }
+        }
+        setPensando(false)
+        const escrever = !parado && !(emCascata && i > 0)
+        const ok = i === 0 && ACOES_OK.includes(data.acao)
+        setMensagens((m) => [...m, { de: 'assistente', texto: resposta, nova: !parado, escrever, ok }])
+        if (escrever) await esperar(tempoDeEscrita(resposta) + 150)
+      }
+      setOpcoes(data.opcoes ?? [])
     } catch (error) {
-      setMensagens((m) => [...m, { de: 'assistente', texto: getErrorMessage(error), erro: true }])
+      setPensando(false)
+      setMensagens((m) => [...m, { de: 'assistente', texto: getErrorMessage(error), erro: true, nova: !parado }])
     } finally {
-      setEnviando(false)
+      setPensando(false)
+      setOcupado(false)
       campoRef.current?.focus()
     }
   }
@@ -78,9 +148,12 @@ export function AssistentePage() {
     if (!window.confirm('Apagar tudo o que o assistente aprendeu com você? Seus lançamentos continuam.')) return
     try {
       await api.delete('/assistente/memoria')
-      setMensagens((m) => [...m, { de: 'assistente', texto: 'Pronto, esqueci o que tinha aprendido. Seus lançamentos não mudaram.' }])
+      setMensagens((m) => [
+        ...m,
+        { de: 'assistente', texto: 'Pronto, esqueci o que tinha aprendido. Seus lançamentos não mudaram.', nova: true },
+      ])
     } catch (error) {
-      setMensagens((m) => [...m, { de: 'assistente', texto: getErrorMessage(error), erro: true }])
+      setMensagens((m) => [...m, { de: 'assistente', texto: getErrorMessage(error), erro: true, nova: true }])
     }
   }
 
@@ -119,7 +192,7 @@ export function AssistentePage() {
           </div>
         </div>
 
-        <ol className="flex-1 space-y-3 pb-4" aria-live="polite" aria-label="Conversa com o assistente">
+        <ol ref={listaRef} className="flex-1 space-y-3 pb-4" aria-live="polite" aria-label="Conversa com o assistente">
           {mensagens.map((m, i) => (
             <li key={i} className={cn('flex', m.de === 'voce' ? 'justify-end' : 'justify-start')}>
               <p
@@ -127,17 +200,24 @@ export function AssistentePage() {
                   'max-w-[85%] whitespace-pre-line rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
                   m.de === 'voce' ? 'rounded-br-md bg-primary text-background' : 'rounded-bl-md bg-surface-2',
                   m.erro && 'border border-expense text-expense',
+                  m.nova && (m.ok ? 'balao-ok' : 'balao-entra'),
+                  m.nova && (m.de === 'voce' ? 'balao-entra-voce' : 'balao-entra-assistente'),
                 )}
               >
                 <span className="sr-only">{m.de === 'voce' ? 'Você: ' : 'Assistente: '}</span>
-                {m.texto}
+                {m.de === 'assistente' ? <TextoDigitado texto={m.texto} animar={Boolean(m.escrever)} /> : m.texto}
               </p>
             </li>
           ))}
-          {enviando && (
+          {pensando && (
             <li className="flex justify-start">
-              <p className="flex items-center gap-2 rounded-2xl rounded-bl-md bg-surface-2 px-4 py-2.5 text-sm text-muted">
-                <Loader2 className="h-4 w-4 animate-spin" /> Pensando…
+              <p className="balao-entra balao-entra-assistente flex items-center rounded-2xl rounded-bl-md bg-surface-2 px-4 py-3.5 text-muted">
+                <span className="digitando flex items-center gap-1" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                </span>
+                <span className="sr-only">O assistente está escrevendo</span>
               </p>
             </li>
           )}
@@ -147,13 +227,14 @@ export function AssistentePage() {
         <div className="sticky bottom-0 space-y-2 bg-background/80 pb-4 pt-2 backdrop-blur-md">
           {opcoes.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {opcoes.map((o) => (
+              {opcoes.map((o, i) => (
                 <button
                   key={o}
                   type="button"
                   onClick={() => enviar(o)}
-                  disabled={enviando}
-                  className="botao-vidro rounded-full px-3 py-1.5 text-sm text-foreground disabled:opacity-60"
+                  disabled={ocupado}
+                  style={{ animationDelay: `${i * 60}ms` }}
+                  className="opcao-entra botao-vidro rounded-full px-3 py-1.5 text-sm text-foreground disabled:opacity-60"
                 >
                   {o}
                 </button>
@@ -181,8 +262,14 @@ export function AssistentePage() {
               placeholder='Ex.: "gastei 40 no mercado"'
               className="h-11 flex-1 rounded-full border border-border bg-surface px-4 text-base text-foreground placeholder:text-muted/70 focus:border-primary sm:text-sm"
             />
-            <Button type="submit" size="icon" className="h-11 w-11" isLoading={enviando} disabled={!texto.trim()}>
-              {!enviando && <SendHorizontal className="h-4 w-4" />}
+            <Button
+              type="submit"
+              size="icon"
+              className="h-11 w-11 transition-transform active:scale-90"
+              isLoading={pensando}
+              disabled={!texto.trim() || ocupado}
+            >
+              {!pensando && <SendHorizontal className="h-4 w-4" />}
               <span className="sr-only">Enviar</span>
             </Button>
           </form>

@@ -57,7 +57,7 @@ const conversa = (repo) => {
     const assistente = criarAssistente(repo)
     return async (texto) => {
         const r = await assistente.processar({ userId: 'u1', texto, agora })
-        return { texto: r.respostas.join('\n'), opcoes: r.opcoes }
+        return { texto: r.respostas.join('\n'), opcoes: r.opcoes, acao: r.acao }
     }
 }
 
@@ -66,6 +66,7 @@ describe('assistente', () => {
         const repo = repoFalso()
         const falar = conversa(repo)
         const r = await falar('gastei 40 no mercado')
+        expect(r.acao).toBe('lancado')
         expect(r.texto).toMatch(/R\$\s?40,00 em Alimentação \(Mercado\), hoje/)
         expect(repo.estado.lancamentos).toHaveLength(1)
         expect(repo.estado.lancamentos[0]).toMatchObject({ amount: 40, type: 'EXPENSE', category: 'alimentacao', date: '2026-11-19' })
