@@ -73,8 +73,27 @@ function porExtenso(frase) {
 }
 
 /** Valor em reais citado na mensagem, ou null. Retorna { valor, trecho }. */
+// "os últimos 3", "as 3 coisas", "três lançamentos": é uma quantidade de lançamentos, não dinheiro.
+const NUMERO_PEQUENO = `\\d{1,2}|${Object.keys(UNIDADES).filter((k) => UNIDADES[k] > 0 && UNIDADES[k] <= 20).join('|')}`
+const CONTAGEM = new RegExp(
+    `\\b(?:ultim[oa]s\\s+(${NUMERO_PEQUENO})|(${NUMERO_PEQUENO})\\s+(?:ultim[oa]s|lancamentos?|coisas|itens|registros))\\b`,
+    'g',
+)
+const numeroPequeno = (t) => (/^\d{1,2}$/.test(t ?? '') ? Number(t) : UNIDADES[t] ?? null)
+
+/** Quantidade de lançamentos citada ("apaga os 3 últimos"), ou null. */
+export function extrairQuantidade(texto) {
+    for (const m of normalizar(texto).matchAll(CONTAGEM)) {
+        const n = numeroPequeno(m[1] ?? m[2])
+        if (n && n > 0) return n
+    }
+    return null
+}
+
+const semContagem = (frase) => frase.replace(CONTAGEM, (trecho, a, b) => (numeroPequeno(a ?? b) ? ' ' : trecho))
+
 export function extrairValor(texto) {
-    const frase = normalizar(texto)
+    const frase = semContagem(normalizar(texto))
     const achado = porAlgarismos(frase) ?? porExtenso(frase)
     return achado ? { valor: achado.valor, trecho: achado.trecho } : null
 }

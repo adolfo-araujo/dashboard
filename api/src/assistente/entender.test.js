@@ -111,4 +111,25 @@ describe('lerEstilo', () => {
         expect(lerEstilo('Gastei R$ 50,00 no restaurante.').informal).toBe(false)
         expect(lerEstilo('paguei a luz 🙃').emoji).toBe(true)
     })
+    it('percebe quando o gasto ainda vai acontecer e limpa o nome', () => {
+        const hoje = '2026-11-19'
+        const plano = interpretar('quero gastar 60 em comida', { hoje })
+        expect(plano).toMatchObject({ intencao: 'registrar', futuro: true, plano: true, tipo: 'EXPENSE', valor: 60, categoria: 'alimentacao' })
+        expect(plano.nome).toBe('Comida')
+        const amanha = interpretar('gastarei amanha 80 no plano de celular', { hoje })
+        expect(amanha).toMatchObject({ futuro: true, quando: 'amanha', valor: 80, categoria: 'contas', nome: 'Plano de celular' })
+        expect(interpretar('vou receber 3000 de salario mes que vem', { hoje })).toMatchObject({ futuro: true, tipo: 'EARNING' })
+        expect(interpretar('gastei 40 no mercado', { hoje }).futuro).toBe(false)
+        expect(interpretar('paguei 120 de luz ontem', { hoje }).futuro).toBe(false)
+    })
+    it('separa quantidade de lançamentos de dinheiro', () => {
+        const hoje = '2026-11-19'
+        expect(extrairValor('apaga os ultimos 3')).toBeNull()
+        expect(extrairValor('tire as 3 coisas que mandei')).toBeNull()
+        expect(extrairValor('apaga os tres ultimos')).toBeNull()
+        expect(extrairValor('gastei 30 no mercado')).toMatchObject({ valor: 30 })
+        expect(interpretar('apaga os 3 ultimos', { hoje })).toMatchObject({ intencao: 'desfazer', quantidade: 3 })
+        expect(interpretar('apague todos esse que mandei', { hoje })).toMatchObject({ intencao: 'desfazer', quantidade: 'todos' })
+        expect(interpretar('apaga o ultimo', { hoje })).toMatchObject({ intencao: 'desfazer', quantidade: null })
+    })
 })

@@ -96,6 +96,20 @@ export const repositorioDoAssistente = {
         return simples(t)
     },
 
+    async lancamentosDoAssistente(userId, { desde, limite = 20 } = {}) {
+        const limiteDeDias = new Date(Date.now() - DIAS_PARA_DESFAZER * 24 * 60 * 60 * 1000)
+        const lista = await prisma.transaction.findMany({
+            where: {
+                user_id: userId,
+                external_id: { startsWith: MARCA },
+                created_at: { gte: desde && desde > limiteDeDias ? desde : limiteDeDias },
+            },
+            orderBy: { created_at: 'desc' },
+            take: limite,
+        })
+        return lista.map(simples)
+    },
+
     async apagarLancamento(userId, id) {
         await prisma.transaction.deleteMany({ where: { id, user_id: userId } })
     },

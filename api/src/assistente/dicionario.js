@@ -59,15 +59,22 @@ export const TERMOS_POR_TIPO = Object.fromEntries(
 
 // Verbos que dizem o tipo do lançamento.
 export const VERBOS = {
-    EXPENSE: ['gastei', 'gasto', 'gastos', 'paguei', 'pago', 'comprei', 'torrei', 'saiu', 'sairam', 'debitou', 'despesa', 'perdi', 'almocei', 'jantei', 'comi', 'lanchei', 'abasteci', 'dei', 'doei'],
-    EARNING: ['recebi', 'ganhei', 'entrou', 'entraram', 'caiu', 'cairam', 'recebimento', 'ganho', 'vendi', 'pingou'],
-    INVESTMENT: ['investi', 'apliquei', 'guardei', 'aportei', 'aporte', 'poupei', 'investimento'],
+    EXPENSE: ['gastei', 'gasto', 'gastos', 'paguei', 'pago', 'comprei', 'torrei', 'saiu', 'sairam', 'debitou', 'despesa', 'perdi', 'almocei', 'jantei', 'comi', 'lanchei', 'abasteci', 'dei', 'doei',
+        'gastar', 'gastarei', 'pagar', 'pagarei', 'comprar', 'comprarei', 'torrar'],
+    EARNING: ['recebi', 'ganhei', 'entrou', 'entraram', 'caiu', 'cairam', 'recebimento', 'ganho', 'vendi', 'pingou', 'receber', 'receberei', 'ganhar', 'ganharei'],
+    INVESTMENT: ['investi', 'apliquei', 'guardei', 'aportei', 'aporte', 'poupei', 'investimento', 'investir', 'investirei', 'aplicar', 'aplicarei', 'guardar', 'guardarei'],
 }
+
+// Algo que ainda vai acontecer: plano ("quero gastar", "vou pagar"), verbo no futuro ou data adiante.
+export const PLANO = /\b(quero|queria|vou|vamos|pretendo|planejo|preciso|tenho que|devo|gostaria de|penso em|to pensando em|estou pensando em)( (ter que|que))? (gastar|pagar|comprar|torrar|investir|aplicar|guardar|receber|ganhar)\b/
+export const VERBO_FUTURO = /\b(gastarei|pagarei|comprarei|investirei|aplicarei|guardarei|receberei|ganharei|vai cair|vai entrar|vai pingar)\b/
+export const QUANDO_FUTURO = /\b(depois de amanha|amanha|semana que vem|proxima semana|mes que vem|proximo mes|ano que vem)\b/
 
 // Palavras que não entram no nome do lançamento.
 export const PALAVRAS_VAZIAS = new Set(
     ('a o as os um uma uns umas de do da dos das no na nos nas em com pra pro para por pelo pela e eu me meu minha ' +
         'foi fui hoje ontem anteontem agora real reais r$ conto contos pila pilas pau paus mil k valor de ja so la ai ' +
         'tipo mano cara ne ta tá blz beleza oi ola reais. dia que nesse neste esse este essa esta uns umas cerca deu kkk kkkk kkkkk haha hahaha rs rsrs coloquei botei ' +
+        'quero queria vou vai vamos pretendo planejo preciso tenho devo gostaria penso pensando amanha depois vem proximo proxima semana ' +
         Object.values(VERBOS).flat().join(' ')).split(' '),
 )

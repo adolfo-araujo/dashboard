@@ -1,7 +1,7 @@
 import { capitalizar, contemTermo, normalizar, palavras, parecidas } from './texto.js'
-import { extrairValor } from './valores.js'
+import { extrairQuantidade, extrairValor } from './valores.js'
 import { extrairData, extrairPeriodo } from './datas.js'
-import { PALAVRAS_VAZIAS, ROTULOS, TERMOS_POR_TIPO, VERBOS } from './dicionario.js'
+import { PALAVRAS_VAZIAS, PLANO, QUANDO_FUTURO, ROTULOS, TERMOS_POR_TIPO, VERBOS, VERBO_FUTURO } from './dicionario.js'
 
 const TIPOS = ['EXPENSE', 'EARNING', 'INVESTMENT']
 
@@ -99,6 +99,7 @@ export function nomeDoLancamento(texto, retirar = []) {
  * Entende uma mensagem. Retorna { intencao, ...detalhes }.
  * Intenções: vazio, saudacao, agradecimento, ajuda, confirmar, negar, desfazer, corrigir,
  * orcamento, consulta, registrar, desconhecido.
+ * Em registrar, `futuro` diz que a pessoa contou algo que ainda vai acontecer (não é para lançar já).
  */
 export function interpretar(texto, { hoje, memoria = {} }) {
     const frase = normalizar(texto)
@@ -122,11 +123,13 @@ export function interpretar(texto, { hoje, memoria = {} }) {
     if (curta && !valor && comeca(frase, 'sim|s|isso|isso mesmo|pode|pode ser|ok|okay|beleza|blz|certo|confirmo|confirma|manda|bora|claro|exato|aham|uhum|positivo|perfeito|fechou|show')) {
         return { intencao: 'confirmar' }
     }
-    if (curta && !valor && comeca(frase, 'nao|n|nada|cancela|cancelar|deixa|deixa pra la|esquece|negativo|errado')) {
+    if (curta && !valor && comeca(frase, 'nenhum|nenhuma|nao|n|nada|cancela|cancelar|deixa|deixa pra la|esquece|negativo|errado')) {
         return { intencao: 'negar' }
     }
-    if (tem(frase, 'apaga|apagar|apague|desfaz|desfazer|desfaca|exclui|excluir|remove|remover|tira|deleta|deletar') && !pergunta) {
-        return { intencao: 'desfazer' }
+    if (tem(frase, 'apaga|apagar|apague|desfaz|desfazer|desfaca|exclui|excluir|exclua|remove|remover|remova|tira|tirar|tire|retira|retire|deleta|deletar|delete') && !pergunta) {
+        // quantos: "os 3 últimos" → 3; "todos" / "tudo" → os que eu lancei hoje; sem nada → só o último
+        const quantidade = extrairQuantidade(texto) ?? (tem(frase, 'todos|todas|tudo') ? 'todos' : null)
+        return { intencao: 'desfazer', quantidade }
     }
     if (comeca(frase, 'era|na verdade|corrige|corrigir|corrija|muda|mudar|troca|trocar|altera|alterar|nao era|ops|opa era|errei')) {
         const categorias = Object.fromEntries(TIPOS.map((tipo) => [tipo, encontrarCategoria(texto, tipo, memoria)]))
@@ -156,8 +159,13 @@ export function interpretar(texto, { hoje, memoria = {} }) {
     if (valor || tipoVerbo) {
         const tipo = tipoVerbo ?? (valor ? tipoPelaCategoria(texto, memoria) : null)
         const categoria = tipo ? encontrarCategoria(texto, tipo, memoria) : null
+        const quando = data ? null : frase.match(QUANDO_FUTURO)?.[0] ?? null
+        const plano = PLANO.test(frase)
         return {
             intencao: 'registrar',
+            futuro: Boolean(plano || quando || VERBO_FUTURO.test(frase)),
+            plano,
+            quando,
             tipo,
             tipoExplicito: Boolean(tipoVerbo),
             valor: valor?.valor ?? null,
@@ -165,7 +173,7 @@ export function interpretar(texto, { hoje, memoria = {} }) {
             categoria: categoria?.categoria ?? null,
             origemCategoria: categoria?.origem ?? null,
             termoCategoria: categoria?.termo ?? null,
-            nome: nomeDoLancamento(texto, [valor?.trecho, data?.trecho]),
+            nome: nomeDoLancamento(texto, [valor?.trecho, data?.trecho, quando]),
         }
     }
 

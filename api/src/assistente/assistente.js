@@ -12,6 +12,9 @@ const opcoesDeCategoria = (tipo) => Object.values(ROTULOS[tipo])
 const porcento = (parte, total) => (total > 0 ? Math.round((parte / total) * 100) : 0)
 
 // Termo que o assistente vai lembrar quando a pessoa ensinar uma categoria ("ifood", "padaria do zé").
+const CONFIRMA = /^(sim|s|isso|pode|ok|beleza|blz|certo|confirmo|confirma|manda|bora|claro|exato|aham|uhum|fechou|show)\b/
+const MAXIMO_PARA_APAGAR = 20
+
 function termoParaAprender(nome) {
     const uteis = palavras(nome ?? '').filter((p) => !PALAVRAS_VAZIAS.has(p) && !/^\d/.test(p))
     return uteis.slice(0, 3).join(' ').slice(0, 60) || null
@@ -71,7 +74,7 @@ export function criarAssistente(repo) {
             case 'corrigir':
                 return corrigir(ctx, entendido)
             case 'desfazer':
-                return desfazer(ctx)
+                return desfazer(ctx, entendido)
             case 'consulta':
                 return consultar(ctx, entendido)
             case 'orcamento':
@@ -94,23 +97,40 @@ export function criarAssistente(repo) {
         const { userId, texto, memoria, fala, hoje } = ctx
         const f = normalizar(texto)
 
-        // Se a mensagem já é um pedido novo e completo, a pergunta anterior fica para trás.
         const novo = interpretar(texto, { hoje, memoria })
+
+        // Confirmação de apagar vários: "sim" ou um novo "apaga" sem número confirmam.
+        if (p.etapa === 'apagar') {
+            if (CONFIRMA.test(f) || (novo.intencao === 'desfazer' && !novo.quantidade)) {
+                for (const id of p.ids) await repo.apagarLancamento(userId, id)
+                await repo.salvarPendencia(userId, null)
+                return fala.apagadosVarios(p.ids.length)
+            }
+        }
+
+        // Se a mensagem já é um pedido novo e completo, a pergunta anterior fica para trás.
         const outroAssunto = ['consulta', 'desfazer', 'corrigir', 'ajuda', 'orcamento', 'saudacao'].includes(novo.intencao)
         const outroLancamento =
             novo.intencao === 'registrar' &&
             (p.etapa === 'valor' ? Boolean(novo.categoria || novo.tipoExplicito) : Boolean(novo.valor))
         if (outroAssunto || outroLancamento) return null
 
-        const negou = /^(nao|n|cancela|cancelar|esquece|deixa|deixa pra la)\b/.test(f)
+        const negou = /^(nenhum|nenhuma|nao|n|cancela|cancelar|esquece|deixa|deixa pra la)\b/.test(f)
         if (negou) {
             await repo.salvarPendencia(userId, null)
             return fala.cancelado()
         }
 
         if (p.etapa === 'confirmar') {
-            if (/^(sim|s|isso|pode|ok|beleza|blz|certo|confirmo|confirma|manda|bora|claro|exato|aham|uhum|fechou|show)\b/.test(f)) {
+            if (CONFIRMA.test(f)) {
                 return lancar(ctx, p.lancamento, p.aprender)
+            }
+            return null
+        }
+
+        if (p.etapa === 'futuro') {
+            if (/^(sim|s|isso|pode|ok|beleza|blz|certo|confirmo|confirma|manda|bora|claro|exato|aham|uhum|fechou|show|ja|lanca|lancar)\b/.test(f)) {
+                return seguir(ctx, { ...p.lancamento, date: hoje })
             }
             return null
         }
@@ -169,6 +189,11 @@ export function criarAssistente(repo) {
             date: e.data,
             textoOriginal: ctx.texto,
         }
+        // Ainda não aconteceu: não lança sozinho; explica e oferece lançar se a pessoa disser que já foi.
+        if (e.futuro) {
+            await repo.salvarPendencia(ctx.userId, { etapa: 'futuro', lancamento })
+            return ctx.fala.futuro(lancamento, e)
+        }
         return seguir(ctx, lancamento, { confirmar: e.origemCategoria === 'aproximado' })
     }
 
@@ -225,8 +250,22 @@ export function criarAssistente(repo) {
         return fala.corrigido(descrever(atualizado, hoje), Boolean(termo))
     }
 
-    async function desfazer(ctx) {
+    async function desfazer(ctx, e = {}) {
         const { userId, hoje, fala } = ctx
+        if (e.quantidade === 'todos' || e.quantidade > 1) {
+            const todos = e.quantidade === 'todos'
+            // "todos" = o que eu lancei hoje (horário de Brasília); com número, os N últimos que eu lancei
+            const lista = await repo.lancamentosDoAssistente(userId, {
+                desde: todos ? new Date(`${hoje}T03:00:00.000Z`) : undefined,
+                limite: todos ? MAXIMO_PARA_APAGAR : Math.min(e.quantidade, MAXIMO_PARA_APAGAR),
+            })
+            if (!lista.length) return fala.nadaParaApagar()
+            await repo.salvarPendencia(userId, { etapa: 'apagar', ids: lista.map((l) => l.id) })
+            return fala.confirmarApagar(
+                lista.map((l) => descrever(l, hoje)),
+                todos ? 'todos' : e.quantidade,
+            )
+        }
         const ultimo = await repo.ultimoLancamentoDoAssistente(userId)
         if (!ultimo) return fala.nadaParaApagar()
         await repo.apagarLancamento(userId, ultimo.id)
@@ -317,6 +356,21 @@ function criarFala(estilo, s, primeiroNome) {
                 opcoesDeCategoria(l.type),
             ),
         confirmar: (descricao) => r(`Entendi ${descricao}. Posso lançar?`, ['Sim', 'Não']),
+        futuro: (l, { plano, quando }) => {
+            const oQue = [l.amount ? formatarDinheiro(l.amount) : null, l.name ? `(${l.name})` : null].filter(Boolean).join(' ')
+            const quandoTexto = quando ? ` ${quando === 'amanha' ? 'amanhã' : quando.replace('proxim', 'próxim').replace('mes', 'mês')}` : ''
+            const abertura = solto
+                ? `Isso ainda vai rolar${quandoTexto}, né? Então não lancei${oQue ? ` ${oQue}` : ''}.`
+                : `Entendi que isso ainda vai acontecer${quandoTexto}, então não lancei${oQue ? ` ${oQue}` : ''}.`
+            const regra = solto
+                ? 'Eu anoto só o que já saiu ou entrou. Quando acontecer, me conta que eu lanço na hora.'
+                : 'Eu registro só o que já foi gasto ou recebido. Quando acontecer, é só me contar.'
+            const dica =
+                plano && l.type === 'EXPENSE' && l.category
+                    ? ` Se a ideia é um limite para o mês, dá para criar um orçamento de ${rotulo('EXPENSE', l.category)} no painel, que eu aviso quando estiver chegando perto.`
+                    : ''
+            return r(`${abertura} ${regra}${dica}`, ['Já aconteceu, pode lançar', 'Não lançar'])
+        },
         lancado: (descricao, aprendeu) =>
             (solto
                 ? v(`Anotado!${e('✅')} ${capitalizar(descricao)}.`, `Feito${e('✅')}: ${descricao}.`, `Pronto, ${descricao}.`)
@@ -332,6 +386,21 @@ function criarFala(estilo, s, primeiroNome) {
             acao: 'corrigido',
         }),
         nadaParaApagar: () => r('Não achei nada lançado por mim para apagar. Você pode excluir pelo painel.'),
+        confirmarApagar: (linhas, pedido) => {
+            const n = linhas.length
+            const titulo =
+                pedido === 'todos'
+                    ? n === 1
+                        ? 'Hoje eu só lancei este:'
+                        : `Estes são os ${n} que eu lancei hoje:`
+                    : n < pedido
+                      ? `Só achei ${n} ${n === 1 ? 'lançamento feito' : 'lançamentos feitos'} por mim nos últimos 7 dias:`
+                      : `Os ${n} últimos que eu lancei:`
+            const pergunta = n === 1 ? 'Apago?' : `Apago ${n === 2 ? 'os dois' : `os ${n}`}?`
+            return r([titulo, ...linhas.map((l) => `• ${capitalizar(l)}`), pergunta].join('\n'), ['Sim, apagar', 'Não'])
+        },
+        apagadosVarios: (n) =>
+            r(n === 1 ? 'Pronto, apaguei. Seu saldo já foi atualizado.' : `Pronto, apaguei os ${n} lançamentos. Seu saldo já foi atualizado.`),
         apagado: (descricao) => r(solto ? `Apaguei: ${descricao}.` : `Pronto, apaguei ${descricao}.`),
         ultimos: (linhas) => r(linhas.length ? ['Seus últimos lançamentos:', ...linhas.map((l) => `• ${capitalizar(l)}`)] : 'Você ainda não tem lançamentos.'),
         maiores: (linhas, periodo, tipo) =>
