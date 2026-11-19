@@ -108,7 +108,7 @@ export const repositorioDoAssistente = {
             take: limite,
         })
         return lista.map(simples)
-    }
+    },
 
     async apagarLancamento(userId, id) {
         await prisma.transaction.deleteMany({ where: { id, user_id: userId } })
