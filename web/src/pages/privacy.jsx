@@ -67,9 +67,12 @@ export function PrivacyPage() {
           <strong>Assistente (lançar conversando):</strong> as mensagens que você escreve no assistente são
           interpretadas pelo próprio {LEGAL.appName}, sem enviar nada a serviços de inteligência artificial de
           terceiros. O texto da conversa não é guardado no servidor: ficam só os lançamentos que ele criar e as
-          palavras que você ensinar a ele (por exemplo, que "zezinho" é Lazer), junto com uma indicação do seu
-          jeito de escrever (mais formal ou informal, com ou sem emoji) para responder no mesmo tom. Você pode ver
-          e apagar o que ele aprendeu a qualquer momento, e isso também sai na exportação dos seus dados.
+          palavras que você ensinar a ele (por exemplo, que "zezinho" é Lazer), as perguntas e preferências que
+          você ensinar e confirmar (como o que mostrar quando você pergunta "quanto sobrou" ou um apelido), uma
+          indicação do seu jeito de escrever (mais formal ou informal, com ou sem emoji) para responder no mesmo
+          tom e, por 30 minutos, um resumo do assunto da conversa (por exemplo, "gastos com Alimentação neste
+          mês"), para entender perguntas como "e ontem?". Você pode ver e apagar o que ele aprendeu a qualquer
+          momento, e isso também sai na exportação dos seus dados.
         </p>
         <p>
           <strong>Dados recebidos da carteira Valtrea Pay (só se você conectar):</strong> se você gerar um

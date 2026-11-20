@@ -100,8 +100,16 @@ describe('interpretar', () => {
         expect(interpretar('apaga o último', { hoje, memoria }).intencao).toBe('desfazer')
         expect(interpretar('como está meu orçamento?', { hoje, memoria }).intencao).toBe('orcamento')
         expect(interpretar('sim', { hoje, memoria }).intencao).toBe('confirmar')
-        expect(interpretar('oi', { hoje, memoria }).intencao).toBe('saudacao')
-        expect(interpretar('valeu!', { hoje, memoria }).intencao).toBe('agradecimento')
+        // cumprimentos e agradecimentos ficam com a base de conhecimento (conhecimento/social.js)
+        expect(interpretar('oi', { hoje, memoria }).intencao).toBe('desconhecido')
+        expect(interpretar('apaga aquele gasto de 60 reais', { hoje, memoria })).toMatchObject({ intencao: 'desfazer', descricao: { valor: 60 } })
+        expect(interpretar('muda o uber de ontem para 25', { hoje, memoria })).toMatchObject({
+            intencao: 'editar',
+            descricao: { categoria: 'transporte', data: '2026-11-18' },
+            valor: 25,
+        })
+        expect(interpretar('define um orçamento de 600 para alimentação', { hoje, memoria })).toMatchObject({ intencao: 'orcamentoCriar', valor: 600, categoria: 'alimentacao' })
+        expect(interpretar('qaunto eu gastei hj?', { hoje, memoria })).toMatchObject({ intencao: 'consulta', tipo: 'EXPENSE', periodo: { nome: 'hoje' } })
     })
 })
 
