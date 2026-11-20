@@ -106,7 +106,8 @@ export function PrivacyPage() {
         </p>
         <p id="cookies" className="scroll-mt-6">
           <strong>Cookies e armazenamento no seu dispositivo:</strong> guardamos no navegador apenas o que é necessário
-          para manter você conectado (identificadores de sessão) e permitir que o app funcione instalado. Não
+          para manter você conectado (identificadores de sessão; o de renovação fica num cookie protegido, que só a
+          API do Valtrea lê, válido por até 30 dias) e permitir que o app funcione instalado. Não
           usamos cookies de publicidade nem ferramentas de rastreamento de terceiros, e as fontes do site são
           servidas pelo próprio Valtrea, sem acessar servidores de terceiros. Também guardamos se você
           já viu o aviso de cookies, para não mostrá-lo de novo, e, se você escolher o tema claro no rodapé, essa

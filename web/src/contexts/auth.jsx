@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { api, tokenStorage } from '../lib/api'
+import { api, encerrarSessao, pedidoDeSessao, tokenStorage } from '../lib/api'
 
 const AuthContext = createContext(null)
 
@@ -10,6 +10,7 @@ export function AuthProvider({ children }) {
   const [isInitializing, setIsInitializing] = useState(true)
 
   const logout = useCallback(() => {
+    encerrarSessao()
     tokenStorage.clear()
     setUser(null)
     queryClient.clear()
@@ -41,20 +42,20 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener('finance-app:logout', logout)
   }, [logout])
 
-  const handleAuthResponse = (data) => {
+  const handleAuthResponse = (data, emCookie) => {
     const { tokens, ...userData } = data
-    tokenStorage.set(tokens)
+    tokenStorage.set(tokens, { emCookie })
     setUser(userData)
   }
 
   const login = async ({ email, password }) => {
-    const { data } = await api.post('/users/login', { email, password })
-    handleAuthResponse(data)
+    const { data, emCookie } = await pedidoDeSessao('post', '/users/login', { email, password })
+    handleAuthResponse(data, emCookie)
   }
 
   const signup = async (values) => {
-    const { data } = await api.post('/users', values)
-    handleAuthResponse(data)
+    const { data, emCookie } = await pedidoDeSessao('post', '/users', values)
+    handleAuthResponse(data, emCookie)
   }
 
   // Busca os dados atualizados do usuário (ex.: depois de confirmar o e-mail)
@@ -66,10 +67,10 @@ export function AuthProvider({ children }) {
   }, [])
 
   const updateUser = async (values) => {
-    const { data } = await api.patch('/users/me', values)
+    const { data, emCookie } = await pedidoDeSessao('patch', '/users/me', values)
     // Ao trocar a senha, a API encerra as outras sessões e manda tokens novos para esta
     const { tokens, ...userData } = data
-    if (tokens) tokenStorage.set(tokens)
+    if (tokens) tokenStorage.set(tokens, { emCookie })
     setUser(userData)
     return userData
   }

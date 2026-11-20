@@ -189,4 +189,33 @@ describe('User Routes E2E Tests', () => {
         expect(response.body.accessToken).toBeDefined()
         expect(response.body.refreshToken).toBeDefined()
     })
+
+    it('POST /api/users/login grava a sessão num cookie HttpOnly e o refresh funciona só com o cookie', async () => {
+        const { body: createdUser } = await request(app)
+            .post('/api/users')
+            .send({
+                ...user,
+                id: undefined,
+            })
+
+        const login = await request(app).post('/api/users/login').send({
+            email: createdUser.email,
+            password: user.password,
+        })
+        const cookie = (login.headers['set-cookie'] ?? []).find((c) => c.startsWith('valtrea_refresh='))
+        expect(cookie).toBeDefined()
+        expect(cookie).toMatch(/HttpOnly/)
+        expect(cookie).toMatch(/Path=\/api\/users/)
+
+        const response = await request(app)
+            .post('/api/users/refresh-token')
+            .set('Cookie', cookie.split(';')[0])
+            .send({})
+        expect(response.status).toBe(200)
+        expect(response.body.accessToken).toBeDefined()
+
+        const sair = await request(app).post('/api/users/logout')
+        expect(sair.status).toBe(204)
+        expect((sair.headers['set-cookie'] ?? []).join(';')).toMatch(/valtrea_refresh=;/)
+    })
 })

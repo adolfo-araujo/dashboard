@@ -3,12 +3,15 @@ import axios from 'axios'
 const ACCESS_KEY = 'finance-app:accessToken'
 const REFRESH_KEY = 'finance-app:refreshToken'
 
+// O token de renovação fica num cookie protegido (HttpOnly) que a API grava; a página não consegue lê-lo.
+// Só se a API ainda for a versão antiga (sem cookie), ele volta a ser guardado aqui, como antes.
 export const tokenStorage = {
   getAccess: () => localStorage.getItem(ACCESS_KEY),
   getRefresh: () => localStorage.getItem(REFRESH_KEY),
-  set: ({ accessToken, refreshToken }) => {
+  set: ({ accessToken, refreshToken }, { emCookie = false } = {}) => {
     localStorage.setItem(ACCESS_KEY, accessToken)
-    localStorage.setItem(REFRESH_KEY, refreshToken)
+    if (emCookie) localStorage.removeItem(REFRESH_KEY)
+    else if (refreshToken) localStorage.setItem(REFRESH_KEY, refreshToken)
   },
   clear: () => {
     localStorage.removeItem(ACCESS_KEY)
@@ -53,14 +56,33 @@ api.interceptors.request.use((config) => {
 // Um único refresh em andamento por vez, mesmo com várias requisições falhando juntas
 let refreshPromise = null
 
+const semResposta = (error) => !error?.response
+
+/**
+ * Pedido que grava ou usa o cookie da sessão. Se a API ainda não aceita cookie (versão antiga, durante a
+ * publicação), o navegador bloqueia a resposta; aí repete sem cookie e avisa que a sessão ficou no modo antigo.
+ */
+export async function pedidoDeSessao(metodo, url, dados) {
+  try {
+    const resposta = await api.request({ method: metodo, url, data: dados, withCredentials: true })
+    return { ...resposta, emCookie: true }
+  } catch (error) {
+    if (!semResposta(error)) throw error
+    const resposta = await api.request({ method: metodo, url, data: dados })
+    return { ...resposta, emCookie: false }
+  }
+}
+
 const refreshTokens = async () => {
-  const refreshToken = tokenStorage.getRefresh()
-  if (!refreshToken) throw new Error('Sem refresh token')
-  const { data } = await axios.post(`${api.defaults.baseURL}/users/refresh-token`, {
-    refreshToken,
-  })
-  tokenStorage.set(data)
+  const antigo = tokenStorage.getRefresh() ?? undefined
+  const { data, emCookie } = await pedidoDeSessao('post', '/users/refresh-token', antigo ? { refreshToken: antigo } : {})
+  tokenStorage.set(data, { emCookie })
   return data.accessToken
+}
+
+// Sair: apaga o cookie da sessão neste navegador (sem esperar a resposta)
+export const encerrarSessao = () => {
+  api.post('/users/logout', null, { withCredentials: true }).catch(() => {})
 }
 
 api.interceptors.response.use(
