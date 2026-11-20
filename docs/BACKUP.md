@@ -42,3 +42,14 @@ Depois de conferir que os dados estão certos na branch, você pode apontar o `D
 ### 4. Apagar os arquivos
 
 Depois de restaurar, apague `backup.dump` e o `.gpg` do seu computador: eles contêm os dados de todos os usuários.
+
+## Backup pelo seu computador (sem o GitHub)
+
+Enquanto o GitHub Actions estiver parado, e como segunda cópia fora do GitHub, rode
+`scripts/backup-local.ps1` no Windows com o Docker Desktop aberto. Ele copia todos os bancos da
+Valtrea de uma vez (Finance, Pay, Agora, Pulso e Volta), no mesmo formato criptografado do backup
+automático, e com `-Testar` restaura cada cópia num banco temporário para conferir que abre.
+
+1. Copie `scripts/backup-local.env.exemplo` para `scripts/backup-local.env` e cole as URLs.
+2. `.\scripts\backup-local.ps1 -Testar`
+3. Guarde a pasta `backups\<data>` fora do computador. Rode uma vez por semana.
