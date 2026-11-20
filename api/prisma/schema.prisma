@@ -173,6 +173,8 @@ model AssistentePendencia {
   user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   dados      Json
   estilo     Json?
+  // Contexto da conversa (intenção, período e categoria do último assunto), sem o texto das mensagens. Vence em 30 min.
+  contexto   Json?
   expira_em  DateTime
   updated_at DateTime @updatedAt
 }

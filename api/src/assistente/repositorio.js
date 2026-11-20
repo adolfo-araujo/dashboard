@@ -23,13 +23,79 @@ export const repositorioDoAssistente = {
                 take: HISTORICO,
                 select: { name: true, category: true, type: true },
             }),
-            prisma.assistentePendencia.findUnique({ where: { user_id: userId }, select: { estilo: true } }),
+            prisma.assistentePendencia.findUnique({ where: { user_id: userId }, select: { estilo: true, contexto: true } }),
         ])
         return {
             termos: new Map(termos.map((m) => [`${m.tipo}:${m.termo}`, m.categoria])),
             historico,
             estilo: pendencia?.estilo ?? null,
+            contexto: pendencia?.contexto ?? null,
         }
+    },
+
+    async salvarContexto(userId, contexto) {
+        await prisma.assistentePendencia.upsert({
+            where: { user_id: userId },
+            create: { user_id: userId, dados: {}, contexto, expira_em: new Date() },
+            update: { contexto },
+        })
+    },
+
+    // Procura lançamentos da pessoa por pistas (valor, data, categoria, tipo, parte do nome)
+    async buscarLancamentos(userId, { desde, ate, amount, type, category, termo, ordem = 'data', limite = 5 } = {}) {
+        const lista = await prisma.transaction.findMany({
+            where: {
+                user_id: userId,
+                ...(desde || ate ? { date: { ...(desde ? { gte: paraDia(desde) } : {}), ...(ate ? { lte: paraDia(ate) } : {}) } } : {}),
+                ...(amount ? { amount } : {}),
+                ...(type ? { type } : {}),
+                ...(category ? { category } : {}),
+                ...(termo ? { name: { contains: termo, mode: 'insensitive' } } : {}),
+            },
+            orderBy: ordem === 'valor' ? [{ amount: 'desc' }] : [{ date: 'desc' }, { created_at: 'desc' }],
+            take: limite,
+        })
+        return lista.map((t) => ({ ...simples(t), doAssistente: Boolean(t.external_id?.startsWith(MARCA)) }))
+    },
+
+    async contarPorOrigem(userId, inicio, fim) {
+        const where = { user_id: userId, date: { gte: paraDia(inicio), lte: paraDia(fim) } }
+        const [total, doAssistente] = await Promise.all([
+            prisma.transaction.count({ where }),
+            prisma.transaction.count({ where: { ...where, external_id: { startsWith: MARCA } } }),
+        ])
+        return { doAssistente, outros: total - doAssistente }
+    },
+
+    async salvarOrcamento(userId, categoria, valor) {
+        await prisma.budget.upsert({
+            where: { user_id_category: { user_id: userId, category: categoria } },
+            create: { user_id: userId, category: categoria, amount: valor },
+            update: { amount: valor },
+        })
+    },
+
+    async removerOrcamento(userId, categoria) {
+        const { count } = await prisma.budget.deleteMany({ where: { user_id: userId, category: categoria } })
+        return count > 0
+    },
+
+    async listarMemoria(userId) {
+        return prisma.assistenteMemoria.findMany({
+            where: { user_id: userId },
+            orderBy: { updated_at: 'desc' },
+            select: { tipo: true, termo: true, categoria: true, usos: true },
+        })
+    },
+
+    async esquecerTermo(userId, termo, tipo) {
+        const { count } = await prisma.assistenteMemoria.deleteMany({ where: { user_id: userId, termo, ...(tipo ? { tipo } : {}) } })
+        return count
+    },
+
+    // Esquece o que aprendeu (categorias, frases e preferências), mas mantém o contexto e os lançamentos
+    async esquecerAprendizado(userId) {
+        await prisma.assistenteMemoria.deleteMany({ where: { user_id: userId } })
     },
 
     async lerPendencia(userId, agora = new Date()) {

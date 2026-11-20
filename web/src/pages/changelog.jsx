@@ -9,7 +9,10 @@ const VERSOES = [
     "19 de novembro de 2026",
     [
       "Assistente: lance gastos e ganhos conversando (\"gastei 40 no mercado\"), pergunte quanto gastou, corrija ou apague o último lançamento e receba aviso do orçamento.",
-      "O assistente funciona dentro do Valtrea, sem IA de fora, e aprende as suas categorias e o seu jeito de escrever."
+      "O assistente funciona dentro do Valtrea, sem IA de fora, e aprende as suas categorias e o seu jeito de escrever.",
+      "Valtrea Assistente: entende erros de digitação e abreviações, segue o assunto (\"e ontem?\"), compara meses, diz se você está gastando muito e dá sugestões com os seus números.",
+      "Agora dá para apagar ou mudar um lançamento pela descrição, criar orçamentos conversando e ensinar expressões e perguntas, sempre com confirmação.",
+      "Também responde dúvidas de educação financeira, contas e datas, e diz quando não sabe em vez de inventar."
     ]
   ],
   [

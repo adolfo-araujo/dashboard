@@ -75,6 +75,33 @@ export const PALAVRAS_VAZIAS = new Set(
     ('a o as os um uma uns umas de do da dos das no na nos nas em com pra pro para por pelo pela e eu me meu minha ' +
         'foi fui hoje ontem anteontem agora real reais r$ conto contos pila pilas pau paus mil k valor de ja so la ai ' +
         'tipo mano cara ne ta tá blz beleza oi ola reais. dia que nesse neste esse este essa esta uns umas cerca deu kkk kkkk kkkkk haha hahaha rs rsrs coloquei botei ' +
-        'acho achando talvez quero queria vou vai vamos pretendo planejo preciso tenho devo gostaria penso pensando amanha depois vem proximo proxima semana ' +
+        'hj ontm lanca lancar lance lancei registra registrar registre anota anotar anote adiciona adicione acho achando talvez quero queria vou vai vamos pretendo planejo preciso tenho devo gostaria penso pensando amanha depois vem proximo proxima semana ' +
         Object.values(VERBOS).flat().join(' ')).split(' '),
 )
+
+// Gírias, abreviações e jeitos curtos de escrever → forma completa (só para entender a intenção).
+export const GIRIAS = {
+    vc: 'voce', vcs: 'voces', vce: 'voce', ce: 'voce', tb: 'tambem', tbm: 'tambem', pq: 'por que', pk: 'por que',
+    q: 'que', oq: 'o que', oque: 'o que', qto: 'quanto', qnt: 'quanto', qnto: 'quanto', qtos: 'quantos', qts: 'quantos',
+    msm: 'mesmo', hj: 'hoje', ontm: 'ontem', td: 'tudo', tds: 'todos', blz: 'beleza', vlw: 'valeu', vlws: 'valeu',
+    obg: 'obrigado', obgd: 'obrigado', obgda: 'obrigada', brigado: 'obrigado', brigada: 'obrigada', mt: 'muito', mto: 'muito',
+    mts: 'muitos', naum: 'nao', nn: 'nao', eh: 'e', dps: 'depois', cmg: 'comigo', ctg: 'contigo', fds: 'fim de semana',
+    grana: 'dinheiro', bufunfa: 'dinheiro', dindin: 'dinheiro', rango: 'comida', busao: 'onibus', vdd: 'verdade',
+    tmj: 'valeu', pfv: 'por favor', pfvr: 'por favor', plmds: 'pelo amor de deus', sdds: 'saudades', agr: 'agora',
+    cd: 'cade', kd: 'cade', vamo: 'vamos', bora: 'vamos', tava: 'estava', to: 'estou', tô: 'estou', ta: 'esta',
+}
+
+// Palavras importantes para entender a intenção; com erro de digitação ("qaunto", "saldu") são corrigidas para estas.
+export const VOCABULARIO = [
+    'gastei', 'gastos', 'gastar', 'quanto', 'quantos', 'saldo', 'sobrou', 'recebi', 'ganhei', 'investi', 'investimentos',
+    'paguei', 'comprei', 'apaga', 'apague', 'apagar', 'exclui', 'excluir', 'lancamento', 'lancamentos', 'lancei', 'categoria',
+    'categorias', 'orcamento', 'orcamentos', 'obrigado', 'obrigada', 'dinheiro', 'despesas', 'receitas', 'semana', 'passada',
+    'passado', 'ontem', 'hoje', 'ultimos', 'ultimas', 'resumo', 'extrato', 'sugestao', 'sugestoes', 'financas', 'economizar',
+    'reduzir', 'preocupado', 'preocupada', 'funciona', 'assistente', 'aprendeu', 'lembra', 'conversando', 'explica', 'entendi',
+    'quanto', 'comparar', 'compara', 'aumentaram', 'aumentando', 'diminuindo', 'tendencia', 'reserva', 'emergencia', 'juros',
+    'compostos', 'inflacao', 'poupanca', 'tesouro', 'cartao', 'credito', 'dividas', 'divida', 'organizar', 'produtividade',
+    'esquece', 'esqueca', 'ensinar', 'considera', 'considere', 'normalmente', 'geralmente', 'perguntar', 'falar', 'escrever',
+    'ultimo', 'ultima', 'gasto', 'ganho', 'ganhos', 'investimento', 'despesa', 'receita', 'mercado', 'salario', 'comida',
+    'transporte', 'alimentacao', 'conta', 'contas', 'pagar', 'comprar', 'receber', 'ganhar', 'investir', 'quanta', 'quais',
+    'muito', 'muita', 'gastando', 'ganhando', 'sobra', 'falta', 'faltam', 'tudo', 'todos', 'todas', 'nada', 'nenhum',
+]

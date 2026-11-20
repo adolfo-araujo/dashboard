@@ -10,12 +10,12 @@ export const hojeEm = (agora = new Date()) =>
 
 const paraData = (iso) => new Date(`${iso}T12:00:00Z`)
 const paraIso = (data) => data.toISOString().slice(0, 10)
-const somarDias = (iso, dias) => {
+export const somarDias = (iso, dias) => {
     const d = paraData(iso)
     d.setUTCDate(d.getUTCDate() + dias)
     return paraIso(d)
 }
-const ultimoDiaDoMes = (ano, mes) => new Date(Date.UTC(ano, mes, 0)).getUTCDate()
+export const ultimoDiaDoMes = (ano, mes) => new Date(Date.UTC(ano, mes, 0)).getUTCDate()
 const doisDigitos = (n) => String(n).padStart(2, '0')
 
 function montar(ano, mes, dia) {
@@ -25,7 +25,7 @@ function montar(ano, mes, dia) {
 
 /** Data citada na mensagem ("ontem", "dia 5", "5/11", "sexta"), ou null. Nunca no futuro. */
 export function extrairData(texto, hoje) {
-    const frase = normalizar(texto)
+    const frase = normalizar(texto).replace(/\bhj\b/g, 'hoje').replace(/\bontm\b/g, 'ontem')
     const [ano, mes] = hoje.split('-').map(Number)
 
     if (/\banteontem\b/.test(frase)) return { data: somarDias(hoje, -2), trecho: 'anteontem' }
@@ -64,33 +64,41 @@ export function extrairData(texto, hoje) {
 
 /** Período citado numa pergunta ("esse mês", "mês passado", "semana", "outubro"). Padrão: mês atual. */
 export function extrairPeriodo(texto, hoje) {
-    const frase = normalizar(texto)
+    const frase = normalizar(texto).replace(/\bhj\b/g, 'hoje').replace(/\bontm\b/g, 'ontem')
     const [ano, mes] = hoje.split('-').map(Number)
-    const mesInteiro = (a, m, nome) => ({ inicio: montar(a, m, 1), fim: montar(a, m, ultimoDiaDoMes(a, m)), nome })
+    const mesInteiro = (a, m, nome) => ({ inicio: montar(a, m, 1), fim: montar(a, m, ultimoDiaDoMes(a, m)), nome, explicito: true })
+    const ultimosDias = frase.match(/\bultim[oa]s (\d{1,3}) dias\b/)
+    if (ultimosDias) {
+        const n = Math.min(Number(ultimosDias[1]), 366)
+        return { inicio: somarDias(hoje, -(n - 1)), fim: hoje, nome: `nos últimos ${n} dias`, explicito: true }
+    }
+    if (/\banteontem\b/.test(frase)) return { inicio: somarDias(hoje, -2), fim: somarDias(hoje, -2), nome: 'anteontem', explicito: true }
+    if (/\bano passado\b/.test(frase)) return { inicio: montar(ano - 1, 1, 1), fim: montar(ano - 1, 12, 31), nome: 'no ano passado', explicito: true }
 
-    if (/\bhoje\b/.test(frase)) return { inicio: hoje, fim: hoje, nome: 'hoje' }
-    if (/\bontem\b/.test(frase)) return { inicio: somarDias(hoje, -1), fim: somarDias(hoje, -1), nome: 'ontem' }
+    if (/\bhoje\b/.test(frase)) return { inicio: hoje, fim: hoje, nome: 'hoje', explicito: true }
+    if (/\bontem\b/.test(frase)) return { inicio: somarDias(hoje, -1), fim: somarDias(hoje, -1), nome: 'ontem', explicito: true }
     if (/\bsemana passada\b/.test(frase)) {
         const recuo = (paraData(hoje).getUTCDay() + 6) % 7
         const segunda = somarDias(hoje, -recuo - 7)
-        return { inicio: segunda, fim: somarDias(segunda, 6), nome: 'na semana passada' }
+        return { inicio: segunda, fim: somarDias(segunda, 6), nome: 'na semana passada', explicito: true }
     }
     if (/\bsemana\b/.test(frase)) {
         const recuo = (paraData(hoje).getUTCDay() + 6) % 7
-        return { inicio: somarDias(hoje, -recuo), fim: hoje, nome: 'nesta semana' }
+        return { inicio: somarDias(hoje, -recuo), fim: hoje, nome: 'nesta semana', explicito: true }
     }
     if (/\bmes passado\b|\bultimo mes\b/.test(frase)) {
         return mes === 1 ? mesInteiro(ano - 1, 12, 'no mês passado') : mesInteiro(ano, mes - 1, 'no mês passado')
     }
     if (/\b(esse|este|neste|nesse) ano\b|\bno ano\b/.test(frase)) {
-        return { inicio: montar(ano, 1, 1), fim: hoje, nome: 'neste ano' }
+        return { inicio: montar(ano, 1, 1), fim: hoje, nome: 'neste ano', explicito: true }
     }
     for (let i = 0; i < MESES.length; i++) {
         if (!new RegExp(`\\b${MESES[i]}\\b`).test(frase)) continue
         const a = i + 1 > mes ? ano - 1 : ano
         return mesInteiro(a, i + 1, `em ${MESES[i] === 'marco' ? 'março' : MESES[i]}`)
     }
-    return { inicio: montar(ano, mes, 1), fim: hoje, nome: 'neste mês' }
+    const explicito = /\b(esse|este|neste|nesse|do|no) mes\b|\bmes atual\b/.test(frase)
+    return { inicio: montar(ano, mes, 1), fim: hoje, nome: 'neste mês', explicito }
 }
 
 export const formatarData = (iso, hoje) => {
@@ -99,3 +107,29 @@ export const formatarData = (iso, hoje) => {
     const [, m, d] = iso.split('-')
     return `${d}/${m}`
 }
+
+/** Mesmo trecho do mês anterior (do dia 1 até o mesmo dia), para comparar de forma justa. */
+export function mesmoTrechoDoMesAnterior(hoje) {
+    const [ano, mes, dia] = hoje.split('-').map(Number)
+    const a = mes === 1 ? ano - 1 : ano
+    const m = mes === 1 ? 12 : mes - 1
+    const d = Math.min(dia, ultimoDiaDoMes(a, m))
+    return { inicio: montar(a, m, 1), fim: montar(a, m, d), nome: 'no mesmo período do mês passado' }
+}
+
+/** Mês inteiro, N meses antes do atual (1 = mês passado). */
+export function mesAnterior(hoje, n = 1) {
+    const [ano, mes] = hoje.split('-').map(Number)
+    let a = ano
+    let m = mes - n
+    while (m < 1) {
+        m += 12
+        a -= 1
+    }
+    return { inicio: montar(a, m, 1), fim: montar(a, m, ultimoDiaDoMes(a, m)), nome: `${NOMES_DOS_MESES[m - 1]}`, ano: a, mes: m }
+}
+
+export const NOMES_DOS_MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
+export const NOMES_DOS_DIAS = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado']
+export const diaDaSemana = (iso) => paraData(iso).getUTCDay()
+export const diasEntre = (de, ate) => Math.round((paraData(ate) - paraData(de)) / 86400000)

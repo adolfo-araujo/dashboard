@@ -12,10 +12,10 @@ const CHAVE = 'finance-app:assistente'
 const INICIO = [
   {
     de: 'assistente',
-    texto: 'Oi! Me conte seus gastos e ganhos do jeito que você fala, que eu lanço no Finance. Também respondo quanto você gastou e aviso do orçamento.',
+    texto: 'Oi! Eu sou a Valtrea Assistente. Me conte seus gastos e ganhos do jeito que você fala, que eu lanço no Finance. Também respondo sobre o seu dinheiro, comparo meses, dou sugestões e aviso do orçamento.',
   },
 ]
-const SUGESTOES = ['Gastei 40 no mercado', 'Recebi 2500 de salário', 'Quanto gastei esse mês?', 'Ajuda']
+const SUGESTOES = ['Gastei 40 no mercado', 'Quanto gastei esse mês?', 'Estou gastando muito?', 'O que você consegue fazer?']
 
 const ACOES_OK = ['lancado', 'corrigido']
 const esperar = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -145,7 +145,7 @@ export function AssistentePage() {
   }
 
   async function esquecer() {
-    if (!window.confirm('Apagar tudo o que o assistente aprendeu com você? Seus lançamentos continuam.')) return
+    if (!window.confirm('Apagar tudo o que a assistente aprendeu com você e o assunto da conversa? Seus lançamentos continuam.')) return
     try {
       await api.delete('/assistente/memoria')
       setMensagens((m) => [
@@ -179,7 +179,7 @@ export function AssistentePage() {
       <main id="conteudo" tabIndex={-1} className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 sm:px-6">
         <div className="flex items-center justify-between gap-2 py-3 text-xs text-muted">
           <p className="flex items-center gap-1.5">
-            <Brain className="h-4 w-4 text-primary" /> Funciona dentro do Valtrea, sem IA de fora. Aprende com o seu jeito de escrever.
+            <Brain className="h-4 w-4 text-primary" /> Funciona dentro do Valtrea, sem IA de fora. Aprende com você e lembra do assunto por 30 minutos.
           </p>
           <div className="flex shrink-0 gap-1">
             <Button variant="ghost" size="sm" onClick={limpar}>
