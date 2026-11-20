@@ -1,106 +1,208 @@
 # Finance Dashboard
 
-Dashboard de finanças pessoais full stack: cadastro e login com JWT, registro de ganhos, gastos e investimentos, saldo por período, gráfico de distribuição e gestão da conta.
+**Gestão financeira pessoal com dashboard interativo, API REST e autenticação JWT.**
 
-| Parte | Stack |
+Aplicação full-stack para acompanhar **receitas, despesas e investimentos**, consultar o saldo em diferentes períodos e gerenciar transações em uma interface responsiva. O projeto reúne práticas de desenvolvimento web, integração entre frontend e backend, persistência de dados, testes automatizados e execução com Docker.
+
+**[Código-fonte](https://github.com/adolfo-araujo/dashboard)** · [Documentação da API (ambiente local)](http://localhost:8080/docs)
+
+> **Ambiente de demonstração:** o projeto inclui dados de exemplo para testes locais. Não utilize credenciais de demonstração nem dados financeiros reais em uma implantação pública sem configurar a segurança do ambiente.
+
+## Funcionalidades
+
+- **Conta do usuário:** cadastro, login, logout e renovação de tokens de acesso (access e refresh token).
+- **Visão financeira:** saldo do período e totais de ganhos, gastos e investimentos.
+- **Gráficos:** distribuição percentual dos lançamentos em gráfico de rosca.
+- **Filtros:** este mês, mês passado, últimos três meses, este ano ou intervalo personalizado, preservando o período na URL.
+- **Transações:** cadastro, listagem, pesquisa, edição e exclusão, com filtro por tipo.
+- **Perfil:** atualização de nome, e-mail e senha, além de exclusão da conta e de suas transações relacionadas.
+- **Interface responsiva:** tabela no desktop e lista no celular.
+
+## Tecnologias
+
+| Camada | Tecnologias |
 | --- | --- |
-| `api/` | Node.js, Express, Prisma, PostgreSQL, Zod, JWT (access + refresh), bcrypt, Swagger |
-| `web/` | React 18, Vite, Tailwind CSS, TanStack Query, React Hook Form + Zod, Recharts |
-| Banco | PostgreSQL 16 com migrations do Prisma e seed de demonstração |
+| **Frontend** | React 18, Vite, Tailwind CSS, TanStack Query, React Hook Form, Zod, Recharts |
+| **Backend** | Node.js, Express, Prisma, Zod, bcrypt |
+| **Autenticação** | JWT com access token e refresh token |
+| **Banco de dados** | PostgreSQL 16, migrações Prisma e dados de demonstração (seed) |
+| **Documentação da API** | Swagger |
+| **Infraestrutura** | Docker e Docker Compose |
+| **Qualidade** | Jest, smoke test e GitHub Actions |
 
-## Rodando tudo com Docker (recomendado)
+## Arquitetura
 
-Pré-requisito: [Docker Desktop](https://www.docker.com/products/docker-desktop/).
-
-```bash
-docker compose up --build
+```mermaid
+flowchart LR
+    U[Usuário] --> W[React + Vite]
+    W -->|HTTP /api| A[Node.js + Express]
+    A -->|Prisma ORM| D[(PostgreSQL)]
+    A -->|JWT| W
 ```
 
-Na primeira vez o container da API aplica as migrations e cria um usuário de demonstração com 6 meses de transações.
+A aplicação está organizada em dois componentes principais:
 
-- Dashboard: http://localhost:3000
-- API: http://localhost:8080/api
-- Documentação Swagger: http://localhost:8080/docs
-- Login demo: `demo@finance.app` / `123456`
+```text
+dashboard/
+├── api/                       # API REST, autenticação, Prisma e testes
+├── web/                       # Interface React + Vite
+├── .github/
+│   └── workflows/
+│       └── ci.yml             # Integração contínua
+├── docker-compose.yml         # Orquestração local
+├── push-to-github.sh          # Script auxiliar de publicação
+├── push-to-github.ps1         # Script auxiliar para Windows
+└── README.md
+```
 
-Para apagar o banco e começar do zero: `docker compose down -v`.
+> A árvore acima mostra apenas os principais diretórios e arquivos citados na documentação do projeto.
 
-## Rodando em modo desenvolvimento
+## Executar com Docker (recomendado)
+
+**Pré-requisito:** Docker Desktop com Docker Compose disponível.
+
+1. Clone o repositório:
+
+   ```bash
+   git clone https://github.com/adolfo-araujo/dashboard.git
+   cd dashboard
+   ```
+2. Inicie os serviços:
+
+   ```bash
+   docker compose up --build
+   ```
+
+Na primeira execução, de acordo com a configuração documentada do projeto, a API aplica as migrações do banco e cria dados de demonstração.
+
+| Serviço | Endereço local |
+| --- | --- |
+| **Dashboard** | http://localhost:3000 |
+| **API** | http://localhost:8080/api |
+| **Swagger** | http://localhost:8080/docs |
+
+**Atenção:** as credenciais de demonstração configuradas pelo seed destinam-se exclusivamente ao ambiente local de testes. Consulte a configuração de seed do repositório para conhecê-las ou alterá-las.
+
+Para encerrar os serviços:
 
 ```bash
-# 1. banco
-docker compose up -d postgres
+docker compose down
+```
 
-# 2. API (porta 8080)
+Para **apagar também os volumes e dados persistidos** e reiniciar do zero:
+
+```bash
+docker compose down -v
+```
+
+## Executar em modo de desenvolvimento
+
+**Pré-requisitos:** Node.js, npm, PostgreSQL (ou Docker para o banco) e variáveis de ambiente configuradas.
+
+### 1. Banco de dados
+
+Na raiz do repositório:
+
+```bash
+docker compose up -d postgres
+```
+
+### 2. Backend — porta 8080
+
+```bash
 cd api
 cp .env.example .env
 npm install
 npx prisma migrate deploy
 npm run seed
 npm run start:dev
+```
 
-# 3. dashboard (porta 5173) — em outro terminal
+Edite o arquivo `api/.env` conforme o seu ambiente **antes de executar**. No Windows PowerShell, você pode usar `Copy-Item .env.example .env` no lugar de `cp`.
+
+### 3. Frontend — porta 5173
+
+Em outro terminal, a partir da raiz:
+
+```bash
 cd web
 npm install
 npm run dev
 ```
 
-O Vite encaminha `/api` para `http://localhost:8080`, então não é preciso configurar CORS em desenvolvimento.
+Acesse **http://localhost:5173**. O Vite encaminha requisições de `/api` à API local na porta 8080, conforme documentado no projeto.
 
-## Funcionalidades
+## API REST
 
-- Cadastro, login, logout e renovação automática do token (refresh token) quando o access token expira
-- Saldo do período com totais de ganhos, gastos e investimentos
-- Gráfico de rosca com a distribuição percentual
-- Filtro de período com atalhos (este mês, mês passado, últimos 3 meses, este ano) ou datas personalizadas; o período fica na URL
-- Criar, editar e excluir transações, com busca por nome e filtro por tipo
-- Editar nome, e-mail e senha; excluir a conta (e todas as transações, em cascata)
-- Layout responsivo (tabela no desktop, lista no celular)
+As rotas abaixo foram documentadas na versão atual do projeto:
 
-## Endpoints da API
-
-| Método | Rota | Descrição |
+| Método | Endpoint | Finalidade |
 | --- | --- | --- |
-| POST | `/api/users` | Cadastro (retorna tokens) |
-| POST | `/api/users/login` | Login (retorna tokens) |
-| POST | `/api/users/refresh-token` | Gera novos tokens |
-| GET | `/api/users/me` | Usuário autenticado |
-| PATCH | `/api/users/me` | Atualiza usuário |
-| DELETE | `/api/users/me` | Exclui usuário |
-| GET | `/api/users/me/balance?from=YYYY-MM-DD&to=YYYY-MM-DD&today=YYYY-MM-DD` | Saldo atual (tudo até hoje) e extrato do período: saldo no início, resultado e saldo no fim |
-| GET | `/api/transactions/me?from=…&to=…` | Lista transações |
-| POST | `/api/transactions/me` | Cria transação |
-| PATCH | `/api/transactions/me/:id` | Edita transação |
-| DELETE | `/api/transactions/me/:id` | Exclui transação |
+| `POST` | `/api/users` | Cadastrar usuário e retornar tokens |
+| `POST` | `/api/users/login` | Autenticar usuário |
+| `POST` | `/api/users/refresh-token` | Renovar tokens |
+| `GET` | `/api/users/me` | Consultar usuário autenticado |
+| `PATCH` | `/api/users/me` | Atualizar perfil |
+| `DELETE` | `/api/users/me` | Excluir conta |
+| `GET` | `/api/users/me/balance?from=YYYY-MM-DD&to=YYYY-MM-DD&today=YYYY-MM-DD` | Consultar saldo e extrato do período |
+| `GET` | `/api/transactions/me?from=...&to=...` | Listar transações filtradas |
+| `POST` | `/api/transactions/me` | Criar transação |
+| `PATCH` | `/api/transactions/me/:id` | Atualizar transação |
+| `DELETE` | `/api/transactions/me/:id` | Excluir transação |
 
-## Testes
+Consulte os esquemas e exemplos de requisições na **documentação Swagger** em `http://localhost:8080/docs` quando a API estiver em execução.
 
-- `cd api && npm run test:smoke` roda um teste de ponta a ponta contra a API em execução (cadastro, login, CRUD de transações, saldo, permissões, refresh token).
-- O GitHub Actions (`.github/workflows/ci.yml`) sobe um PostgreSQL, aplica as migrations, roda o seed, inicia a API e executa esse teste a cada push; também faz o build do dashboard.
-- Os testes unitários/e2e originais com Jest continuam em `api/src` (`npm test`, usa o `api/docker-compose.yml` com o banco de teste na porta 5433 e um `.env.test` — veja `api/.env.test.example`).
+## Testes e integração contínua
 
-## Correções em relação à API original
-
-- Login aceitava qualquer senha: a comparação do bcrypt (assíncrona) não era aguardada.
-- Qualquer usuário autenticado conseguia editar transações de outro; agora retorna 403.
-- Excluir transação de outro usuário retornava 500 em vez de 403.
-- O hash da senha era devolvido nas respostas de usuário; agora é removido.
-- Transações agora vêm ordenadas por data (mais recentes primeiro).
-
-## Publicando no GitHub
-
-Crie um repositório vazio em https://github.com/new e rode na pasta do projeto:
+O repositório documenta um smoke test de ponta a ponta para cadastro, login, operações CRUD, saldo, permissões e renovação de tokens:
 
 ```bash
-./push-to-github.sh https://github.com/SEU-USUARIO/finance-dashboard.git
+cd api
+npm run test:smoke
 ```
 
-No Windows (PowerShell): `.\push-to-github.ps1 https://github.com/SEU-USUARIO/finance-dashboard.git`
+**A API precisa estar em execução** para o smoke test.
 
-Com o GitHub CLI logado (`gh auth login`) dá para criar o repositório e enviar de uma vez: `./push-to-github.sh --gh finance-dashboard`.
+Também há testes com Jest no backend (`npm test`, com o ambiente de teste apropriado). O workflow `.github/workflows/ci.yml` usa PostgreSQL, aplica as migrações, executa seed e smoke test e verifica o build do dashboard a cada push.
 
-## Deploy
+### Correções de segurança documentadas
 
-- Banco: qualquer PostgreSQL gerenciado (Neon, Supabase, Render).
-- API: Render/Railway apontando para a pasta `api` com o `Dockerfile`; defina `DATABASE_URL`, `JWT_ACCESS_TOKEN_SECRET`, `JWT_REFRESH_TOKEN_SECRET` e, opcionalmente, `CORS_ORIGIN`.
-- Dashboard: Vercel/Netlify na pasta `web`, com `VITE_API_URL=https://sua-api.com/api` nas variáveis de build.
+Entre os ajustes em relação à API original estão:
+
+- Aguardar corretamente a validação assíncrona de senha com bcrypt.
+- Impedir edição de transações pertencentes a outros usuários (`403`).
+- Retornar `403` ao tentar excluir transações de terceiros, em vez de erro `500`.
+- Não expor hash de senha nas respostas da API.
+- Ordenar transações da mais recente para a mais antiga.
+
+Esses pontos são descritos no histórico técnico do projeto; mantenha testes automatizados para evitar regressões.
+
+## Publicação e implantação
+
+A documentação do projeto prevê implantação separada para banco de dados, API e frontend:
+
+- **Banco:** PostgreSQL gerenciado (por exemplo, Neon, Supabase ou Render).
+- **API:** serviço Node.js (por exemplo, Render ou Railway) utilizando o `Dockerfile` da pasta `api/`.
+- **Frontend:** hospedagem estática compatível com Vite (por exemplo, Vercel ou Netlify) utilizando a pasta `web/`.
+
+Configure no serviço de API as variáveis de ambiente necessárias, incluindo `DATABASE_URL`, `JWT_ACCESS_TOKEN_SECRET`, `JWT_REFRESH_TOKEN_SECRET` e, quando aplicável, `CORS_ORIGIN`. No frontend, configure `VITE_API_URL` com a URL pública de sua API seguida de `/api`, conforme a configuração existente.
+
+> **Não publique** arquivos `.env`, senhas de produção, tokens de acesso ou strings de conexão reais. Não utilize a senha demonstrativa do seed em produção.
+
+## Próximos passos
+
+- [ ] Adicionar capturas reais do dashboard e de suas visualizações em `docs/screenshots/`.
+- [ ] Documentar as variáveis obrigatórias do ambiente usando arquivos `.env.example`, sem segredos reais.
+- [ ] Verificar acessibilidade e responsividade em diferentes telas.
+- [ ] Ampliar cobertura de testes de autenticação, permissões e cálculos financeiros.
+- [ ] Adicionar demonstração pública, se houver ambiente seguro com dados fictícios.
+
+## Autor
+
+**João Adolfo Martins Araújo**  
+Engenharia de Software — Universidade Veiga de Almeida  
+GitHub: [@adolfo-araujo](https://github.com/adolfo-araujo)
+
+---
+
+*Projeto de estudo e portfólio em desenvolvimento full-stack.*
