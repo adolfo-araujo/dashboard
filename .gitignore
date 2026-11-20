@@ -6,3 +6,7 @@ coverage
 .postgres-data
 .DS_Store
 loadtest/resultado/
+
+# Backup local (scripts/backup-local.ps1): URLs dos bancos e os arquivos gerados
+scripts/backup-local.env
+backups/
