@@ -24,6 +24,7 @@ import { TokensGeneratorAdapter } from '../adapters/tokens-generator.js'
 import { sendVerificationEmail } from './email-verification.js'
 import { publicUser } from '../security/serializers.js'
 import { isBot } from '../security/bot-protection.js'
+import { apagarSessao, guardarSessao, lerCookie } from '../middlewares/sessao.js'
 
 export const usersRouter = Router()
 
@@ -167,6 +168,7 @@ usersRouter.post('/', async (request, response) => {
         } catch (error) {
             console.error(error)
         }
+        guardarSessao(response, body?.tokens?.refreshToken)
     }
 
     response.status(statusCode).send(sanitize(body))
@@ -201,6 +203,7 @@ usersRouter.patch('/me', auth, async (request, response) => {
             data: { sessions_valid_after: new Date() },
         })
         body.tokens = new TokensGeneratorAdapter().execute(request.userId)
+        guardarSessao(response, body.tokens.refreshToken)
     }
 
     if (emailChanged) {
@@ -280,6 +283,7 @@ usersRouter.delete('/me', auth, async (request, response) => {
             }
         }
 
+        if (statusCode >= 200 && statusCode < 300) apagarSessao(response)
         response.status(statusCode).send(sanitize(body))
     } catch (error) {
         console.error(error)
@@ -323,10 +327,22 @@ usersRouter.post('/login', async (request, response) => {
         return response.status(401).send({ message: 'Unauthorized' })
     }
 
+    if (statusCode === 200) guardarSessao(response, body?.tokens?.refreshToken)
     response.status(statusCode).send(sanitize(body))
 })
 
+// POST /api/users/logout: apaga o cookie da sessão neste navegador
+usersRouter.post('/logout', (request, response) => {
+    apagarSessao(response)
+    response.status(204).send()
+})
+
 usersRouter.post('/refresh-token', async (request, response) => {
+    // O token vem do cookie protegido (site) ou do corpo (app e versões antigas)
+    if (!request.body?.refreshToken) {
+        const doCookie = lerCookie(request)
+        if (doCookie) request.body = { ...(request.body ?? {}), refreshToken: doCookie }
+    }
     // A sessão só é renovada se a conta ainda existe e a senha não foi trocada
     // depois que este token foi emitido.
     try {
@@ -351,5 +367,7 @@ usersRouter.post('/refresh-token', async (request, response) => {
 
     const { statusCode, body } = await refreshTokenController.execute(request)
 
+    if (statusCode === 200) guardarSessao(response, body?.refreshToken)
+    else if (statusCode === 401) apagarSessao(response)
     response.status(statusCode).send(sanitize(body))
 })

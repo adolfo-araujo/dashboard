@@ -47,6 +47,8 @@ app.use(
         origin: process.env.CORS_ORIGIN
             ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
             : DEFAULT_ORIGINS,
+        // O site manda o cookie da sessão (middlewares/sessao.js); só as origens acima podem
+        credentials: true,
     }),
 )
 app.use(express.json({ limit: '100kb' }))
